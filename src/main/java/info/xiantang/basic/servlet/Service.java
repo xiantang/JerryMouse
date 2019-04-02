@@ -7,49 +7,45 @@ import info.xiantang.basic.Http.Response;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * 使用serverSocket 建立与浏览器的链接 获取请求协议
  */
 public class Service {
-    private ServerSocket serverSocket;
-    // 启动
-    public void start() {
+
+    private final ExecutorService exec = Executors.newCachedThreadPool();
+    private ServerSocket socket;
+    public void start()  {
+
         try {
-            serverSocket = new ServerSocket(8888);
+            socket = new ServerSocket(8888);
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("服务器启动失败");
         }
-        while (true) {
-            receive();
+        while (!exec.isShutdown()) {
+            try {
+                final Socket client = socket.accept();
+                exec.execute(new Dispatcher(client));
+            } catch (IOException e) {
+                if (!exec.isShutdown())
+                    log("task submission rejected", e);
+            }
         }
-
-
     }
 
     public void stop() {
-
+        exec.shutdown();
     }
 
-    public void receive() {
-        try {
-            Socket client = serverSocket.accept();
-            Request request = new Request(client);
-            Response response = new Response(client);
-            Servlet servlet = WebApp.getServletFromUrl(request.getUrl());
-            if (servlet != null) {
-                servlet.service(request, response);
-                response.pushToBrower(200);
-            } else response.pushToBrower(404);
-
-
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void log(String msg, Exception e) {
+        Logger.getAnonymousLogger().log(Level.WARNING, msg, e);
     }
+
 
     public static void main(String[] args) {
         Service server = new Service();

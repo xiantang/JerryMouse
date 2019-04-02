@@ -89,6 +89,7 @@ public class Response {
         createHeadInfo(code);
         bufferedWriter.append(headInfo);
         bufferedWriter.append(content);
+        bufferedWriter.append(CRLF);
         bufferedWriter.flush();
 
     }

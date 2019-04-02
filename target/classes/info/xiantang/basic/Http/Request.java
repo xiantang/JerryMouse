@@ -16,10 +16,15 @@ public class Request {
     private String requestInfo;
     // 请求方式
     private String method;
+
+
+
     // 请求URL
     private String url;
     // 请求参数
     private String queStr;
+
+    private boolean emptyPackage = false;
 
     private final String CRLF = "\r\n";
 
@@ -40,14 +45,25 @@ public class Request {
     public String getQueStr() {
         return queStr;
     }
+    public boolean isEmptyPackage() {
+        return emptyPackage;
+    }
 
     public Request(InputStream is) {
         parameterMap = new HashMap<>();
+
         byte[] data = new byte[1024 * 1024];
         int len = 0;
         try {
+
             len = is.read(data);
+            if (len == -1) {
+                emptyPackage = true;
+                return;
+            }
 //            System.out.println(len);
+//            System.out.println("----1.获得协议------");
+//            System.out.println("------读取data-----");
             requestInfo = new String(data, 0, len);
         } catch (IOException e) {
             e.printStackTrace();
@@ -67,16 +83,19 @@ public class Request {
         return null;
     }
 
-    private void parseRequestInfo() {
-        /*
+    public boolean isEmptypackage() {
+        return emptyPackage;
+    }
 
-         */
-        System.out.println("----1.获得协议------");
-        System.out.println(requestInfo);
-        System.out.println("----2.获取请求方式------");
+//    public void setEmptypackage(boolean emptypackage) {
+//        isEmptypackage = emptypackage;
+//    }
+
+    private void parseRequestInfo() {
+//        System.out.println("----2.获取请求方式------");
         method = requestInfo.substring(0, requestInfo.indexOf("/")).trim();
-        System.out.println(method);
-        System.out.println("----3.获取请求URL------");
+//        System.out.println(method);
+//        System.out.println("----3.获取请求URL------");
         int startidx = requestInfo.indexOf("/") + 1;
         int endidx = requestInfo.indexOf("HTTP/");
         url = requestInfo.substring(startidx, endidx).trim();
@@ -87,8 +106,8 @@ public class Request {
             queStr = urlArray[1];
 
         }
-        System.out.println(url);
-        System.out.println("----3.获取请求参数------");
+//        System.out.println(url);
+//        System.out.println("----3.获取请求参数------");
 
         if (method.equals("POST")) {
             String qStr = requestInfo.substring(
