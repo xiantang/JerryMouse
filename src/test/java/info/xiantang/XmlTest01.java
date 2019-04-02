@@ -26,7 +26,7 @@ public class XmlTest01 {
         String className = webContext.getClz("/xx");
         Class clz =  Class.forName(className);
         Servlet servlet = (Servlet) clz.getConstructor().newInstance();
-        servlet.service();
+//        servlet.service();
 
     }
 
