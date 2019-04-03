@@ -1,4 +1,4 @@
-package info.xiantang.basic.Http;
+package info.xiantang.basic.http;
 
 import java.io.IOException;
 import java.io.InputStream;

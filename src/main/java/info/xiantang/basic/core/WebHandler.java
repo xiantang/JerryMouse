@@ -1,4 +1,5 @@
-package info.xiantang.basic.servlet;
+package info.xiantang.basic.core;
+
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -7,6 +8,10 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 负责解析web.xml
+ *
+ */
 public class WebHandler extends DefaultHandler {
     private List<Entity> entities;
     private List<Mapping> mappings;

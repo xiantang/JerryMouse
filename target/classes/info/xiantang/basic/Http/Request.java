@@ -1,4 +1,4 @@
-package info.xiantang.basic.Http;
+package info.xiantang.basic.http;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,10 +7,10 @@ import java.net.Socket;
 import java.net.URLDecoder;
 import java.util.*;
 
-/*
+/**
 封装请求协议
 封装请求参数为map
- */
+ **/
 public class Request {
     // 协议信息
     private String requestInfo;
@@ -53,7 +53,7 @@ public class Request {
         parameterMap = new HashMap<>();
 
         byte[] data = new byte[1024 * 1024];
-        int len = 0;
+        int len;
         try {
 
             len = is.read(data);
@@ -61,9 +61,6 @@ public class Request {
                 emptyPackage = true;
                 return;
             }
-//            System.out.println(len);
-//            System.out.println("----1.获得协议------");
-//            System.out.println("------读取data-----");
             requestInfo = new String(data, 0, len);
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,15 +84,11 @@ public class Request {
         return emptyPackage;
     }
 
-//    public void setEmptypackage(boolean emptypackage) {
-//        isEmptypackage = emptypackage;
-//    }
+
 
     private void parseRequestInfo() {
-//        System.out.println("----2.获取请求方式------");
         method = requestInfo.substring(0, requestInfo.indexOf("/")).trim();
-//        System.out.println(method);
-//        System.out.println("----3.获取请求URL------");
+
         int startidx = requestInfo.indexOf("/") + 1;
         int endidx = requestInfo.indexOf("HTTP/");
         url = requestInfo.substring(startidx, endidx).trim();
@@ -106,8 +99,6 @@ public class Request {
             queStr = urlArray[1];
 
         }
-//        System.out.println(url);
-//        System.out.println("----3.获取请求参数------");
 
         if (method.equals("POST")) {
             String qStr = requestInfo.substring(
@@ -124,9 +115,9 @@ public class Request {
         System.out.println(method + "->" + url + "->" + queStr);
         convertMap();
     }
-    /*
+    /**
    处理请求参数为Map
-     */
+    * */
     private void convertMap() {
         // 分割
         String[] keyValues = queStr.split("&");

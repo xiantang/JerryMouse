@@ -1,13 +1,14 @@
-package info.xiantang.basic.servlet;
+package info.xiantang.basic.core;
 
-import info.xiantang.basic.Http.Request;
-import info.xiantang.basic.Http.Response;
+import info.xiantang.basic.http.Request;
+import info.xiantang.basic.http.Response;
 
 import java.io.IOException;
 import java.net.Socket;
 
 /**
  * 分发器
+ * 获得请求的url并且分配给指定的servlet处理
  */
 public class Dispatcher implements Runnable {
 

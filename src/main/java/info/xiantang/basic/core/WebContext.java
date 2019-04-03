@@ -1,4 +1,6 @@
-package info.xiantang.basic.servlet;
+package info.xiantang.basic.core;
+
+
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,7 +11,6 @@ public class WebContext {
     private List<Mapping> mappings;
     // key --> servlet-name value --> servlet-class
     private Map<String, String> entityMap = new HashMap<>();
-    // key -
     private Map<String, String> mappingMap = new HashMap<>();
     public WebContext(List<Entity> entities, List<Mapping> mappings) {
         // 存储实体类

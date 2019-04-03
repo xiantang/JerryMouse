@@ -1,7 +1,8 @@
-package info.xiantang.basic.servlet;
+package info.xiantang.basic.user;
 
-import info.xiantang.basic.Http.Request;
-import info.xiantang.basic.Http.Response;
+import info.xiantang.basic.http.Request;
+import info.xiantang.basic.http.Response;
+import info.xiantang.basic.core.Servlet;
 
 public class LoginServlet implements Servlet {
     @Override

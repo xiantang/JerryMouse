@@ -1,15 +1,12 @@
 package info.xiantang;
 
-import info.xiantang.basic.servlet.*;
+import info.xiantang.basic.core.*;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class XmlTest01 {
@@ -19,7 +16,7 @@ public class XmlTest01 {
         WebHandler phandler = new WebHandler();
         // 当前线程的类加载器
         parse.parse(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("info/xiantang/basic/servlet/web.xml"), phandler);
+                .getResourceAsStream("info/xiantang/basic/web.xml"), phandler);
         List<Entity> entities = phandler.getEntities();
         List<Mapping> mappings = phandler.getMappings();
         WebContext webContext = new WebContext(entities, mappings);

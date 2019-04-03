@@ -1,8 +1,11 @@
-package info.xiantang.basic.servlet;
+package info.xiantang.basic.core;
 
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ *
+ */
 public class Mapping {
     private String name;
     private Set<String> patterns;

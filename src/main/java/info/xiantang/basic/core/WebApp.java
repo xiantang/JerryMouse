@@ -1,11 +1,13 @@
-package info.xiantang.basic.servlet;
+package info.xiantang.basic.core;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.List;
 
 public class WebApp {
     private static WebContext webContext;
+    /*
+    初始化webContext存入servlet以及他的映射
+     */
     static {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -13,7 +15,7 @@ public class WebApp {
             WebHandler phandler = new WebHandler();
             // 当前线程的类加载器
             parse.parse(Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream("info/xiantang/basic/servlet/web.xml"), phandler);
+                    .getResourceAsStream("info/xiantang/basic/web.xml"), phandler);
             webContext = new WebContext( phandler.getEntities(),phandler.getMappings());
         } catch (Exception e) {
             System.out.println("解析配置文件错误");

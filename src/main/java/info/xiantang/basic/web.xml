@@ -2,7 +2,7 @@
 <web-app>
     <servlet>
         <servlet-name>login</servlet-name>
-        <servlet-class>info.xiantang.basic.servlet.LoginServlet</servlet-class>
+        <servlet-class>info.xiantang.basic.user.LoginServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
@@ -13,7 +13,7 @@
 
     <servlet>
         <servlet-name>reg</servlet-name>
-        <servlet-class>info.xiantang.basic.servlet.RegisterServlet</servlet-class>
+        <servlet-class>info.xiantang.basic.user.RegisterServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>reg</servlet-name>
