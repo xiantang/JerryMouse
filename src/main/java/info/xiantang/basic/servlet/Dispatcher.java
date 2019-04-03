@@ -32,7 +32,7 @@ public class Dispatcher implements Runnable {
 
         // socket 编程如果是浏览器请求会发送一个空包
         if (request.isEmptypackage()) {
-
+            release();
             return;
         }
         try {
