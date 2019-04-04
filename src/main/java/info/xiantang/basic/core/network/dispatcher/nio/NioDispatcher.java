@@ -2,6 +2,7 @@ package info.xiantang.basic.core.network.dispatcher.nio;
 
 import info.xiantang.basic.core.handler.NioRequestHandler;
 import info.xiantang.basic.core.network.dispatcher.AbstractDispatcher;
+import info.xiantang.basic.exception.ServletException;
 import info.xiantang.basic.http.Request;
 import info.xiantang.basic.http.Response;
 
@@ -12,11 +13,10 @@ import java.nio.channels.SocketChannel;
 
 public class NioDispatcher extends AbstractDispatcher {
     @Override
-    public void doDispatch(SocketChannel client) {
+    public void doDispatch(SocketChannel client) throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(1024);
-//        System.out.println("开始读取Request");
         Request request = null;
-        Response response = null;
+        Response response = new Response(client);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             while (client.read(buffer) > 0) {
@@ -25,10 +25,12 @@ public class NioDispatcher extends AbstractDispatcher {
             }
             baos.close();
             request = new Request(baos.toByteArray());
-            pool.execute(new NioRequestHandler(request,client));
+            pool.execute(new NioRequestHandler(request,response,client));
         } catch (IOException e) {
             e.printStackTrace();
 
+        } catch (ServletException e) {
+            client.close();
         }
 
 

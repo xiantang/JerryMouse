@@ -1,5 +1,7 @@
 package info.xiantang.basic.http;
 
+import info.xiantang.basic.exception.RequestInvalidException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -49,12 +51,22 @@ public class Request {
     public Request() {
         parameterMap = new HashMap<>();
     }
-    public Request(byte[] bytes) {
+
+    public Request(Socket client) throws IOException, RequestInvalidException {
+        this(client.getInputStream());
+    }
+
+    public Request(byte[] bytes) throws RequestInvalidException {
+
         this();
         requestInfo = new String(bytes, 0, bytes.length);
+        // 对于空包的处理
+        if (requestInfo.length() == 0) {
+            throw new RequestInvalidException();
+        }
         parseRequestInfo();
     }
-    public Request(InputStream is) {
+    public Request(InputStream is) throws RequestInvalidException {
         this();
 
         byte[] data = new byte[1024 * 1024];
@@ -63,8 +75,9 @@ public class Request {
 
             len = is.read(data);
             if (len == -1) {
-                emptyPackage = true;
-                return;
+                // 請求的是空包
+                // 就上抛 無效請求
+                throw new RequestInvalidException();
             }
             requestInfo = new String(data, 0, len);
         } catch (IOException e) {
@@ -85,9 +98,7 @@ public class Request {
         return null;
     }
 
-    public boolean isEmptypackage() {
-        return emptyPackage;
-    }
+
 
 
 
@@ -162,7 +173,5 @@ public class Request {
         return values == null ? null : values[0];
     }
 
-    public Request(Socket client) throws IOException {
-        this(client.getInputStream());
-    }
+
 }

@@ -1,6 +1,8 @@
 package info.xiantang.basic.core;
 
 
+import info.xiantang.basic.exception.RequestInvalidException;
+import info.xiantang.basic.exception.ServletException;
 import info.xiantang.basic.http.Request;
 import info.xiantang.basic.http.Response;
 
@@ -25,6 +27,9 @@ public class Dispatcher implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
             release();
+        } catch (RequestInvalidException e) {
+            // 發送的是空包 所以不做處理  也不打印錯誤棧
+            release();
         }
 
     }
@@ -32,11 +37,6 @@ public class Dispatcher implements Runnable {
     @Override
     public void run() {
 
-        // socket 编程如果是浏览器请求会发送一个空包
-        if (request.isEmptypackage()) {
-            release();
-            return;
-        }
         try {
             Servlet servlet = WebApp.getServletFromUrl(request.getUrl());
 

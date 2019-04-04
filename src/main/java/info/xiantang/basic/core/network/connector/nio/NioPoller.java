@@ -29,11 +29,7 @@ public class NioPoller implements Runnable {
 
     public void register(SocketChannel socket) {
         try {
-
             socket.register(selector, SelectionKey.OP_READ,socket);
-
-//            System.out.println("注册成功");
-
         } catch (ClosedChannelException e) {
             e.printStackTrace();
         }
@@ -56,19 +52,13 @@ public class NioPoller implements Runnable {
                     SelectionKey key = it.next();
                     if (key.isReadable()) {
                         // 读取事件就绪
-
                         SocketChannel socket = (SocketChannel)key.attachment();
-
                         if (socket != null) {
                             processSocket(socket);
                         }
                         it.remove();
-
-
                     }
                 }
-
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -77,12 +67,11 @@ public class NioPoller implements Runnable {
     }
 
     /**
-     *
+     * 將SocketChannel 交付給綫程池進行處理
      * @param socket
      * @throws IOException
      */
     private void processSocket(SocketChannel socket) throws IOException {
-//        System.out.println(socket);
 
         nioEndpoint.execute(socket);
 

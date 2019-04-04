@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.util.Date;
 
 /*
@@ -19,6 +21,9 @@ public class Response {
     private StringBuilder headInfo;
     // 正文的字节数
     private int len = 0;
+    private int bufferSize = 1024;
+    private ByteBuffer byteBuffer;
+    private SocketChannel socketChannel;
     private final String  BLANK = " ";
     private final String CRLF = "\r\n";
 
@@ -26,8 +31,16 @@ public class Response {
     private Response() {
         content = new StringBuilder();
         headInfo = new StringBuilder();
+//        byteBuffer = ByteBuffer.allocate(bufferSize);
         len = 0;
     }
+
+    public Response(SocketChannel socketChannel) {
+        this();
+        this.socketChannel = socketChannel;
+
+    }
+
 
     public Response(Socket client) {
         this();
@@ -44,8 +57,10 @@ public class Response {
 
     public Response(OutputStream os) {
         this();
+
         bufferedWriter = new BufferedWriter(new OutputStreamWriter(os));
     }
+
 
     public Response pirnt(String info) {
         content.append(info);
@@ -87,11 +102,12 @@ public class Response {
             code = 505;
         }
         createHeadInfo(code);
-        bufferedWriter.append(headInfo);
-        bufferedWriter.append(content);
-        bufferedWriter.append(CRLF);
-        bufferedWriter.flush();
-
+        StringBuilder sb = new StringBuilder();
+        sb.append(headInfo);
+        sb.append(content);
+        sb.append(CRLF);
+        byteBuffer = ByteBuffer.wrap(sb.toString().getBytes());
+        socketChannel.write(byteBuffer);
     }
 }
 

@@ -89,12 +89,11 @@ public class NioEndpoint extends Endpoint {
         return nioPollers.get(idx);
     }
 
-    public void execute(SocketChannel client) {
+    public void execute(SocketChannel client) throws IOException {
         nioDispatcher.doDispatch(client);
     }
 
     public void registerToPoller(SocketChannel socket) throws IOException {
-//        System.out.println("注册到Poll");
         server.configureBlocking(false);
         getPoller().register(socket);
         server.configureBlocking(true);

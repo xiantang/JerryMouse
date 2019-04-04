@@ -1,5 +1,6 @@
 package info.xiantang.basic.core.network.dispatcher;
 
+import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -27,5 +28,5 @@ public abstract class AbstractDispatcher {
 
     }
 
-    public abstract void doDispatch(SocketChannel client);
+    public abstract void doDispatch(SocketChannel client) throws IOException;
 }
