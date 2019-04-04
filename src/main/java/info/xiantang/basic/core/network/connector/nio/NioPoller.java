@@ -2,11 +2,14 @@ package info.xiantang.basic.core.network.connector.nio;
 
 import info.xiantang.basic.core.network.endpoint.nio.NioEndpoint;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.Iterator;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
@@ -27,8 +30,9 @@ public class NioPoller implements Runnable {
     public void register(SocketChannel socket) {
         try {
 
-            socket.register(selector, SelectionKey.OP_READ);
-            System.out.println("注册成功");
+            socket.register(selector, SelectionKey.OP_READ,socket);
+
+//            System.out.println("注册成功");
 
         } catch (ClosedChannelException e) {
             e.printStackTrace();
@@ -48,6 +52,21 @@ public class NioPoller implements Runnable {
                 if (num <= 0) {
                     continue;
                 }
+                for (Iterator<SelectionKey> it =selector.selectedKeys().iterator();it.hasNext();) {
+                    SelectionKey key = it.next();
+                    if (key.isReadable()) {
+                        // 读取事件就绪
+
+                        SocketChannel socket = (SocketChannel)key.attachment();
+
+                        if (socket != null) {
+                            processSocket(socket);
+                        }
+                        it.remove();
+
+
+                    }
+                }
 
 
             } catch (IOException e) {
@@ -55,6 +74,19 @@ public class NioPoller implements Runnable {
             }
 
         }
+    }
+
+    /**
+     *
+     * @param socket
+     * @throws IOException
+     */
+    private void processSocket(SocketChannel socket) throws IOException {
+//        System.out.println(socket);
+
+        nioEndpoint.execute(socket);
+
+
     }
 
 

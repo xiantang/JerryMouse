@@ -16,9 +16,6 @@ public class Request {
     private String requestInfo;
     // 请求方式
     private String method;
-
-
-
     // 请求URL
     private String url;
     // 请求参数
@@ -49,8 +46,16 @@ public class Request {
         return emptyPackage;
     }
 
-    public Request(InputStream is) {
+    public Request() {
         parameterMap = new HashMap<>();
+    }
+    public Request(byte[] bytes) {
+        this();
+        requestInfo = new String(bytes, 0, bytes.length);
+        parseRequestInfo();
+    }
+    public Request(InputStream is) {
+        this();
 
         byte[] data = new byte[1024 * 1024];
         int len;
@@ -88,7 +93,6 @@ public class Request {
 
     private void parseRequestInfo() {
         method = requestInfo.substring(0, requestInfo.indexOf("/")).trim();
-
         int startidx = requestInfo.indexOf("/") + 1;
         int endidx = requestInfo.indexOf("HTTP/");
         url = requestInfo.substring(startidx, endidx).trim();
@@ -97,7 +101,6 @@ public class Request {
             String[] urlArray = url.split("\\?");
             url = urlArray[0];
             queStr = urlArray[1];
-
         }
 
         if (method.equals("POST")) {
@@ -112,7 +115,6 @@ public class Request {
         }
         queStr = null == queStr ? "" : queStr;
 
-        System.out.println(method + "->" + url + "->" + queStr);
         convertMap();
     }
     /**

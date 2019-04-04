@@ -2,6 +2,7 @@ package info.xiantang.basic.core.network.endpoint.nio;
 
 import info.xiantang.basic.core.network.connector.nio.NioAcceptor;
 import info.xiantang.basic.core.network.connector.nio.NioPoller;
+import info.xiantang.basic.core.network.dispatcher.nio.NioDispatcher;
 import info.xiantang.basic.core.network.endpoint.Endpoint;
 
 
@@ -19,6 +20,8 @@ public class NioEndpoint extends Endpoint {
     // Poller线程数量是cpu的核数 参考tomcat
     private int pollerCount = Math.min(2, Runtime.getRuntime().availableProcessors());
     private List<NioPoller> nioPollers;
+    private NioDispatcher nioDispatcher;
+
     /**
      * poller轮询器
      */
@@ -36,6 +39,7 @@ public class NioEndpoint extends Endpoint {
         server.bind(new InetSocketAddress(port));
         // 设置阻塞
         server.configureBlocking(true);
+        System.out.println("初始化SeverSocket完成");
     }
 
     /**
@@ -44,8 +48,10 @@ public class NioEndpoint extends Endpoint {
     private void initAcceptor() {
         acceptor = new NioAcceptor(this);
         Thread t = new Thread(acceptor);
-        t.setDaemon(true);
+        //TODO:setDaemon(false)
+//        t.setDaemon(true);
         t.start();
+        System.out.println("初始化Acceptor完成");
 
     }
 
@@ -59,20 +65,36 @@ public class NioEndpoint extends Endpoint {
             String pollName = "NioPoller-" + i;
             NioPoller nioPoller = new NioPoller(this, pollName);
             Thread pollerThread = new Thread(nioPoller);
-//            pollerThread.setDaemon(true);
+            pollerThread.setDaemon(true);
             pollerThread.start();
 
             nioPollers.add(nioPoller);
 
         }
+        System.out.println("初始化Poller完成");
     }
+
+    /**
+     * 初始化Dispatcher
+     */
+    private void initDispatcher() {
+        nioDispatcher = new NioDispatcher();
+        System.out.println("初始化Dispatcher完成");
+    }
+
+
+
     public NioPoller getPoller() {
         int idx = Math.abs(pollerRotater.incrementAndGet()) % nioPollers.size();
         return nioPollers.get(idx);
     }
 
+    public void execute(SocketChannel client) {
+        nioDispatcher.doDispatch(client);
+    }
+
     public void registerToPoller(SocketChannel socket) throws IOException {
-        System.out.println("注册到Poll");
+//        System.out.println("注册到Poll");
         server.configureBlocking(false);
         getPoller().register(socket);
         server.configureBlocking(true);
@@ -85,10 +107,12 @@ public class NioEndpoint extends Endpoint {
             initSeverSocket(port);
             initPoller();
             initAcceptor();
+            initDispatcher();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
 
 
