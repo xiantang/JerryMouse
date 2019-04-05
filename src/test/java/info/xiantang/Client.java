@@ -17,10 +17,11 @@ public class Client {
         while(true)                                                 //循环发消息
         {
             readline=scanner.nextLine();
+//            System.out.println(readline);
             write.write(readline+'\n');                            //write()要加'\n'
             write.flush();
-//			socket.shutdownOutput();
-            System.out.println(in.readLine());
+////			socket.shutdownOutput();
+//            System.out.println(in.readLine());
         }
 //        write.close();
 //        in.close();

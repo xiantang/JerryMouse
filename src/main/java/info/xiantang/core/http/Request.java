@@ -70,11 +70,12 @@ public class Request {
 
         this();
         requestInfo = new String(bytes, 0, bytes.length);
+
         // 对于空包的处理
         if (requestInfo.length() == 0) {
             throw new RequestInvalidException();
         }
-
+//        System.out.println(requestInfo);
         parseRequestInfo();
     }
 
