@@ -1,6 +1,10 @@
 package info.xiantang;
 
-import info.xiantang.basic.core.*;
+import info.xiantang.core.servlet.Servlet;
+import info.xiantang.core.context.WebContext;
+import info.xiantang.core.context.WebHandler;
+import info.xiantang.core.entity.Entity;
+import info.xiantang.core.entity.Mapping;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -16,7 +20,7 @@ public class XmlTest01 {
         WebHandler phandler = new WebHandler();
         // 当前线程的类加载器
         parse.parse(Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("info/xiantang/basic/web.xml"), phandler);
+                .getResourceAsStream("info/xiantang/core/web.xml"), phandler);
         List<Entity> entities = phandler.getEntities();
         List<Mapping> mappings = phandler.getMappings();
         WebContext webContext = new WebContext(entities, mappings);
