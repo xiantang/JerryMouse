@@ -1,6 +1,6 @@
 package info.xiantang;
 
-import info.xiantang.basic.utils.StringUtils;
+import info.xiantang.core.utils.StringUtils;
 import org.junit.Test;
 import static org.junit.Assert.*;
 public class StringUtilsTest {
