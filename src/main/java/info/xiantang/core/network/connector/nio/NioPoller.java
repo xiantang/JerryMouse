@@ -18,7 +18,8 @@ public class NioPoller implements Runnable {
     private NioEndpoint nioEndpoint;
     private Selector selector;
     private String pollerName;
-    private Queue<SocketChannel> events;
+    // 事件队列
+    private Queue<PollerEvent> events;
 
     public NioPoller(NioEndpoint nioEndpoint, String pollerName) throws IOException {
         this.nioEndpoint = nioEndpoint;
@@ -35,12 +36,8 @@ public class NioPoller implements Runnable {
     public void register(SocketChannel socket, boolean isNewSocket) {
 
         NioSocketWrapper nioSocketWrapper = new NioSocketWrapper(nioEndpoint, this, socket, isNewSocket);
-        try {
-            socket.register(selector, SelectionKey.OP_READ,nioSocketWrapper);
-        } catch (ClosedChannelException e) {
-            e.printStackTrace();
-        }
-        events.offer(socket);
+
+        events.offer(new PollerEvent(nioSocketWrapper));
         // 如果selector 在select 阻塞 就调用wakeup立马返回
         selector.wakeup();
     }
@@ -50,6 +47,7 @@ public class NioPoller implements Runnable {
         while (nioEndpoint.isRunning()) {
 
             try {
+                events();
                 // 若沒有事件就緒則不往下執行
                 int num = selector.select();
                 if (num <= 0) {
@@ -80,6 +78,14 @@ public class NioPoller implements Runnable {
         }
     }
 
+    private void events() {
+        System.out.println("当前队列大小为 "+ events.size());
+        PollerEvent pollerEvent;
+        for (int i = 0, size = events.size(); i < size && (pollerEvent = events.poll())!= null; i++) {
+            pollerEvent.run();
+        }
+    }
+
     /**
      * 將SocketChannel 交付給綫程池進行處理
      * @param nioSocketWrapper
@@ -90,6 +96,38 @@ public class NioPoller implements Runnable {
         nioEndpoint.execute(nioSocketWrapper);
 
 
+    }
+
+    private static class PollerEvent implements Runnable  {
+
+        // 包装对象
+        private NioSocketWrapper wrapper;
+
+        public PollerEvent(NioSocketWrapper wrapper) {
+            this.wrapper = wrapper;
+        }
+
+        public NioSocketWrapper getWrapper() {
+            return wrapper;
+        }
+
+
+        @Override
+        public void run() {
+            System.out.println("将读事件注册到Poller的selector中");
+            try {
+                if (wrapper.getSocketChannel().isOpen()) {
+
+
+                    wrapper.getSocketChannel().register(wrapper.getPoller().getSelector(), SelectionKey.OP_READ, wrapper);
+                } else {
+                    System.out.println("socket已经关闭，无法注册到Poller");
+                }
+            }
+            catch (ClosedChannelException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 

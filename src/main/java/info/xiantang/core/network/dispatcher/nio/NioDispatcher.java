@@ -35,6 +35,7 @@ public class NioDispatcher extends AbstractDispatcher {
             nioSocketWrapper.close();
 
         } catch (ServletException e) {
+            nioSocketWrapper.close();
 //                System.out.println(1111);
         }
 
