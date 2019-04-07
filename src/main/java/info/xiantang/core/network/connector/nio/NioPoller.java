@@ -10,6 +10,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class NioPoller implements Runnable {
@@ -21,6 +22,7 @@ public class NioPoller implements Runnable {
 
     public NioPoller(NioEndpoint nioEndpoint, String pollerName) throws IOException {
         this.nioEndpoint = nioEndpoint;
+        // 每个Poller 线程都对应了一个Selector
         this.selector = Selector.open();
         this.pollerName = pollerName;
         this.events = new ConcurrentLinkedDeque<>();
@@ -48,11 +50,14 @@ public class NioPoller implements Runnable {
         while (nioEndpoint.isRunning()) {
 
             try {
+                // 若沒有事件就緒則不往下執行
                 int num = selector.select();
                 if (num <= 0) {
                     continue;
                 }
-                for (Iterator<SelectionKey> it =selector.selectedKeys().iterator();it.hasNext();) {
+                // 获得所有已就绪事件Key集合
+                Set<SelectionKey> selectedKeys = selector.selectedKeys();
+                for (Iterator<SelectionKey> it =selectedKeys.iterator();it.hasNext();) {
                     SelectionKey key = it.next();
                     // 先判断是否有效
                     if (key.isValid()) {

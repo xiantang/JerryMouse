@@ -22,8 +22,13 @@ public abstract class AbstractDispatcher {
                 return new Thread(r, "Worker Pool-" + count++);
             }
         };
-        this.pool = new ThreadPoolExecutor(100,100, 1, TimeUnit.SECONDS, new ArrayBlockingQueue<Runnable>(200));
-
+        // 设置线程工厂类
+        this.pool = new ThreadPoolExecutor(100,
+                                        100,
+                                        1,
+                                        TimeUnit.SECONDS,
+                                        new ArrayBlockingQueue<Runnable>(200),
+                                        threadFactory);
     }
     public void shutdown() {
         pool.shutdown();
