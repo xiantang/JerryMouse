@@ -19,7 +19,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class NioEndpoint extends Endpoint {
     private ServerSocketChannel server;
     private NioAcceptor acceptor;
-    // Poller线程数量是cpu的核数 参考tomcat
+    /**
+     * Poller线程数量是cpu的核数 参考tomcat
+     * 对于计算密集性的任务 当线程池的大小为Ncpu+1 通常能实现最优的利用率
+     * (当计算密集型的线程偶尔由于页缺失或者其他情况而暂停的时候
+     * ，这个额外的线程可以CPU时钟周期不会被浪费)
+     */
     private int pollerCount = Math.min(2, Runtime.getRuntime().availableProcessors());
     private List<NioPoller> nioPollers;
     private NioDispatcher nioDispatcher;

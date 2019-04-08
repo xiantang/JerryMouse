@@ -38,6 +38,7 @@ public class NioRequestHandler implements Runnable {
             }
             if (request.getConnetction().equals("keep-alive")) {
             // 反注册
+                System.out.println("反注册");
                 endpoint.registerToPoller(client, false);
             } else nioSocketWrapper.close();
 

@@ -21,7 +21,6 @@ public class Response {
     private StringBuilder headInfo;
     // 正文的字节数
     private int len = 0;
-    private int bufferSize = 1024;
     private ByteBuffer byteBuffer;
     private SocketChannel socketChannel;
     private final String  BLANK = " ";
@@ -106,6 +105,7 @@ public class Response {
         sb.append(headInfo);
         sb.append(content);
         sb.append(CRLF);
+//        System.out.println(sb.toString());
         byteBuffer = ByteBuffer.wrap(sb.toString().getBytes());
         socketChannel.write(byteBuffer);
     }

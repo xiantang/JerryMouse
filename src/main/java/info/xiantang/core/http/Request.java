@@ -31,7 +31,6 @@ public class Request {
 
     private final long startTime;
 
-
     private Map<String, List<String>> parameterMap;
 
     public String getRequestInfo() {
@@ -45,8 +44,6 @@ public class Request {
     public String getUrl() {
         return url;
     }
-
-
 
     public String getQueStr() {
         return queStr;
@@ -83,11 +80,9 @@ public class Request {
 
     public Request(InputStream is) throws RequestInvalidException {
         this();
-
         byte[] data = new byte[1024 * 1024];
         int len;
         try {
-
             len = is.read(data);
             if (len == -1) {
                 // 請求的是空包
