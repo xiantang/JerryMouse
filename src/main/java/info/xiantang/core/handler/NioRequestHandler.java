@@ -35,7 +35,8 @@ public class NioRequestHandler implements Runnable {
              servlet = (HttpServlet) WebApp.getServletFromUrl(request.getRequestURI());
             if (servlet != null) {
                 servlet.service(request, response);
-//                response.flushResponse(200); 这句是什么意思
+//              TODO:  response.flushResponse(200); 这句是什么意思
+                // ANS 推送到浏览器
             }
             if (request.getParameter("connection") == null || !request.getParameter("connection").equals("false")) {
             // 反注册

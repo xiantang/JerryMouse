@@ -38,6 +38,7 @@ public class NioPoller implements Runnable {
         } catch (ClosedChannelException e) {
             e.printStackTrace();
         }
+        // TODO FIXME 这里有BUG 需要放到队列处理
         events.offer(socket);
         // 如果selector 在select 阻塞 就调用wakeup立马返回
         selector.wakeup();

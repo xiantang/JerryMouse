@@ -10,7 +10,7 @@ import java.net.URLClassLoader;
 
 public class WebApp {
     private static WebContext webContext;
-    public static final String servletUrl = "file:E:\\XServer-master\\target\\test-classes\\"; //放着servlet编译后的文件的文件夹地址
+    public static final String servletUrl = "file:target/test-classes/"; //放着servlet编译后的文件的文件夹地址
     /*
     初始化webContext存入servlet以及他的映射
      */
