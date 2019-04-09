@@ -11,12 +11,14 @@
 * Response
 * GET/POST
 * web.xml Parse
+* NIO
 
 ## TODO
 
+* 
+* 長連接
 * 确定并发模型
 * 线程池优化
 * ServletApi 修正
-* NIO
 * Cookie
 * Session

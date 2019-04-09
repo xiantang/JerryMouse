@@ -1,5 +1,6 @@
 package info.xiantang.core.context;
 
+
 import javax.servlet.http.HttpServlet;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -11,6 +12,7 @@ import java.net.URLClassLoader;
 public class WebApp {
     private static WebContext webContext;
     public static final String servletUrl = "file:target/test-classes/"; //放着servlet编译后的文件的文件夹地址
+
     /*
     初始化webContext存入servlet以及他的映射
      */
@@ -30,6 +32,7 @@ public class WebApp {
 
     /**
      * 通过url返回特定的servlet
+
      * 这里更新了 改用 URLClassLoader
      * @param url
      * @return
@@ -46,6 +49,7 @@ public class WebApp {
             return servlet;
         } catch (NullPointerException e) {
             System.out.println("頁面未找到");
+
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
@@ -56,8 +60,10 @@ public class WebApp {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
+
         }
         return null;
     }

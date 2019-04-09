@@ -6,12 +6,12 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Client {
+
     public void start() throws UnknownHostException, IOException, InterruptedException {
-        Socket socket=new Socket("127.0.0.1",8080);
-        System.out.println("客户端连接成功");
-        Scanner scanner=new Scanner(System.in);
-        BufferedWriter write=new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));     //可用PrintWriter
-        BufferedReader in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+    public void start() throws UnknownHostException, IOException
+    {
+
 
         write.write("GET /login?api=jdk-zh HTTP/1.1\n" +
                 "Host: tool.oschina.net\n" +
@@ -44,6 +44,7 @@ public class Client {
         while (true);
     }
     public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
+
         new Client().start();
     }
 

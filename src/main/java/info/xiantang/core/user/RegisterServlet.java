@@ -1,16 +1,16 @@
-package info.xiantang.basic.user;
+package info.xiantang.core.user;
 
-import info.xiantang.basic.http.Request;
-import info.xiantang.basic.http.Response;
-import info.xiantang.basic.core.Servlet;
+import info.xiantang.core.http.Request;
+import info.xiantang.core.http.Response;
+import info.xiantang.core.servlet.Servlet;
 
-public class LoginServlet implements Servlet {
+public class RegisterServlet implements Servlet {
     @Override
     public void service(Request request, Response response) {
         response.pirnt("<html lang=\"en\">\n" +
                 "<head>\n" +
                 "    <meta charset=\"UTF-8\">\n" +
-                "    <title>登陆</title>\n" +
+                "    <title>注册</title>\n" +
                 "</head>\n" +
                 "<body>\n" +
                 "<form method=\"post\" action=\"http://localhost:8888/login\">\n" +
@@ -23,5 +23,6 @@ public class LoginServlet implements Servlet {
                 "</form>\n" +
                 "</body>\n" +
                 "</html>");
+
     }
 }

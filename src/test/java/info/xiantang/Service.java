@@ -1,4 +1,4 @@
-package info.xiantang.basic.core;
+package info.xiantang;
 
 
 import java.io.IOException;

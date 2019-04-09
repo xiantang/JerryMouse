@@ -2,7 +2,9 @@
 <web-app>
     <servlet>
         <servlet-name>login</servlet-name>
+
         <servlet-class>user.LoginServlet</servlet-class>
+
     </servlet>
 
     <servlet-mapping>
@@ -13,7 +15,9 @@
 
     <servlet>
         <servlet-name>reg</servlet-name>
+
         <servlet-class>user.RegisterServlet</servlet-class>
+
     </servlet>
     <servlet-mapping>
         <servlet-name>reg</servlet-name>

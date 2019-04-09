@@ -9,10 +9,12 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 
 public class NioRequestHandler implements Runnable {
+
 
     private HttpServlet servlet;
     private SocketChannel client;
@@ -47,6 +49,7 @@ public class NioRequestHandler implements Runnable {
             e.printStackTrace();
         } catch (ServletException e) {
             e.printStackTrace();
+
         }
 
     }

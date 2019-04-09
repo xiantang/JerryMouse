@@ -1,4 +1,6 @@
-package info.xiantang.basic.http;
+package info.xiantang.core.http;
+
+import info.xiantang.core.exception.RequestInvalidException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,9 +23,13 @@ public class Request {
     // 请求参数
     private String queStr;
 
+    private String connetction;
+
     private boolean emptyPackage = false;
 
     private final String CRLF = "\r\n";
+
+    private final long startTime;
 
     private Map<String, List<String>> parameterMap;
 
@@ -47,24 +53,41 @@ public class Request {
     }
 
     public Request() {
+        startTime = System.currentTimeMillis();
         parameterMap = new HashMap<>();
     }
-    public Request(byte[] bytes) {
+
+    public Request(Socket client) throws IOException, RequestInvalidException {
+        this(client.getInputStream());
+    }
+
+
+
+    public Request(byte[] bytes) throws RequestInvalidException {
+
         this();
         requestInfo = new String(bytes, 0, bytes.length);
+
+        // 对于空包的处理
+        if (requestInfo.length() == 0) {
+            throw new RequestInvalidException();
+        }
+//        System.out.println(requestInfo);
         parseRequestInfo();
     }
-    public Request(InputStream is) {
-        this();
 
+
+
+    public Request(InputStream is) throws RequestInvalidException {
+        this();
         byte[] data = new byte[1024 * 1024];
         int len;
         try {
-
             len = is.read(data);
             if (len == -1) {
-                emptyPackage = true;
-                return;
+                // 請求的是空包
+                // 就上抛 無效請求
+                throw new RequestInvalidException();
             }
             requestInfo = new String(data, 0, len);
         } catch (IOException e) {
@@ -73,6 +96,8 @@ public class Request {
         }
         // 分解字符串
         parseRequestInfo();
+
+
 
     }
 
@@ -85,18 +110,19 @@ public class Request {
         return null;
     }
 
-    public boolean isEmptypackage() {
-        return emptyPackage;
-    }
+
 
 
 
     private void parseRequestInfo() {
+
         method = requestInfo.substring(0, requestInfo.indexOf("/")).trim();
         int startidx = requestInfo.indexOf("/") + 1;
         int endidx = requestInfo.indexOf("HTTP/");
         url = requestInfo.substring(startidx, endidx).trim();
         int queueidx = url.indexOf("?");
+        String subRequestInfo = requestInfo.substring(requestInfo.indexOf("Connection: ") + 12);
+        connetction = subRequestInfo.substring(0, subRequestInfo.indexOf("\n")).replace("\r", "");
         if (queueidx >= 0) {
             String[] urlArray = url.split("\\?");
             url = urlArray[0];
@@ -162,7 +188,11 @@ public class Request {
         return values == null ? null : values[0];
     }
 
-    public Request(Socket client) throws IOException {
-        this(client.getInputStream());
+    public String getConnetction() {
+        return connetction;
+    }
+
+    public long getStartTime() {
+        return startTime;
     }
 }
