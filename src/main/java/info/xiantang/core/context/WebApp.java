@@ -1,16 +1,23 @@
 package info.xiantang.core.context;
 
-import info.xiantang.core.servlet.Servlet;
 
+
+import javax.servlet.http.HttpServlet;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 public class WebApp {
+
     private static WebContext webContext;
+    public static final String servletUrl = "file:target/test-classes/"; //放着servlet编译后的文件的文件夹地址
     /*
     初始化webContext存入servlet以及他的映射
      */
+
     static {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -30,18 +37,18 @@ public class WebApp {
      * @param url
      * @return
      */
-    public static Servlet getServletFromUrl(String url) {
+    public static HttpServlet getServletFromUrl(String url) {
 
         try {
             System.out.println(url);
-
             String className = webContext.getClz("/" + url);
-            Class clz = Class.forName(className);
-            Servlet servlet = (Servlet) clz.getConstructor().newInstance();
+            URL classUrl = new URL(servletUrl);
+            ClassLoader classLoader = new URLClassLoader(new URL[]{classUrl});
+            Class clz = classLoader.loadClass(className);
+            HttpServlet servlet = (HttpServlet) clz.getConstructor().newInstance();
             return servlet;
         } catch (NullPointerException e) {
             System.out.println("頁面未找到");
-//            e.printStackTrace();
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
@@ -51,6 +58,8 @@ public class WebApp {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         return null;
