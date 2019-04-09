@@ -4,7 +4,9 @@ import info.xiantang.core.network.connector.nio.NioAcceptor;
 import info.xiantang.core.network.connector.nio.NioPoller;
 import info.xiantang.core.network.dispatcher.nio.NioDispatcher;
 import info.xiantang.core.network.endpoint.Endpoint;
+
 import info.xiantang.core.network.wrapper.SocketWrapper;
+
 import info.xiantang.core.network.wrapper.nio.NioSocketWrapper;
 
 
@@ -19,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class NioEndpoint extends Endpoint {
     private ServerSocketChannel server;
     private NioAcceptor acceptor;
+
     /**
      * Poller线程数量是cpu的核数 参考tomcat
      * 对于计算密集性的任务 当线程池的大小为Ncpu+1 通常能实现最优的利用率
@@ -55,8 +58,10 @@ public class NioEndpoint extends Endpoint {
     private void initAcceptor() {
         acceptor = new NioAcceptor(this);
         Thread t = new Thread(acceptor);
+
         //TODO:setDaemon(false)
 //        t.setDaemon(true);
+
         t.start();
         System.out.println("初始化Acceptor完成");
 
@@ -75,7 +80,9 @@ public class NioEndpoint extends Endpoint {
             pollerThread.setDaemon(true);
             pollerThread.start();
 
+
             nioPollers.add(nioPoller);
+
 
         }
         System.out.println("初始化Poller完成");
@@ -100,7 +107,9 @@ public class NioEndpoint extends Endpoint {
         nioDispatcher.doDispatch(nioSocketWrapper);
     }
 
-    public void registerToPoller(SocketChannel socket,boolean isNewSocket ) throws IOException {
+
+    public void registerToPoller(SocketChannel socket,boolean isNewSocket) throws IOException {
+
         server.configureBlocking(false);
         getPoller().register(socket,isNewSocket);
         server.configureBlocking(true);
@@ -118,8 +127,6 @@ public class NioEndpoint extends Endpoint {
             e.printStackTrace();
         }
     }
-
-
 
 
     public SocketChannel accept() throws IOException {

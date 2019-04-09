@@ -19,13 +19,16 @@ public class NioAcceptor implements Runnable {
 
             SocketChannel client;
             try {
+
                 // 若沒有事件就緒則不往下執行
+
                 client = nioEndpoint.accept();
                 if (client == null) {
                     continue;
                 }
                 // 必须设置通道为非阻塞才能向select注册
                 client.configureBlocking(false);
+
                 // 注册到Poller 中去
                 nioEndpoint.registerToPoller(client,true);
 

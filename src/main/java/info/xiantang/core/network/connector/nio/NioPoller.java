@@ -10,14 +10,16 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Queue;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.TimeUnit;
+
 
 public class NioPoller implements Runnable {
 
     private NioEndpoint nioEndpoint;
     private Selector selector;
     private String pollerName;
+
     // 事件队列
     private Queue<PollerEvent> events;
 
@@ -34,9 +36,7 @@ public class NioPoller implements Runnable {
     }
 
     public void register(SocketChannel socket, boolean isNewSocket) {
-
         NioSocketWrapper nioSocketWrapper = new NioSocketWrapper(nioEndpoint, this, socket, isNewSocket);
-
         events.offer(new PollerEvent(nioSocketWrapper));
         // 如果selector 在select 阻塞 就调用wakeup立马返回
         // 通过调用wakeup() 使线程抛出ClosedSelectorException 提前返回
@@ -47,6 +47,7 @@ public class NioPoller implements Runnable {
     public void run() {
         while (nioEndpoint.isRunning()) {
 
+
             try {
                 events();
                 // 若沒有事件就緒則不往下執行
@@ -54,9 +55,11 @@ public class NioPoller implements Runnable {
                 if (num <= 0) {
                     continue;
                 }
+
                 // 获得所有已就绪事件Key集合
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 for (Iterator<SelectionKey> it =selectedKeys.iterator();it.hasNext();) {
+
                     SelectionKey key = it.next();
                     // 先判断是否有效
                     if (key.isValid()) {
@@ -76,6 +79,7 @@ public class NioPoller implements Runnable {
                 e.printStackTrace();
             }
 
+
         }
     }
 
@@ -84,6 +88,7 @@ public class NioPoller implements Runnable {
         PollerEvent pollerEvent;
         for (int i = 0, size = events.size() ; i < size && (pollerEvent = events.poll())!= null; i++) {
             pollerEvent.run();
+
         }
     }
 
@@ -93,6 +98,7 @@ public class NioPoller implements Runnable {
      * @throws IOException
      */
     private void processSocket(NioSocketWrapper nioSocketWrapper) throws IOException {
+
 
         nioEndpoint.execute(nioSocketWrapper);
 
@@ -128,7 +134,7 @@ public class NioPoller implements Runnable {
             catch (ClosedChannelException e) {
                 e.printStackTrace();
             }
-        }
+
     }
 
 

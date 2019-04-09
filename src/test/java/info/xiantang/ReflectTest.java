@@ -1,5 +1,13 @@
 package info.xiantang;
 
+import user.Apple;
+
+import javax.servlet.http.HttpServlet;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+
 /**
  * Hello world!
  *
@@ -11,9 +19,6 @@ public class ReflectTest
 
 {
 
-    public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        Class aa = Class.forName("info.xiantang.Iphone");
-        System.out.println(aa.newInstance());;
-
+    public static void main(String[] args) throws ClassNotFoundException, IllegalAccessException, InstantiationException, MalformedURLException, NoSuchMethodException, InvocationTargetException {
     }
 }
