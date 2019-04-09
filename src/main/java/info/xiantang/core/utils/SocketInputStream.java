@@ -1,6 +1,7 @@
 package info.xiantang.core.utils;
 
 import info.xiantang.core.http.HttpRequest;
+
 import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -9,7 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;
 
-/*
+/**
  * 这个类专门负责读取和解析 http 协议
  * 至于在什么时候解析 还没有定
  */

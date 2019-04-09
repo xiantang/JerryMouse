@@ -224,6 +224,10 @@ public class HttpResponse implements HttpServletResponse {
 
     }
 
+    public ByteBuffer getBodyBuffer() {
+        return bodyBuffer;
+    }
+
     @Override
     public void setLocale(Locale locale) {
 

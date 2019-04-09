@@ -12,7 +12,7 @@ import java.io.Writer;
  * 实现了正版servlet接口的船新版本
  */
 public class RegisterServlet extends HttpServlet {
-
+    private final String CRLF = "\r\n";
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Writer writer = resp.getWriter();
@@ -32,5 +32,9 @@ public class RegisterServlet extends HttpServlet {
                 "</form>\n" +
                 "</body>\n" +
                 "</html>");
+        writer.flush();
+
+
     }
+
 }
