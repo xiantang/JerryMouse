@@ -44,7 +44,6 @@ public class HttpRequest implements HttpServletRequest {
     private String requestInfo;
     //空包异常
     private boolean emptyPackage = false;
-
     private final String CRLF = "\r\n";
 
     public HttpRequest(SocketChannel socketChannel) throws IOException {

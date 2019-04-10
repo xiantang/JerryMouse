@@ -26,7 +26,6 @@ public abstract class AbstractDispatcher {
 
         ThreadFactory threadFactory = new ThreadFactory() {
             private int count;
-
             @Override
             public Thread newThread(Runnable r) {
                 return new Thread(r, "Worker Pool-" + count++);
@@ -35,14 +34,19 @@ public abstract class AbstractDispatcher {
 
 
         /*
-
+           關於CallerRunsPolicy
+           中止(Abort)是默認的飽和策略 將會抛出RejectedExecutionException
+           CallerRunsPolicy 則是將綫程交給調用者去運行
+           使用的是run方法 不是創建綫程的方式
          */
-        this.pool = new ThreadPoolExecutor(200,
-                200,
+        this.pool = new ThreadPoolExecutor(100,
+                100,
                                         1,
                                         TimeUnit.SECONDS,
-                                        new SynchronousQueue<Runnable>(),
-                                        threadFactory);
+                                        new ArrayBlockingQueue<Runnable>(200),
+                                        threadFactory,
+                new ThreadPoolExecutor.CallerRunsPolicy()
+        );
     }
 
     /**`
