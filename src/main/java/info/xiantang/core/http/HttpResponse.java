@@ -73,6 +73,7 @@ public class HttpResponse implements HttpServletResponse {
     public void sendError(int i, String s) throws IOException {
         status = i;
         errorInfo = s;
+
     }
 
     @Override
