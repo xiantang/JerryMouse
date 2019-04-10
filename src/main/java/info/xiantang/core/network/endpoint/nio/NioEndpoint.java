@@ -8,6 +8,8 @@ import info.xiantang.core.network.endpoint.Endpoint;
 import info.xiantang.core.network.wrapper.SocketWrapper;
 
 import info.xiantang.core.network.wrapper.nio.NioSocketWrapper;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggerFactory;
 
 
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+
 
 public class NioEndpoint extends Endpoint {
     private ServerSocketChannel server;
@@ -49,7 +52,8 @@ public class NioEndpoint extends Endpoint {
         server.bind(new InetSocketAddress(port));
         // 设置阻塞
         server.configureBlocking(true);
-        System.out.println("初始化SeverSocket完成");
+
+
     }
 
     /**
@@ -63,7 +67,7 @@ public class NioEndpoint extends Endpoint {
 //        t.setDaemon(true);
 
         t.start();
-        System.out.println("初始化Acceptor完成");
+
 
     }
 
@@ -85,7 +89,7 @@ public class NioEndpoint extends Endpoint {
 
 
         }
-        System.out.println("初始化Poller完成");
+
     }
 
     /**
@@ -93,7 +97,7 @@ public class NioEndpoint extends Endpoint {
      */
     private void initDispatcher() {
         nioDispatcher = new NioDispatcher();
-        System.out.println("初始化Dispatcher完成");
+
     }
 
 
