@@ -4,6 +4,7 @@ import info.xiantang.core.utils.SocketInputStream;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
+import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

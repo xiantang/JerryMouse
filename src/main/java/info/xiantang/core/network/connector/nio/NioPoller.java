@@ -2,6 +2,7 @@ package info.xiantang.core.network.connector.nio;
 
 import info.xiantang.core.network.endpoint.nio.NioEndpoint;
 import info.xiantang.core.network.wrapper.nio.NioSocketWrapper;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
@@ -12,7 +13,7 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.TimeUnit;
+
 
 
 public class NioPoller implements Runnable {
@@ -23,6 +24,7 @@ public class NioPoller implements Runnable {
 
     // 事件队列
     private Queue<PollerEvent> events;
+    private Logger logger = Logger.getLogger(NioPoller.class);
 
     public NioPoller(NioEndpoint nioEndpoint, String pollerName) throws IOException {
         this.nioEndpoint = nioEndpoint;
@@ -85,7 +87,7 @@ public class NioPoller implements Runnable {
     }
 
     private void events() {
-        System.out.println("当前队列大小为 " + events.size());
+        logger.info("当前事件队列大小为 " + events.size());
         PollerEvent pollerEvent;
         for (int i = 0, size = events.size(); i < size && (pollerEvent = events.poll()) != null; i++) {
             pollerEvent.run();

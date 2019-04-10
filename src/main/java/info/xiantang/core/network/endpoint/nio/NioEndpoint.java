@@ -34,6 +34,7 @@ public class NioEndpoint extends Endpoint {
     private int pollerCount = Math.min(2, Runtime.getRuntime().availableProcessors());
     private List<NioPoller> nioPollers;
     private NioDispatcher nioDispatcher;
+    private Logger logger = Logger.getLogger(NioEndpoint.class);
 
     /**
      * poller轮询器
@@ -52,7 +53,7 @@ public class NioEndpoint extends Endpoint {
         server.bind(new InetSocketAddress(port));
         // 设置阻塞
         server.configureBlocking(true);
-
+        logger.info("SeverSocket已啓動");
 
     }
 
@@ -67,7 +68,7 @@ public class NioEndpoint extends Endpoint {
 //        t.setDaemon(true);
 
         t.start();
-
+        logger.info("Acceptor已啓動");
 
     }
 
@@ -83,12 +84,9 @@ public class NioEndpoint extends Endpoint {
             Thread pollerThread = new Thread(nioPoller);
             pollerThread.setDaemon(true);
             pollerThread.start();
-
-
             nioPollers.add(nioPoller);
-
-
         }
+        logger.info("Poller已啓動");
 
     }
 
@@ -97,7 +95,7 @@ public class NioEndpoint extends Endpoint {
      */
     private void initDispatcher() {
         nioDispatcher = new NioDispatcher();
-
+        logger.info("Dispatcher已啓動");
     }
 
 
@@ -127,6 +125,7 @@ public class NioEndpoint extends Endpoint {
             initPoller();
             initAcceptor();
             initDispatcher();
+            logger.info("Endpoint初始化完成");
         } catch (IOException e) {
             e.printStackTrace();
         }
