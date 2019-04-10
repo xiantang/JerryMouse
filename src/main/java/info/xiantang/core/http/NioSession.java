@@ -66,20 +66,27 @@ public class NioSession implements HttpSession {
 
     /**
      * 獲取最後使用的時間
-     * @return
+     * @return long
      */
     @Override
     public long getLastAccessedTime() {
         return lastAccessed.getEpochSecond();
     }
 
-
+    /**
+     * 设置过期时间
+     * @param i
+     */
 
     @Override
     public void setMaxInactiveInterval(int i) {
         maxInactiveInterval = i;
     }
 
+    /**
+     * 获取过期时间
+     * @return int
+     */
     @Override
     public int getMaxInactiveInterval() {
         return maxInactiveInterval;
@@ -98,7 +105,7 @@ public class NioSession implements HttpSession {
         throw new IllegalArgumentException("session has invalidated!");
     }
 
-    
+
 
     @Override
     public void removeAttribute(String s) {
