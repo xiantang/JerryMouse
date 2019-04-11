@@ -4,6 +4,8 @@ import info.xiantang.core.network.connector.nio.NioPoller;
 import info.xiantang.core.network.endpoint.nio.NioEndpoint;
 import info.xiantang.core.network.wrapper.SocketWrapper;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -12,6 +14,9 @@ public class NioSocketWrapper implements SocketWrapper {
 
     private final NioEndpoint server;
     private final NioPoller poller;
+    private HttpServletResponse response;
+    private HttpServletRequest request;
+
     private volatile boolean newSocket;
 
     public NioEndpoint getServer() {
@@ -39,8 +44,23 @@ public class NioSocketWrapper implements SocketWrapper {
         this.newSocket = isNewSocket;
     }
 
-    @Override
+    public void setResponse(HttpServletResponse response) {
+        this.response = response;
+    }
 
+    public HttpServletResponse getResponse() {
+        return response;
+    }
+
+    public HttpServletRequest getRequest() {
+        return request;
+    }
+
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
+
+    @Override
     public void close() throws IOException {
         // 取消注冊
         Selector selector = poller.getSelector();

@@ -41,6 +41,7 @@ public class SocketInputStream {
         int ch = -1;
         int head = pos;
         do {
+//            System.out.println(1111);
             ch = read();
             if (ch == -1) continue; //丢弃空包
             requestLineBuffer.append((char) ch);
@@ -150,7 +151,6 @@ public class SocketInputStream {
                 return -1;
             }
         }
-        //将负数变为反码形式以便于转换为char
         return buffer.get(pos++) & 0xff;
     }
 
@@ -161,7 +161,6 @@ public class SocketInputStream {
                 return -1;
             }
         }
-        //将负数变为反码形式以便于转换为char
         return buffer.get(pos) & 0xff;
     }
 

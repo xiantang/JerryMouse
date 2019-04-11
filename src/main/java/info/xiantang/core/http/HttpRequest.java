@@ -1,10 +1,10 @@
 package info.xiantang.core.http;
 
+import info.xiantang.core.exception.RequestInvalidException;
 import info.xiantang.core.utils.SocketInputStream;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.servlet.http.HttpSession;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -43,17 +43,15 @@ public class HttpRequest implements HttpServletRequest {
     private boolean parsed = false;
     // 协议信息
     private String requestInfo;
-    //空包异常
-    private boolean emptyPackage = false;
-    private final String CRLF = "\r\n";
 
-    public HttpRequest(SocketChannel socketChannel) throws IOException {
+    public HttpRequest(SocketChannel socketChannel) throws IOException, RequestInvalidException {
         headersMap = new HashMap<>();
         parametersMap = new HashMap<>();
+        serverName = "Xserver";
+        serverPort = 8080;
         SocketInputStream socketInputStream = new SocketInputStream(socketChannel);
         socketInputStream.readRequestLine(this);
         while (socketInputStream.readHttpHead(this));
-        System.out.println("构建完成");
     }
 
     public void setContentLength(int length) {
@@ -72,11 +70,11 @@ public class HttpRequest implements HttpServletRequest {
         this.queryString = queryString;
     }
 
-    private void setServerName(String name) {
+    public void setServerName(String name) {
         this.serverName = name;
     }
 
-    private void setServerPort(int port) {
+    public void setServerPort(int port) {
         this.serverPort = port;
     }
 

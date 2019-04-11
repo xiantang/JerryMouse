@@ -1,5 +1,8 @@
 package info.xiantang.core.handler;
 
+import info.xiantang.core.exception.RequestInvalidException;
+import info.xiantang.core.http.HttpRequest;
+import info.xiantang.core.http.HttpResponse;
 import info.xiantang.core.network.endpoint.nio.NioEndpoint;
 import info.xiantang.core.network.wrapper.SocketWrapper;
 import info.xiantang.core.network.wrapper.nio.NioSocketWrapper;
@@ -12,22 +15,19 @@ import javax.servlet.http.HttpServletResponse;
 
 
 import java.io.IOException;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 public class NioRequestHandler implements Runnable {
 
-
     private HttpServlet servlet;
     private SocketChannel client;
-    private HttpServletRequest request;
-    private HttpServletResponse response;
     private NioEndpoint endpoint;
     private NioSocketWrapper nioSocketWrapper;
 
-    public NioRequestHandler(SocketWrapper socketWrapper, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public NioRequestHandler(SocketWrapper socketWrapper) throws IOException {
         this.nioSocketWrapper = (NioSocketWrapper)socketWrapper;
-        this.request = request;
-        this.response = response;
+        SocketChannel socketChannel = nioSocketWrapper.getSocketChannel();
         this.endpoint =(NioEndpoint) nioSocketWrapper.getServer();
         this.client = nioSocketWrapper.getSocketChannel();
     }
@@ -35,24 +35,36 @@ public class NioRequestHandler implements Runnable {
     @Override
     public void run() {
         try {
+            SocketChannel socketChannel = nioSocketWrapper.getSocketChannel();
+            HttpServletRequest request = new HttpRequest(socketChannel);
+            HttpServletResponse response = new HttpResponse(socketChannel);
+            nioSocketWrapper.setResponse(response);
+            nioSocketWrapper.setRequest(request);
 
             servlet = (HttpServlet) WebApp.getServletFromUrl(request.getRequestURI());
-
             if (servlet != null) {
                 servlet.service(request, response);
-//              TODO:  response.flushResponse(200); 这句是什么意思
                 // ANS 推送到浏览器
             }
-            if (request.getParameter("connection") == null || !request.getParameter("connection").equals("false")) {
 
+            endpoint.registerToPoller(client, false, SelectionKey.OP_WRITE);
+            //关闭之后才可以完全奖body写入
+            response.getWriter().close();
+
+            /* 我注释了这段 改为了注册写事件 写完再注册下一个读事件 见NioResponseHandler
+            if (request.getParameter("connection") == null || !request.getParameter("connection").equals("false")) {
                 endpoint.registerToPoller(client, false);
-            } else nioSocketWrapper.close();
+            }
+            else
+                nioSocketWrapper.close();*/
 
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ServletException e) {
             e.printStackTrace();
 
+        } catch (RequestInvalidException e) {
+            e.printStackTrace();
         }
 
     }
