@@ -43,7 +43,9 @@ public class SocketInputStream {
         do {
 //            System.out.println(1111);
             ch = read();
-            if (ch == -1) continue; //丢弃空包
+            if (ch == -1) {
+                continue; //丢弃空包
+            }
             requestLineBuffer.append((char) ch);
         } while (ch != CR && ch != LF);
 

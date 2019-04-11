@@ -35,6 +35,23 @@ public class SocketOutputStream extends Writer{
 
     @Override
     public void flush() throws IOException {
+
+        httpResponse.setStatus(200);
+        httpResponse.setHeader("Date", String.valueOf(new Date()));
+        httpResponse.setHeader("Server", "X Server/0.0.1;charset=UTF-8");
+        httpResponse.setHeader("Content-Type", "text/html");
+        httpResponse.setHeader("Content-Length", "122");
+        System.out.println(httpResponse.toString());
+        ByteBuffer buffer = ByteBuffer.wrap(httpResponse.toString().getBytes());
+        socketChannel.write(buffer);
+        ByteBuffer aaaa = ByteBuffer.wrap(("fhjskdhfnsdfnsdflksjfnmlksdgnvdlfb" +
+                "dasdasklfndklgfnfglkdfnghlkfdhnlbnldkgndflkgndfklgdfngfdsgfdg"+
+                "dasdasklfndklgfnfglkdfnghlkfdhnlbnldkgndflkgndfklgdfngfdsgfdg").getBytes());
+        socketChannel.write(aaaa);
+
+
+
+
     }
 
 
