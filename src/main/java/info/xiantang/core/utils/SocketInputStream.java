@@ -42,7 +42,9 @@ public class SocketInputStream {
         int head = pos;
         do {
             ch = read();
-            if (ch == -1) continue; //丢弃空包
+            if (ch == -1) {
+                continue; //丢弃空包
+            }
             requestLineBuffer.append((char) ch);
         } while (ch != CR && ch != LF);
 
