@@ -4,6 +4,7 @@ import info.xiantang.core.http.HttpResponse;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Date;
 
