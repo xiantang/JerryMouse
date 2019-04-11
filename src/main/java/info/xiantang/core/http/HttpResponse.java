@@ -17,8 +17,8 @@ public class HttpResponse implements HttpServletResponse {
     private ArrayList<Cookie> cookies = new ArrayList<Cookie>();
     //http header 字段
     private Map<String, String> headersMap;
-    //状态字
-    private int status;
+    //状态字 默认200了
+    private int status = 200;
     //状态信息
     private String statusInfo;
     //错误信息
@@ -27,8 +27,13 @@ public class HttpResponse implements HttpServletResponse {
     private String characterEncoding;
     //报文长度
     private int contentLength;
+    private long contentLengthLong;
+    //报文长度
+    private String contentType;
     //报文正文
     private ByteBuffer bodyBuffer;
+    //是否可提交
+    private boolean isCommitted;
 
     private final String  BLANK = " ";
     private final String CRLF = "\r\n";
@@ -49,7 +54,7 @@ public class HttpResponse implements HttpServletResponse {
         return headersMap.containsKey(s);
     }
 
-    @Override
+    @Deprecated
     public String encodeURL(String s) {
         return null;
     }
@@ -156,12 +161,12 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public String getCharacterEncoding() {
-        return null;
+        return characterEncoding;
     }
 
     @Override
     public String getContentType() {
-        return null;
+        return contentType;
     }
 
     @Override
@@ -181,22 +186,24 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public void setContentLength(int i) {
-        contentLength = i;
+        this.contentLength = i;
     }
 
     @Override
     public void setContentLengthLong(long l) {
-
+        this.contentLengthLong = l;
     }
 
     @Override
     public void setContentType(String s) {
-
+        this.contentType = s;
     }
 
     @Override
     public void setBufferSize(int i) {
-
+        ByteBuffer byteBuffer = ByteBuffer.allocate(i);
+        byteBuffer.put(bodyBuffer);
+        bodyBuffer = byteBuffer;
     }
 
     @Override
@@ -206,22 +213,22 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public void flushBuffer() throws IOException {
-
+        socketChannel.write(bodyBuffer);
     }
 
     @Override
     public void resetBuffer() {
-
+        bodyBuffer.reset();
     }
 
     @Override
     public boolean isCommitted() {
-        return false;
+        return isCommitted;
     }
 
     @Override
     public void reset() {
-
+        bodyBuffer.reset();
     }
 
     public ByteBuffer getBodyBuffer() {
