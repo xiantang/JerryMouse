@@ -181,21 +181,30 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public void setCharacterEncoding(String s) {
+        headersMap.put("character-encoding", s);
         this.characterEncoding = s;
     }
 
     @Override
     public void setContentLength(int i) {
+
+        headersMap.put("content-length", i + "");
         this.contentLength = i;
     }
 
     @Override
     public void setContentLengthLong(long l) {
+
+        headersMap.put("content-length", l + "");
+
         this.contentLengthLong = l;
     }
 
     @Override
     public void setContentType(String s) {
+
+        headersMap.put("content-type", s);
+
         this.contentType = s;
     }
 
@@ -213,6 +222,11 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public void flushBuffer() throws IOException {
+
+        for (int i = 0; i < bodyBuffer.position(); i++) {
+            System.out.print((char)bodyBuffer.get(i));
+        }
+
         socketChannel.write(bodyBuffer);
     }
 

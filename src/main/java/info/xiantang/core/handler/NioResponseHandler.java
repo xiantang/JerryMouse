@@ -31,11 +31,14 @@ public class NioResponseHandler implements Runnable {
 
         String head = response.toString();
         try {
+
             socketChannel.write(ByteBuffer.wrap(head.getBytes()));
             response.flushBuffer();
             System.out.println("写入完成");
             if (request.getParameter("connection") == null || !request.getParameter("connection").equals("false")) {
-                endpoint.registerToPoller(client, false, SelectionKey.OP_READ);
+
+                endpoint.registerToPoller(client, false, SelectionKey.OP_READ, nioSocketWrapper);
+
             }
             else
                 nioSocketWrapper.close();
