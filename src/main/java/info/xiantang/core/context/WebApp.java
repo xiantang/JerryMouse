@@ -30,7 +30,7 @@ public class WebApp {
             WebHandler phandler = new WebHandler();
             // 当前线程的类加载器
             parse.parse(Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream("info/xiantang/core/web.xml"), phandler);
+                    .getResourceAsStream("web.xml"), phandler);
             webContext = new WebContext( phandler.getEntities(),phandler.getMappings());
         } catch (ParserConfigurationException e) {
             e.printStackTrace();

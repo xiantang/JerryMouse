@@ -68,8 +68,6 @@ public class NioRequestHandler implements Runnable {
         } catch (ServletException e) {
             e.printStackTrace();
 
-        } catch (RequestInvalidException e) {
-            e.printStackTrace();
         }
 
     }
