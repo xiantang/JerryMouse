@@ -2,11 +2,7 @@ package info.xiantang.core.network.endpoint.nio;
 
 import info.xiantang.core.network.connector.nio.NioAcceptor;
 import info.xiantang.core.network.connector.nio.NioPoller;
-import info.xiantang.core.network.dispatcher.nio.NioDispatcher;
 import info.xiantang.core.network.endpoint.Endpoint;
-
-import info.xiantang.core.network.wrapper.SocketWrapper;
-
 import info.xiantang.core.network.wrapper.nio.NioSocketWrapper;
 import org.apache.log4j.Logger;
 
@@ -36,7 +32,7 @@ public class NioEndpoint extends Endpoint {
      */
     private int pollerCount = Math.min(2, Runtime.getRuntime().availableProcessors())/4 + 1;
     private List<NioPoller> nioPollers;
-//    private NioDispatcher nioDispatcher;
+
 
     /**
      * poller轮询器
@@ -65,9 +61,6 @@ public class NioEndpoint extends Endpoint {
         acceptor = new NioAcceptor(this);
         Thread t = new Thread(acceptor);
 
-        //TODO:setDaemon(false)
-//        t.setDaemon(true);
-
         t.start();
         logger.info("初始化Acceptor完成");
 
@@ -90,10 +83,6 @@ public class NioEndpoint extends Endpoint {
         logger.info("初始化Poller完成");
     }
 
-//    private void initDispatcher() {
-//        nioDispatcher = new NioDispatcher();
-//        System.out.println("初始化Dispatcher完成");
-//    }
 
 
 
@@ -102,19 +91,12 @@ public class NioEndpoint extends Endpoint {
         return nioPollers.get(idx);
     }
 
-//    public void executeRead(NioSocketWrapper nioSocketWrapper) throws IOException {
-//        nioDispatcher.doDispatch(nioSocketWrapper);
-//    }
-//
-//    public void executeWrite(NioSocketWrapper nioSocketWrapper) throws IOException {
-//        nioDispatcher.doDispatch(nioSocketWrapper);
-//    }
 
+    public void registerToPoller(SocketChannel socket, boolean isNewSocket, int eventType, NioSocketWrapper nioSocketWrapper) throws IOException {
+//        server.configureBlocking(false);
+        getPoller().register(socket, isNewSocket, eventType, nioSocketWrapper);
+//        server.configureBlocking(true);
 
-    public void registerToPoller(SocketChannel socket,boolean isNewSocket, int eventType) throws IOException {
-        server.configureBlocking(false);
-        getPoller().register(socket, isNewSocket, eventType);
-        server.configureBlocking(true);
     }
 
 

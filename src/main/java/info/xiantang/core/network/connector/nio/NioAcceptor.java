@@ -31,7 +31,9 @@ public class NioAcceptor implements Runnable {
                 client.configureBlocking(false);
 
                 // 注册到Poller 中去
-                nioEndpoint.registerToPoller(client,true, SelectionKey.OP_READ);
+
+                nioEndpoint.registerToPoller(client,true, SelectionKey.OP_READ, null);
+
 
             } catch (IOException e) {
                 e.printStackTrace();
