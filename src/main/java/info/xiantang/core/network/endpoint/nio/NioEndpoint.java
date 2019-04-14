@@ -8,6 +8,7 @@ import info.xiantang.core.network.endpoint.Endpoint;
 import info.xiantang.core.network.wrapper.SocketWrapper;
 
 import info.xiantang.core.network.wrapper.nio.NioSocketWrapper;
+import org.apache.log4j.Logger;
 
 
 import java.io.IOException;
@@ -22,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class NioEndpoint extends Endpoint {
     private ServerSocketChannel server;
     private NioAcceptor acceptor;
-
+    private Logger logger = Logger.getLogger(NioEndpoint.class);
     /**
      * Poller线程数量是cpu的核数 参考tomcat
      * 对于计算密集性的任务 当线程池的大小为Ncpu+1 通常能实现最优的利用率
@@ -54,7 +55,7 @@ public class NioEndpoint extends Endpoint {
         server.bind(new InetSocketAddress(port));
         // 设置阻塞
         server.configureBlocking(true);
-        System.out.println("初始化SeverSocket完成");
+        logger.info("初始化SeverSocket完成");
     }
 
     /**
@@ -68,7 +69,7 @@ public class NioEndpoint extends Endpoint {
 //        t.setDaemon(true);
 
         t.start();
-        System.out.println("初始化Acceptor完成");
+        logger.info("初始化Acceptor完成");
 
     }
 
@@ -86,7 +87,7 @@ public class NioEndpoint extends Endpoint {
             pollerThread.start();
             nioPollers.add(nioPoller);
         }
-        System.out.println("初始化Poller完成");
+        logger.info("初始化Poller完成");
     }
 
 //    private void initDispatcher() {
