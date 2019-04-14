@@ -1,5 +1,6 @@
 package info.xiantang.core.http;
 
+import info.xiantang.core.exception.RequestInvalidException;
 import info.xiantang.core.utils.SocketInputStream;
 
 import javax.servlet.*;
@@ -43,7 +44,9 @@ public class HttpRequest implements HttpServletRequest {
     // 协议信息
     private String requestInfo;
 
+
     public HttpRequest(SocketChannel socketChannel) throws IOException {
+
         headersMap = new HashMap<>();
         parametersMap = new HashMap<>();
         serverName = "Xserver";

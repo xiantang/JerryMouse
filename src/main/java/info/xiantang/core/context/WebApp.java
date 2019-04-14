@@ -2,9 +2,13 @@ package info.xiantang.core.context;
 
 
 
+import org.xml.sax.SAXException;
+
 import javax.servlet.http.HttpServlet;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -28,8 +32,12 @@ public class WebApp {
             parse.parse(Thread.currentThread().getContextClassLoader()
                     .getResourceAsStream("info/xiantang/core/web.xml"), phandler);
             webContext = new WebContext( phandler.getEntities(),phandler.getMappings());
-        } catch (Exception e) {
-            System.out.println("解析配置文件错误");
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
         }
     }
 

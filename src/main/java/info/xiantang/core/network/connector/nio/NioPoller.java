@@ -37,6 +37,7 @@ public class NioPoller implements Runnable {
         return selector;
     }
 
+
     public void register(SocketChannel socket, boolean isNewSocket, int eventType, NioSocketWrapper nioSocketWrapper) {
         if (nioSocketWrapper == null)
             nioSocketWrapper = new NioSocketWrapper(nioEndpoint, this, socket, isNewSocket);
@@ -100,6 +101,7 @@ public class NioPoller implements Runnable {
     }
 
 
+
     private static class PollerEvent implements Runnable {
 
         // 包装对象
@@ -122,12 +124,14 @@ public class NioPoller implements Runnable {
             try {
                 if (wrapper.getSocketChannel().isOpen()) {
 
+
                     if (eventType == SelectionKey.OP_READ)
                         System.out.println("我注册了一个读事件");
                     else if (eventType == SelectionKey.OP_WRITE)
                         System.out.println("我注册了一个读事件");
                     else
                         System.out.println("我注册了一个其他事件");
+
 
                     wrapper.getSocketChannel().register(wrapper.getPoller().getSelector(), eventType, wrapper);
                 } else {

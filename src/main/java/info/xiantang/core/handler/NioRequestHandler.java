@@ -1,5 +1,7 @@
 package info.xiantang.core.handler;
 
+
+import info.xiantang.core.exception.RequestInvalidException;
 import info.xiantang.core.http.HttpRequest;
 import info.xiantang.core.http.HttpResponse;
 import info.xiantang.core.network.endpoint.nio.NioEndpoint;
@@ -46,9 +48,11 @@ public class NioRequestHandler implements Runnable {
                 // ANS 推送到浏览器
             }
 
+
             System.out.println("开始注册写事件");
             endpoint.registerToPoller(client, false, SelectionKey.OP_WRITE, nioSocketWrapper);
             System.out.println("写事件完成注册");
+
             //关闭之后才可以完全奖body写入
             response.getWriter().close();
 
@@ -64,6 +68,8 @@ public class NioRequestHandler implements Runnable {
         } catch (ServletException e) {
             e.printStackTrace();
 
+        } catch (RequestInvalidException e) {
+            e.printStackTrace();
         }
 
     }

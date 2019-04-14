@@ -8,6 +8,7 @@ import info.xiantang.core.network.wrapper.nio.NioSocketWrapper;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class NioEndpoint extends Endpoint {
      */
     private int pollerCount = Math.min(2, Runtime.getRuntime().availableProcessors())/4 + 1;
     private List<NioPoller> nioPollers;
+
 
     /**
      * poller轮询器
@@ -82,6 +84,7 @@ public class NioEndpoint extends Endpoint {
 
 
 
+
     public NioPoller getPoller() {
         int idx = Math.abs(pollerRotater.incrementAndGet()) % nioPollers.size();
         return nioPollers.get(idx);
@@ -92,6 +95,7 @@ public class NioEndpoint extends Endpoint {
 //        server.configureBlocking(false);
         getPoller().register(socket, isNewSocket, eventType, nioSocketWrapper);
 //        server.configureBlocking(true);
+
     }
 
 

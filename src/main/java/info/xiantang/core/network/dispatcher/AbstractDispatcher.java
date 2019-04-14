@@ -14,19 +14,15 @@ import java.util.concurrent.*;
 
 
 
-
+@Deprecated
 public abstract class AbstractDispatcher {
 
     protected ThreadPoolExecutor pool;
 
     public AbstractDispatcher() {
-
-
         // 设置线程工厂类
-
         ThreadFactory threadFactory = new ThreadFactory() {
             private int count;
-
             @Override
             public Thread newThread(Runnable r) {
                 return new Thread(r, "Worker Pool-" + count++);
@@ -34,9 +30,6 @@ public abstract class AbstractDispatcher {
         };
 
 
-        /*
-
-         */
         this.pool = new ThreadPoolExecutor(200,
                 200,
                                         1,

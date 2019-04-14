@@ -35,6 +35,7 @@ public class SocketOutputStream extends Writer{
 
     @Override
     public void flush() throws IOException {
+
     }
 
 
@@ -43,7 +44,7 @@ public class SocketOutputStream extends Writer{
         httpResponse.setHeader("Date", String.valueOf(new Date()));
         httpResponse.setHeader("Server", "X Server/0.0.1;charset=UTF-8");
         httpResponse.setHeader("Content-Type", "text/html");
-        httpResponse.setContentLength(323);
+        httpResponse.setContentLength(bufferUsedCap);
         System.out.println("close 完成");
     }
 }
