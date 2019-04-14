@@ -25,19 +25,16 @@
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
-<<<<<<< HEAD
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <version>3.1.0</version>
     </dependency>
-=======
       <dependency>
           <groupId>javax.servlet</groupId>
           <artifactId>javax.servlet-api</artifactId>
           <version>3.1.0</version>
       </dependency>
->>>>>>> ad02913427a26a106200eef8fdd8b5c3006e61ab
   </dependencies>
 
   <build>

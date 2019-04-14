@@ -150,7 +150,6 @@ public class SocketInputStream {
                 return -1;
             }
         }
-        //将负数变为反码形式以便于转换为char
         return buffer.get(pos++) & 0xff;
     }
 
@@ -161,7 +160,6 @@ public class SocketInputStream {
                 return -1;
             }
         }
-        //将负数变为反码形式以便于转换为char
         return buffer.get(pos) & 0xff;
     }
 

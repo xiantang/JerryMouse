@@ -3,6 +3,7 @@ package info.xiantang.core.network.connector.nio;
 import info.xiantang.core.network.endpoint.nio.NioEndpoint;
 
 import java.io.IOException;
+import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 public class NioAcceptor implements Runnable {
@@ -30,7 +31,7 @@ public class NioAcceptor implements Runnable {
                 client.configureBlocking(false);
 
                 // 注册到Poller 中去
-                nioEndpoint.registerToPoller(client,true);
+                nioEndpoint.registerToPoller(client,true, SelectionKey.OP_READ, null);
 
             } catch (IOException e) {
                 e.printStackTrace();

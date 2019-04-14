@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.TimeUnit;
 
 
 public class NioPoller implements Runnable {
@@ -20,6 +19,7 @@ public class NioPoller implements Runnable {
     private NioEndpoint nioEndpoint;
     private Selector selector;
     private String pollerName;
+    private NioWorker worker;
 
     // 事件队列
     private Queue<PollerEvent> events;
@@ -29,6 +29,7 @@ public class NioPoller implements Runnable {
         // 每个Poller 线程都对应了一个Selector
         this.selector = Selector.open();
         this.pollerName = pollerName;
+        worker = new NioWorker();
         this.events = new ConcurrentLinkedDeque<>();
     }
 
@@ -36,9 +37,11 @@ public class NioPoller implements Runnable {
         return selector;
     }
 
-    public void register(SocketChannel socket, boolean isNewSocket) {
-        NioSocketWrapper nioSocketWrapper = new NioSocketWrapper(nioEndpoint, this, socket, isNewSocket);
-        events.offer(new PollerEvent(nioSocketWrapper));
+    public void register(SocketChannel socket, boolean isNewSocket, int eventType, NioSocketWrapper nioSocketWrapper) {
+        if (nioSocketWrapper == null)
+            nioSocketWrapper = new NioSocketWrapper(nioEndpoint, this, socket, isNewSocket);
+
+        events.offer(new PollerEvent(nioSocketWrapper, eventType));
         // 如果selector 在select 阻塞 就调用wakeup立马返回
         // 通过调用wakeup() 使线程抛出ClosedSelectorException 提前返回
         selector.wakeup();
@@ -47,8 +50,6 @@ public class NioPoller implements Runnable {
     @Override
     public void run() {
         while (nioEndpoint.isRunning()) {
-
-
             try {
                 events();
                 // 若沒有事件就緒則不往下執行
@@ -65,12 +66,18 @@ public class NioPoller implements Runnable {
                     // 先判断是否有效
                     if (key.isValid()) {
                         if (key.isReadable()) {
-                            // 读取事件就绪
+                            key.cancel();
                             NioSocketWrapper socketWrapper = (NioSocketWrapper) key.attachment();
                             if (socketWrapper != null) {
-                                processSocket(socketWrapper);
+                                worker.executeRead(socketWrapper);
                             }
-
+                        } else if (key.isWritable()) {
+                            System.out.println("管道可写");
+                            key.cancel();
+                            NioSocketWrapper socketWrapper = (NioSocketWrapper) key.attachment();
+                            if (socketWrapper != null) {
+                                worker.executeWrite(socketWrapper);
+                            }
                         }
                     }
                     it.remove();
@@ -89,31 +96,19 @@ public class NioPoller implements Runnable {
         PollerEvent pollerEvent;
         for (int i = 0, size = events.size(); i < size && (pollerEvent = events.poll()) != null; i++) {
             pollerEvent.run();
-
         }
     }
 
-    /**
-     * 將SocketChannel 交付給綫程池進行處理
-     *
-     * @param nioSocketWrapper
-     * @throws IOException
-     */
-    private void processSocket(NioSocketWrapper nioSocketWrapper) throws IOException {
-
-
-        nioEndpoint.execute(nioSocketWrapper);
-
-
-    }
 
     private static class PollerEvent implements Runnable {
 
         // 包装对象
         private NioSocketWrapper wrapper;
+        private int eventType;
 
-        public PollerEvent(NioSocketWrapper wrapper) {
+        public PollerEvent(NioSocketWrapper wrapper, int eventType) {
             this.wrapper = wrapper;
+            this.eventType = eventType;
         }
 
         public NioSocketWrapper getWrapper() {
@@ -127,8 +122,14 @@ public class NioPoller implements Runnable {
             try {
                 if (wrapper.getSocketChannel().isOpen()) {
 
+                    if (eventType == SelectionKey.OP_READ)
+                        System.out.println("我注册了一个读事件");
+                    else if (eventType == SelectionKey.OP_WRITE)
+                        System.out.println("我注册了一个读事件");
+                    else
+                        System.out.println("我注册了一个其他事件");
 
-                    wrapper.getSocketChannel().register(wrapper.getPoller().getSelector(), SelectionKey.OP_READ, wrapper);
+                    wrapper.getSocketChannel().register(wrapper.getPoller().getSelector(), eventType, wrapper);
                 } else {
                     System.out.println("socket已经关闭，无法注册到Poller");
                 }
