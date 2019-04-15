@@ -1,5 +1,6 @@
 package info.xiantang.core.utils;
 
+import info.xiantang.core.exception.RequestInvalidException;
 import info.xiantang.core.http.HttpRequest;
 
 import javax.servlet.http.Cookie;
@@ -31,24 +32,33 @@ public class SocketInputStream {
         this.buffer = ByteBuffer.allocate(2048);
     }
 
-    /*
-     * 读取并解析 http 的第一行
+    /**
+     * 填充requestLineBuffer
+     * @param requestBuffer
+     * @throws RequestInvalidException
+     * @throws IOException
      */
-    public void readRequestLine(HttpRequest httpRequest) throws IOException {
-        StringBuilder requestLineBuffer = new StringBuilder(1024);
-        while (peek() == CR || peek() == LF || peek() == ' ' )
-            read();
+    public void stuffRequestLineBuffer(StringBuilder requestBuffer) throws RequestInvalidException, IOException {
         int ch = -1;
         int head = pos;
         do {
-//            System.out.println(1111);
             ch = read();
             if (ch == -1) {
-                continue; //丢弃空包
+                // 通過在這裏
+                throw new RequestInvalidException(); //丢弃空包
             }
-            requestLineBuffer.append((char) ch);
+            requestBuffer.append((char) ch);
         } while (ch != CR && ch != LF);
+    }
 
+    /*
+     * 读取并解析 http 的第一行
+     */
+    public void readRequestLine(HttpRequest httpRequest) throws IOException, RequestInvalidException {
+        StringBuilder requestLineBuffer = new StringBuilder(1024);
+        while (peek() == CR || peek() == LF || peek() == ' ' )
+            read();
+        stuffRequestLineBuffer(requestLineBuffer);
         String requestLine = requestLineBuffer.toString();
         String method = requestLine.substring(0, requestLine.indexOf("/")).trim();
         httpRequest.setMethod(method);
@@ -90,22 +100,17 @@ public class SocketInputStream {
     /*
      * 读取一个请求头
      */
-    public boolean readHttpHead(HttpRequest httpRequest) throws IOException {
+    public boolean readHttpHead(HttpRequest httpRequest) throws IOException, RequestInvalidException {
         StringBuilder httpHeadBuffer = new StringBuilder(1024);
         int i = 0;
         while (peek() == CR || peek() == LF || peek() == ' '){
             read();
+
             i++;
         }
         if (i >= 2) return false;
 
-        int ch = -1;
-        int head = pos;
-        do {
-            ch = read();
-            if (ch == -1) continue; //丢弃空包
-            httpHeadBuffer.append((char) ch);
-        } while (ch != CR && ch != LF);
+        stuffRequestLineBuffer(httpHeadBuffer);
 
         String httpHead = httpHeadBuffer.toString().trim();
         String[] kv = httpHead.split(":");
@@ -149,7 +154,9 @@ public class SocketInputStream {
     private int read() throws IOException {
         if (pos >= count) {
             fill();
+
             if (pos >= count) {
+
                 return -1;
             }
         }
@@ -159,10 +166,12 @@ public class SocketInputStream {
     private int peek() throws IOException {
         if (pos >= count) {
             fill();
+
             if (pos >= count) {
                 return -1;
             }
         }
+
         return buffer.get(pos) & 0xff;
     }
 

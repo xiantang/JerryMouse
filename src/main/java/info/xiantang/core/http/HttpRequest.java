@@ -45,7 +45,7 @@ public class HttpRequest implements HttpServletRequest {
     private String requestInfo;
 
 
-    public HttpRequest(SocketChannel socketChannel) throws IOException {
+    public HttpRequest(SocketChannel socketChannel) throws IOException, RequestInvalidException {
 
         headersMap = new HashMap<>();
         parametersMap = new HashMap<>();
@@ -54,6 +54,7 @@ public class HttpRequest implements HttpServletRequest {
         SocketInputStream socketInputStream = new SocketInputStream(socketChannel);
         socketInputStream.readRequestLine(this);
         while (socketInputStream.readHttpHead(this));
+
     }
 
     public void setContentLength(int length) {

@@ -1,8 +1,10 @@
 package info.xiantang.core.network.connector.nio;
 
+import info.xiantang.core.context.WebApp;
 import info.xiantang.core.handler.NioRequestHandler;
 import info.xiantang.core.handler.NioResponseHandler;
 import info.xiantang.core.network.wrapper.nio.NioSocketWrapper;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -25,6 +27,7 @@ public class NioWorker {
     private ExecutorService ReadThreadPool;
     //写 线程池
     private ExecutorService WriteThreadPool;
+    private  Logger logger = Logger.getLogger(WebApp.class);
 
     public NioWorker() {
         ThreadFactory ReadthreadFactory = new ThreadFactory() {
@@ -69,7 +72,7 @@ public class NioWorker {
 
     public void executeWrite(NioSocketWrapper nioSocketWrapper) {
         try {
-            System.out.println("注册写");
+            logger.info("注册写");
             WriteThreadPool.execute(new NioResponseHandler(nioSocketWrapper));
         } catch (IOException e) {
             e.printStackTrace();

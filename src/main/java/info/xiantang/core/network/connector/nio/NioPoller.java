@@ -2,6 +2,7 @@ package info.xiantang.core.network.connector.nio;
 
 import info.xiantang.core.network.endpoint.nio.NioEndpoint;
 import info.xiantang.core.network.wrapper.nio.NioSocketWrapper;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.channels.ClosedChannelException;
@@ -20,7 +21,7 @@ public class NioPoller implements Runnable {
     private Selector selector;
     private String pollerName;
     private NioWorker worker;
-
+    private Logger logger = Logger.getLogger(NioPoller.class);
     // 事件队列
     private Queue<PollerEvent> events;
 
@@ -73,7 +74,7 @@ public class NioPoller implements Runnable {
                                 worker.executeRead(socketWrapper);
                             }
                         } else if (key.isWritable()) {
-                            System.out.println("管道可写");
+                            logger.info("管道可写");
                             key.cancel();
                             NioSocketWrapper socketWrapper = (NioSocketWrapper) key.attachment();
                             if (socketWrapper != null) {
@@ -93,7 +94,7 @@ public class NioPoller implements Runnable {
     }
 
     private void events() {
-        System.out.println("当前队列大小为 " + events.size());
+        logger.info("当前队列大小为 " + events.size());
         PollerEvent pollerEvent;
         for (int i = 0, size = events.size(); i < size && (pollerEvent = events.poll()) != null; i++) {
             pollerEvent.run();
@@ -103,7 +104,7 @@ public class NioPoller implements Runnable {
 
 
     private static class PollerEvent implements Runnable {
-
+        private Logger logger = Logger.getLogger(PollerEvent.class);
         // 包装对象
         private NioSocketWrapper wrapper;
         private int eventType;
@@ -120,22 +121,22 @@ public class NioPoller implements Runnable {
 
         @Override
         public void run() {
-            System.out.println("将读事件注册到Poller的selector中");
+            logger.info("将读事件注册到Poller的selector中");
             try {
                 if (wrapper.getSocketChannel().isOpen()) {
 
 
                     if (eventType == SelectionKey.OP_READ)
-                        System.out.println("我注册了一个读事件");
+                        logger.info("我注册了一个读事件");
                     else if (eventType == SelectionKey.OP_WRITE)
-                        System.out.println("我注册了一个读事件");
+                        logger.info("我注册了一个读事件");
                     else
-                        System.out.println("我注册了一个其他事件");
+                        logger.info("我注册了一个其他事件");
 
 
                     wrapper.getSocketChannel().register(wrapper.getPoller().getSelector(), eventType, wrapper);
                 } else {
-                    System.out.println("socket已经关闭，无法注册到Poller");
+                    logger.info("socket已经关闭，无法注册到Poller");
                 }
             } catch (ClosedChannelException e) {
                 e.printStackTrace();

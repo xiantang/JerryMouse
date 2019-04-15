@@ -2,6 +2,8 @@ package info.xiantang.core.context;
 
 
 
+import info.xiantang.core.network.endpoint.nio.NioEndpoint;
+import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 import javax.servlet.http.HttpServlet;
@@ -18,7 +20,7 @@ public class WebApp {
 
     private static WebContext webContext;
     public static final String servletUrl = "file:target/test-classes/"; //放着servlet编译后的文件的文件夹地址
-
+    private static Logger logger = Logger.getLogger(WebApp.class);
     /*
     初始化webContext存入servlet以及他的映射
      */
@@ -51,7 +53,7 @@ public class WebApp {
     public static HttpServlet getServletFromUrl(String url) {
 
         try {
-            System.out.println(url);
+            logger.info("訪問Url為:"+url);
             String className = webContext.getClz("/" + url);
             URL classUrl = new URL(servletUrl);
             ClassLoader classLoader = new URLClassLoader(new URL[]{classUrl});
@@ -59,7 +61,7 @@ public class WebApp {
             HttpServlet servlet = (HttpServlet) clz.getConstructor().newInstance();
             return servlet;
         } catch (NullPointerException e) {
-            System.out.println("頁面未找到");
+            logger.warn("頁面未找到");
 
         } catch (InstantiationException e) {
             e.printStackTrace();
