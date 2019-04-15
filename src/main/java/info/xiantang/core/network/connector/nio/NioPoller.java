@@ -74,7 +74,7 @@ public class NioPoller implements Runnable {
                                 worker.executeRead(socketWrapper);
                             }
                         } else if (key.isWritable()) {
-                            logger.info("管道可写");
+                            logger.debug("管道可写");
                             key.cancel();
                             NioSocketWrapper socketWrapper = (NioSocketWrapper) key.attachment();
                             if (socketWrapper != null) {
@@ -94,7 +94,7 @@ public class NioPoller implements Runnable {
     }
 
     private void events() {
-        logger.info("当前队列大小为 " + events.size());
+        logger.debug("当前队列大小为 " + events.size());
         PollerEvent pollerEvent;
         for (int i = 0, size = events.size(); i < size && (pollerEvent = events.poll()) != null; i++) {
             pollerEvent.run();
@@ -121,22 +121,22 @@ public class NioPoller implements Runnable {
 
         @Override
         public void run() {
-            logger.info("将读事件注册到Poller的selector中");
+            logger.debug("将读事件注册到Poller的selector中");
             try {
                 if (wrapper.getSocketChannel().isOpen()) {
 
 
                     if (eventType == SelectionKey.OP_READ)
-                        logger.info("我注册了一个读事件");
+                        logger.debug("我注册了一个读事件");
                     else if (eventType == SelectionKey.OP_WRITE)
-                        logger.info("我注册了一个读事件");
+                        logger.debug("我注册了一个读事件");
                     else
-                        logger.info("我注册了一个其他事件");
+                        logger.debug("我注册了一个其他事件");
 
 
                     wrapper.getSocketChannel().register(wrapper.getPoller().getSelector(), eventType, wrapper);
                 } else {
-                    logger.info("socket已经关闭，无法注册到Poller");
+                    logger.debug("socket已经关闭，无法注册到Poller");
                 }
             } catch (ClosedChannelException e) {
                 e.printStackTrace();

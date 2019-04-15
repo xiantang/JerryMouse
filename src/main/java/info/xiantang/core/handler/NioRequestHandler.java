@@ -45,16 +45,15 @@ public class NioRequestHandler implements Runnable {
             HttpServletResponse response = new HttpResponse(socketChannel);
             nioSocketWrapper.setResponse(response);
             nioSocketWrapper.setRequest(request);
-
             servlet = (HttpServlet) WebApp.getServletFromUrl(request.getRequestURI());
             if (servlet != null) {
                 servlet.service(request, response);
             }
 
 
-            logger.info("开始注册写事件");
+            logger.debug("开始注册写事件");
             endpoint.registerToPoller(client, false, SelectionKey.OP_WRITE, nioSocketWrapper);
-            logger.info("写事件完成注册");
+            logger.debug("写事件完成注册");
 
             //关闭之后才可以完全奖body写入
             response.getWriter().close();

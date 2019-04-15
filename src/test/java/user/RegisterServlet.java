@@ -16,7 +16,7 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Writer writer = resp.getWriter();
-        writer.write("<body>aaaaa</body>");
+        writer.write("<body>aaaaa<img src=\"divcss5-logo-201305.gif\" width=\"165\" height=\"60\" /> </body>");
         writer.flush();
 
 
