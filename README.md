@@ -1,7 +1,7 @@
 # XServer
 
 ## Introduction
-本项目为Java编写的Web服务器，解析GET,POST,PUT,DELETE请求，可处理静态资源，支持HTTP长连接。
+This project is a web server written in Java. It parses GET, POST, PUT, DELETE requests, can handle static resources, and supports HTTP long connections.
 ## 具备功能
 
 * Servlet
@@ -15,9 +15,6 @@
 
 ## TODO
 
-* 長連接
-* 确定并发模型
-* 线程池优化
-* ServletApi 修正
+* keep-alive
 * Cookie
 * Session
