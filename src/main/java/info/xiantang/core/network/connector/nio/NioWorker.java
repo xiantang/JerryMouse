@@ -72,7 +72,7 @@ public class NioWorker {
 
     public void executeWrite(NioSocketWrapper nioSocketWrapper) {
         try {
-            logger.info("注册写");
+            logger.debug("注册写");
             WriteThreadPool.execute(new NioResponseHandler(nioSocketWrapper));
         } catch (IOException e) {
             e.printStackTrace();

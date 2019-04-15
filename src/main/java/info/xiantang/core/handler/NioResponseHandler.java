@@ -31,12 +31,9 @@ public class NioResponseHandler implements Runnable {
         HttpServletResponse response = nioSocketWrapper.getResponse();
         HttpServletRequest request = nioSocketWrapper.getRequest();
 
-
-
-
         try {
             response.flushBuffer();
-            logger.info("写入完成");
+            logger.debug("写入完成");
             if (request.getParameter("connection") == null || !request.getParameter("connection").equals("false")) {
                 endpoint.registerToPoller(client, false, SelectionKey.OP_READ, nioSocketWrapper);
             }

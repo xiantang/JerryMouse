@@ -61,7 +61,7 @@ public class WebApp {
             HttpServlet servlet = (HttpServlet) clz.getConstructor().newInstance();
             return servlet;
         } catch (NullPointerException e) {
-            logger.warn("頁面未找到");
+            logger.debug("頁面未找到");
 
         } catch (InstantiationException e) {
             e.printStackTrace();

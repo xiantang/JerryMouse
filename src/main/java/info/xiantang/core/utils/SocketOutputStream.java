@@ -58,6 +58,6 @@ public class SocketOutputStream extends Writer{
         httpResponse.setHeader("Server", "X Server/0.0.1;charset=UTF-8");
         httpResponse.setHeader("Content-Type", "text/html");
         httpResponse.setContentLength(bufferUsedCap);
-        logger.info("close 完成");
+        logger.debug("close 完成");
     }
 }
