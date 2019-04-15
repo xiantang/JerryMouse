@@ -4,10 +4,12 @@ package info.xiantang.core.handler;
 import info.xiantang.core.exception.RequestInvalidException;
 import info.xiantang.core.http.HttpRequest;
 import info.xiantang.core.http.HttpResponse;
+import info.xiantang.core.network.connector.nio.NioPoller;
 import info.xiantang.core.network.endpoint.nio.NioEndpoint;
 import info.xiantang.core.network.wrapper.SocketWrapper;
 import info.xiantang.core.network.wrapper.nio.NioSocketWrapper;
 import info.xiantang.core.context.WebApp;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,6 +27,7 @@ public class NioRequestHandler implements Runnable {
     private SocketChannel client;
     private NioEndpoint endpoint;
     private NioSocketWrapper nioSocketWrapper;
+    private Logger logger = Logger.getLogger(NioRequestHandler.class);
 
     public NioRequestHandler(SocketWrapper socketWrapper) throws IOException {
         this.nioSocketWrapper = (NioSocketWrapper)socketWrapper;
@@ -36,6 +39,7 @@ public class NioRequestHandler implements Runnable {
     @Override
     public void run() {
         try {
+
             SocketChannel socketChannel = nioSocketWrapper.getSocketChannel();
             HttpServletRequest request = new HttpRequest(socketChannel);
             HttpServletResponse response = new HttpResponse(socketChannel);
@@ -45,13 +49,12 @@ public class NioRequestHandler implements Runnable {
             servlet = (HttpServlet) WebApp.getServletFromUrl(request.getRequestURI());
             if (servlet != null) {
                 servlet.service(request, response);
-                // ANS 推送到浏览器
             }
 
 
-            System.out.println("开始注册写事件");
+            logger.info("开始注册写事件");
             endpoint.registerToPoller(client, false, SelectionKey.OP_WRITE, nioSocketWrapper);
-            System.out.println("写事件完成注册");
+            logger.info("写事件完成注册");
 
             //关闭之后才可以完全奖body写入
             response.getWriter().close();
@@ -69,7 +72,7 @@ public class NioRequestHandler implements Runnable {
             e.printStackTrace();
 
         } catch (RequestInvalidException e) {
-            e.printStackTrace();
+            nioSocketWrapper.close();
         }
 
     }

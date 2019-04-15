@@ -1,8 +1,10 @@
 package info.xiantang.core.handler;
 
+import info.xiantang.core.context.WebApp;
 import info.xiantang.core.network.endpoint.nio.NioEndpoint;
 import info.xiantang.core.network.wrapper.SocketWrapper;
 import info.xiantang.core.network.wrapper.nio.NioSocketWrapper;
+import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,7 +18,7 @@ public class NioResponseHandler implements Runnable {
     private SocketChannel client;
     private NioEndpoint endpoint;
     private NioSocketWrapper nioSocketWrapper;
-
+    private  Logger logger = Logger.getLogger(WebApp.class);
     public NioResponseHandler(SocketWrapper socketWrapper) throws IOException {
         this.nioSocketWrapper = (NioSocketWrapper)socketWrapper;
         this.endpoint =(NioEndpoint) nioSocketWrapper.getServer();
@@ -29,16 +31,14 @@ public class NioResponseHandler implements Runnable {
         HttpServletResponse response = nioSocketWrapper.getResponse();
         HttpServletRequest request = nioSocketWrapper.getRequest();
 
-        String head = response.toString();
+
+
+
         try {
-
-            socketChannel.write(ByteBuffer.wrap(head.getBytes()));
             response.flushBuffer();
-            System.out.println("写入完成");
+            logger.info("写入完成");
             if (request.getParameter("connection") == null || !request.getParameter("connection").equals("false")) {
-
                 endpoint.registerToPoller(client, false, SelectionKey.OP_READ, nioSocketWrapper);
-
             }
             else
                 nioSocketWrapper.close();

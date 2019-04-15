@@ -41,102 +41,8 @@ public class HttpResponse implements HttpServletResponse {
     public HttpResponse(SocketChannel socketChannel) {
         this.socketChannel = socketChannel;
         this.headersMap = new HashMap<>();
-        this.bodyBuffer = ByteBuffer.allocate(1024);
+        this.bodyBuffer = ByteBuffer.allocate(2048);
     }
-
-    @Override
-    public void addCookie(Cookie cookie) {
-        cookies.add(cookie);
-    }
-
-    @Override
-    public boolean containsHeader(String s) {
-        return headersMap.containsKey(s);
-    }
-
-    @Deprecated
-    public String encodeURL(String s) {
-        return null;
-    }
-
-    @Override
-    public String encodeRedirectURL(String s) {
-        return null;
-    }
-
-    @Override
-    public String encodeUrl(String s) {
-        return null;
-    }
-
-    @Override
-    public String encodeRedirectUrl(String s) {
-        return null;
-    }
-
-    @Override
-    public void sendError(int i, String s) throws IOException {
-        status = i;
-        errorInfo = s;
-    }
-
-    @Override
-    public void sendError(int i) throws IOException {
-        status = i;
-    }
-
-    @Override
-    public void sendRedirect(String s) throws IOException {
-        //重定向 日后实现
-    }
-
-    @Override
-    public void setDateHeader(String s, long l) {
-        setHeader("Date", String.valueOf(new Date(l)));
-    }
-
-    @Override
-    public void addDateHeader(String s, long l) {
-        addHeader("Date", String.valueOf(new Date(l)));
-    }
-
-    @Override
-    public void setHeader(String s, String s1) {
-        headersMap.put(s, s1);
-    }
-
-    @Override
-    public void addHeader(String s, String s1) {
-        if (!containsHeader(s))
-            setHeader(s, s1);
-    }
-
-    @Override
-    public void setIntHeader(String s, int i) {
-        setHeader(s, i+"");
-    }
-
-    @Override
-    public void addIntHeader(String s, int i) {
-        addHeader(s, i+"");
-    }
-
-    @Override
-    public void setStatus(int i) {
-        status = i;
-    }
-
-    @Override
-    public void setStatus(int i, String s) {
-        status = i;
-        statusInfo = s;
-    }
-
-    @Override
-    public int getStatus() {
-        return status;
-    }
-
     @Override
     public String getHeader(String s) {
         if (containsHeader(s))
@@ -154,26 +60,43 @@ public class HttpResponse implements HttpServletResponse {
         return null;
     }
 
+    /**
+     * 這裏需要修改
+     * @return
+     */
     @Override
-    public Collection<String> getHeaderNames() {
-        return headersMap.keySet();
-    }
+    public String toString() {
+        // TODO:我覺得這裏應該是把整個response
+        // 給轉換為String 而不是單純的一個header
+        StringBuilder resp = new StringBuilder();
+        resp.append("HTTP/1.1").append(BLANK);
+        resp.append(status).append(BLANK);
 
-    @Override
-    public String getCharacterEncoding() {
-        return characterEncoding;
-    }
+        switch (status) {
+            case 200:
+                resp.append("OK").append(CRLF);
+                break;
+            case 404:
+                resp.append("NOT FOUND").append(CRLF);
+                break;
+            case 505:
+                resp.append("SEVER ERROR").append(CRLF);
+                break;
+            default:
+                resp.append(errorInfo);
+        }
 
-    @Override
-    public String getContentType() {
-        return contentType;
-    }
+        Set<String> keySet = headersMap.keySet();
 
-    @Override
-    public ServletOutputStream getOutputStream() throws IOException {
-        return null;
+        for (String key: keySet) {
+            resp.append(key);
+            resp.append(":");
+            resp.append(headersMap.get(key));
+            resp.append(CRLF);
+        }
+        resp.append(CRLF);
+        return resp.toString();
     }
-
     @Override
     public PrintWriter getWriter() throws IOException {
         return new PrintWriter(new SocketOutputStream(socketChannel, this));
@@ -216,19 +139,151 @@ public class HttpResponse implements HttpServletResponse {
     }
 
     @Override
+    public void setStatus(int i, String s) {
+        status = i;
+        statusInfo = s;
+    }
+    @Override
     public int getBufferSize() {
         return bodyBuffer.capacity();
     }
 
+    /**
+     * capacity 容納的最大數量
+     * limit 指的是缓冲区中第一个不能读写的元素的数组下标索引，也可以认为是缓冲区中实际元素的数量
+     * position 指的是下一个要被读写的元素的数组下标索引，该值会随get()和put()的调用自动更新
+     * @throws IOException
+     */
     @Override
     public void flushBuffer() throws IOException {
 
-        for (int i = 0; i < bodyBuffer.position(); i++) {
-            System.out.print((char)bodyBuffer.get(i));
-        }
-
+        // 獲取put之後的position
+        // 作爲之後clear 之後的limit
+        int limit = bodyBuffer.position();
+        // 它并没有清除数据，只是把position设置第一个位置上
+        // 但是他會把limit 設置為buffer的capacity
+        bodyBuffer.clear();
+        int bodyLength = limit - bodyBuffer.position();
+        setContentLength(bodyLength);
+        socketChannel.write(ByteBuffer.wrap(this.toString().getBytes()));
         socketChannel.write(bodyBuffer);
     }
+
+    @Override
+    public void addHeader(String s, String s1) {
+        if (!containsHeader(s))
+            setHeader(s, s1);
+    }
+
+    @Override
+    public void sendError(int i, String s) throws IOException {
+        status = i;
+        errorInfo = s;
+    }
+
+    @Override
+    public void sendError(int i) throws IOException {
+        status = i;
+    }
+
+
+    @Override
+    public void addCookie(Cookie cookie) {
+        cookies.add(cookie);
+    }
+
+    @Override
+    public boolean containsHeader(String s) {
+        return headersMap.containsKey(s);
+    }
+
+    @Deprecated
+    public String encodeURL(String s) {
+        return null;
+    }
+
+    @Override
+    public String encodeRedirectURL(String s) {
+        return null;
+    }
+
+    @Override
+    public String encodeUrl(String s) {
+        return null;
+    }
+
+    @Override
+    public String encodeRedirectUrl(String s) {
+        return null;
+    }
+
+
+    @Override
+    public void sendRedirect(String s) throws IOException {
+        //重定向 日后实现
+    }
+
+    @Override
+    public void setDateHeader(String s, long l) {
+        setHeader("Date", String.valueOf(new Date(l)));
+    }
+
+    @Override
+    public void addDateHeader(String s, long l) {
+        addHeader("Date", String.valueOf(new Date(l)));
+    }
+
+    @Override
+    public void setHeader(String s, String s1) {
+        headersMap.put(s, s1);
+    }
+
+
+
+    @Override
+    public void setIntHeader(String s, int i) {
+        setHeader(s, i+"");
+    }
+
+    @Override
+    public void addIntHeader(String s, int i) {
+        addHeader(s, i+"");
+    }
+
+    @Override
+    public void setStatus(int i) {
+        status = i;
+    }
+
+
+
+    @Override
+    public int getStatus() {
+        return status;
+    }
+
+
+    @Override
+    public Collection<String> getHeaderNames() {
+        return headersMap.keySet();
+    }
+
+    @Override
+    public String getCharacterEncoding() {
+        return characterEncoding;
+    }
+
+    @Override
+    public String getContentType() {
+        return contentType;
+    }
+
+    @Override
+    public ServletOutputStream getOutputStream() throws IOException {
+        return null;
+    }
+
+
 
     @Override
     public void resetBuffer() {
@@ -259,35 +314,5 @@ public class HttpResponse implements HttpServletResponse {
         return null;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder resp = new StringBuilder();
-        resp.append("HTTP/1.1").append(BLANK);
-        resp.append(status).append(BLANK);
 
-        switch (status) {
-            case 200:
-                resp.append("OK").append(CRLF);
-                break;
-            case 404:
-                resp.append("NOT FOUND").append(CRLF);
-                break;
-            case 505:
-                resp.append("SEVER ERROR").append(CRLF);
-                break;
-            default:
-                resp.append(errorInfo);
-        }
-
-        Set<String> keySet = headersMap.keySet();
-
-        for (String key: keySet) {
-            resp.append(key);
-            resp.append(":");
-            resp.append(headersMap.get(key));
-            resp.append(CRLF);
-        }
-        resp.append(CRLF);
-        return resp.toString();
-    }
 }

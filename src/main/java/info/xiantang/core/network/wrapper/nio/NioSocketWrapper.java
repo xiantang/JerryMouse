@@ -61,17 +61,14 @@ public class NioSocketWrapper implements SocketWrapper {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close()  {
         // 取消注冊
-        Selector selector = poller.getSelector();
-        // 锁住这个对象
-        // 使这个共享的对象的操作原子化
-        synchronized (socketChannel) {
-            if (socketChannel.isOpen()) {
-                socketChannel.keyFor(selector).cancel();
-                socketChannel.close();
-            }
+        try {
+            socketChannel.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
 
     }
 }
