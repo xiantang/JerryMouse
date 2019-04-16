@@ -38,7 +38,7 @@ public class SocketInputStream {
      * @throws RequestInvalidException
      * @throws IOException
      */
-    public void stuffRequestLineBuffer(StringBuilder requestBuffer) throws RequestInvalidException, IOException {
+    private void stuffRequestLineBuffer(StringBuilder requestBuffer) throws RequestInvalidException, IOException {
         int ch = -1;
         int head = pos;
         do {
