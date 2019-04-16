@@ -18,3 +18,8 @@ This project is a web server written in Java. It parses GET, POST, PUT, DELETE r
 * keep-alive
 * Cookie
 * Session
+
+
+## NIO Timing Diagram
+
+![](http://ww1.sinaimg.cn/large/006d4JA0ly1g24ju3h7iaj30xe0n8abs.jpg)
