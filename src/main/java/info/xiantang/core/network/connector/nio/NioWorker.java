@@ -7,6 +7,7 @@ import info.xiantang.core.http.HttpResponse;
 import info.xiantang.core.network.endpoint.nio.NioEndpoint;
 import info.xiantang.core.network.wrapper.SocketWrapper;
 import info.xiantang.core.network.wrapper.nio.NioSocketWrapper;
+import info.xiantang.core.utils.SocketInputStream;
 import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
@@ -120,7 +121,8 @@ public class NioWorker {
             try {
 
                 SocketChannel socketChannel = nioSocketWrapper.getSocketChannel();
-                HttpServletRequest request = new HttpRequest(socketChannel);
+                SocketInputStream requestSocketInputStream = new SocketInputStream(socketChannel);
+                HttpServletRequest request = new HttpRequest(requestSocketInputStream);
                 HttpServletResponse response = new HttpResponse(socketChannel);
                 nioSocketWrapper.setResponse(response);
                 nioSocketWrapper.setRequest(request);

@@ -1,6 +1,7 @@
 package info.xiantang.core.http;
 
 import info.xiantang.core.exception.RequestInvalidException;
+import info.xiantang.core.utils.PropertyUtil;
 import info.xiantang.core.utils.SocketInputStream;
 
 import javax.servlet.*;
@@ -11,54 +12,154 @@ import java.io.UnsupportedEncodingException;
 import java.nio.channels.SocketChannel;
 import java.security.Principal;
 import java.util.*;
+
+import static org.apache.log4j.NDC.peek;
+
 /**
  * @Author: xiantang
  * @Date: 2019/4/17 14:45
  */
 public class HttpRequest implements HttpServletRequest {
-    //http 头中的属性
+
     private String contentType;
     private int contentLength = -1;
     private boolean keepAlive = true;
-    // http 请求方式 GET, POST等
     private String method;
-    // url 后面跟着的查询字符串
     private String queryString;
-    //请求的 url
     private String requestURL;
-    //请求的 uri
     private String requestURI;
-    //协议名 一般就是http/1.1
     private String protocol;
-    //请求报文
     private String body;
-    //服务器名
     private String serverName;
-    //端口号
     private int serverPort;
-    //cookies
     private ArrayList<Cookie> cookies = new ArrayList<Cookie>();
-    //http header 字段
     private Map<String, String> headersMap;
-    //http 请求参数
     private Map<String, List<String>> parametersMap;
-    //是否已解析
     private boolean parsed = false;
-    // 协议信息
-    private String requestInfo;
+    private SocketInputStream socketInputStream;
 
 
-    public HttpRequest(SocketChannel socketChannel) throws IOException, RequestInvalidException {
-
+    public HttpRequest(SocketInputStream socketInputStream) throws IOException, RequestInvalidException {
         headersMap = new HashMap<>();
         parametersMap = new HashMap<>();
-        serverName = "Xserver";
-        serverPort = 8080;
-        SocketInputStream socketInputStream = new SocketInputStream(socketChannel);
-        socketInputStream.readRequestLine(this);
-        while (socketInputStream.readHttpHead(this));
+        serverName = PropertyUtil.getProperty("server.name");
+        serverPort = Integer.parseInt(PropertyUtil.getProperty("server.port"));
+        this.socketInputStream = socketInputStream;
+        parseFirstRequestLine();
+        parseRequestHeaders();
+    }
+
+    /**
+     * 解析头信息
+     */
+    private void parseRequestHeaders() throws IOException, RequestInvalidException {
+        boolean flag = true;
+        while (flag) {
+            flag = parseRequestHeader();
+        }
+    }
+
+    private boolean parseRequestHeader() throws RequestInvalidException, IOException {
+        StringBuilder httpHeadBuffer = new StringBuilder(1024);
+
+        if (!socketInputStream.stuffRequestHeaderBuffer(httpHeadBuffer)) {
+            return false;
+        }
+        socketInputStream.stuffRequestLineBuffer(httpHeadBuffer);
+
+        String httpHead = httpHeadBuffer.toString().trim();
+        String[] kv = httpHead.split(":");
+        String headKey = kv[0].trim().toLowerCase();
+        String headValue = kv[1].trim();
+
+        if (headKey.equals("contentType")) {
+
+            setContentType(headValue);
+        } else if (headKey.equals("contentLength")) {
+            setContentLength(Integer.parseInt(headValue));
+        }
+
+        else if (headKey.equals("Connection")) {
+            if (!headValue.equals("keep-alive")) {
+                setKeepAlive(false);
+            }
+        } else if (headKey.equals("Cookie")) {
+            headValue = headValue.replaceAll(" ", "");
+            String[] cookiesStr = headValue.split(";");
+            addCookie(new Cookie(cookiesStr[0], cookiesStr[1]));
+        }
+
+        setHead(headKey, headValue);
+        return true;
+
 
     }
+
+    /**
+     * 解析第一条的信息
+     * @throws IOException
+     * @throws RequestInvalidException
+     */
+    private void parseFirstRequestLine() throws IOException, RequestInvalidException {
+        StringBuilder requestLineBuffer = new StringBuilder(1024);
+        socketInputStream.stuffRequestBuffer(requestLineBuffer);
+        String requestLine = requestLineBuffer.toString();
+        String method = requestLine.substring(0, requestLine.indexOf("/")).trim();
+        setMethod(method);
+        int startidx = requestLine.indexOf("/") + 1;
+        int endurix = requestLine.indexOf("?");
+        int endurlx = requestLine.indexOf("HTTP/");
+        String requestURL = requestLine.substring(startidx, endurlx).trim();
+        setRequestURL(requestURL);
+        String protocol   = requestLine.substring(endurlx);
+        setProtocol(protocol);
+        if (endurix == -1) {
+            setRequestURI(requestURL);
+        } else {
+            String requestURI = requestLine.substring(startidx, endurix).trim();
+            setRequestURI(requestURI);
+            String param      = requestLine.substring(endurix + 1, endurlx);
+            setQueryString(param);
+            // 剖析 url 参数
+            String[] keyValues = param.split("&");
+            for (String queryStr : keyValues) {
+                String[] kv = queryStr.split("=");
+                kv = Arrays.copyOf(kv, 2);
+                String key = kv[0];
+                String value = kv[1]==null?null:socketInputStream.decode(kv[1],"utf-8");
+                setParameter(key, value);
+            }
+        }
+    }
+
+    @Override
+    public Map<String, String[]> getParameterMap() {
+        Map<String, String[]> parametersMap0 = new HashMap<>();
+
+        Set<String> keySet = parametersMap.keySet();
+        for (String k : keySet){
+            parametersMap0.put(k, parametersMap.get(k).toArray(new String[0]));
+        }
+        return parametersMap0;
+    }
+
+    public void setParameter(String key, String value) {
+        if (!parametersMap.containsKey(key)) {
+            parametersMap.put(key, new ArrayList<String>());
+        }
+        parametersMap.get(key).add(value);
+    }
+
+    @Override
+    public Enumeration<String> getHeaderNames() {
+        Vector<String> headerNames = new Vector<String>();
+        headerNames.addAll(headersMap.keySet());
+        return headerNames.elements();
+    }
+
+
+    //==================================================
+    //==================================================
 
     public void setContentLength(int length) {
         this.contentLength = length;
@@ -96,12 +197,7 @@ public class HttpRequest implements HttpServletRequest {
         this.protocol = protocol;
     }
 
-    public void setParameter(String key, String value) {
-        if (!parametersMap.containsKey(key)) {
-            parametersMap.put(key, new ArrayList<String>());
-        }
-        parametersMap.get(key).add(value);
-    }
+
 
     public void setHead(String key, String value) {
         headersMap.put(key, value);
@@ -144,12 +240,7 @@ public class HttpRequest implements HttpServletRequest {
         return null;
     }
 
-    @Override
-    public Enumeration<String> getHeaderNames() {
-        Vector<String> headerNames = new Vector<String>();
-        headerNames.addAll(headersMap.keySet());
-        return headerNames.elements();
-    }
+
 
     @Override
     public int getIntHeader(String s) {
@@ -321,36 +412,23 @@ public class HttpRequest implements HttpServletRequest {
         return null;
     }
 
-    @Override
-    public String getParameter(String s) {
-        s = s.toLowerCase();
-        if (!parametersMap.containsKey(s)) return null;
-        return parametersMap.get(s).get(0);
-    }
 
-    @Override
-    public Enumeration<String> getParameterNames() {
-        Vector<String> headerNames = new Vector<String>();
-        headerNames.addAll(parametersMap.keySet());
-        return headerNames.elements();
-    }
 
     @Override
     public String[] getParameterValues(String s) {
         return parametersMap.get(s).toArray(new String[0]);
     }
 
-    @Override
-    public Map<String, String[]> getParameterMap() {
-        Map<String, String[]> parametersMap0 = new HashMap<>();
 
-        Set<String> keySet = parametersMap.keySet();
-        for (String k : keySet){
-            parametersMap0.put(k, parametersMap.get(k).toArray(new String[0]));
-        }
-        return parametersMap0;
+    @Override
+    public String getParameter(String s) {
+        return null;
     }
 
+    @Override
+    public Enumeration<String> getParameterNames() {
+        return null;
+    }
     @Override
     public String getProtocol() {
         return protocol;

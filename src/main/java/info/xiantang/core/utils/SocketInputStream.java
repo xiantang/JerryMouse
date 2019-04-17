@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;
 
+import static org.apache.log4j.NDC.peek;
 
 
 /**
@@ -43,7 +44,7 @@ public class SocketInputStream {
      * @throws RequestInvalidException
      * @throws IOException
      */
-    private void stuffRequestLineBuffer(StringBuilder requestBuffer) throws RequestInvalidException, IOException {
+    public void stuffRequestLineBuffer(StringBuilder requestBuffer) throws RequestInvalidException, IOException {
         int ch = -1;
         int head = pos;
         do {
@@ -61,41 +62,10 @@ public class SocketInputStream {
      * 读取并解析 http 的第一行
      */
     public void readRequestLine(HttpRequest httpRequest) throws IOException, RequestInvalidException {
-        StringBuilder requestLineBuffer = new StringBuilder(1024);
-        while (peek() == CR || peek() == LF || peek() == ' ') {
-            read();
-        }
-        stuffRequestLineBuffer(requestLineBuffer);
-        String requestLine = requestLineBuffer.toString();
-        String method = requestLine.substring(0, requestLine.indexOf("/")).trim();
-        httpRequest.setMethod(method);
-        int startidx = requestLine.indexOf("/") + 1;
-        int endurix = requestLine.indexOf("?");
-        int endurlx = requestLine.indexOf("HTTP/");
-        String requestURL = requestLine.substring(startidx, endurlx).trim();
-        httpRequest.setRequestURL(requestURL);
-        String protocol   = requestLine.substring(endurlx);
-        httpRequest.setProtocol(protocol);
-        if (endurix == -1) {
-            httpRequest.setRequestURI(requestURL);
-        } else {
-            String requestURI = requestLine.substring(startidx, endurix).trim();
-            httpRequest.setRequestURI(requestURI);
-            String param      = requestLine.substring(endurix + 1, endurlx);
-            httpRequest.setQueryString(param);
-            // 剖析 url 参数
-            String[] keyValues = param.split("&");
-            for (String queryStr : keyValues) {
-                String[] kv = queryStr.split("=");
-                kv = Arrays.copyOf(kv, 2);
-                String key = kv[0];
-                String value = kv[1]==null?null:decode(kv[1],"utf-8");
-                httpRequest.setParameter(key, value);
-            }
-        }
+
     }
 
-    private String decode(String value, String enc) {
+    public String decode(String value, String enc) {
         try {
             return URLDecoder.decode(value, enc);
         } catch (UnsupportedEncodingException e) {
@@ -107,40 +77,6 @@ public class SocketInputStream {
     /*
      * 读取一个请求头
      */
-    public boolean readHttpHead(HttpRequest httpRequest) throws IOException, RequestInvalidException {
-        StringBuilder httpHeadBuffer = new StringBuilder(1024);
-        int i = 0;
-        while (peek() == CR || peek() == LF || peek() == ' '){
-            read();
-
-            i++;
-        }
-        if (i >= 2) return false;
-
-        stuffRequestLineBuffer(httpHeadBuffer);
-
-        String httpHead = httpHeadBuffer.toString().trim();
-        String[] kv = httpHead.split(":");
-        String headKey = kv[0].trim().toLowerCase();
-        String headValue = kv[1].trim();
-
-        if (headKey.equals("contentType"))
-            httpRequest.setContentType(headValue);
-        else if (headKey.equals("contentLength"))
-            httpRequest.setContentLength(Integer.parseInt(headValue));
-        else if (headKey.equals("Connection")) {
-            if (!headValue.equals("keep-alive"))
-                httpRequest.setKeepAlive(false);
-        }
-        else if (headKey.equals("Cookie")) {
-            headValue = headValue.replaceAll(" ", "");
-            String[] cookiesStr = headValue.split(";");
-            httpRequest.addCookie(new Cookie(cookiesStr[0], cookiesStr[1]));
-        }
-
-        httpRequest.setHead(headKey, headValue);
-        return true;
-    }
 
     private void readHttpBody(HttpRequest httpRequest) throws IOException {
         int contentLength = httpRequest.getContentLength();
@@ -148,7 +84,9 @@ public class SocketInputStream {
         if (contentLength >= 0) {
             for (int i = 0; i < contentLength; i++) {
                 int ch = read();
-                if (ch == -1) continue; //丢弃空包
+                if (ch == -1){
+                    continue; //丢弃空包
+                }
                 httpBody.append(ch);
             }
             httpRequest.setBody(httpBody.toString());
@@ -180,6 +118,26 @@ public class SocketInputStream {
         }
 
         return buffer.get(pos) & 0xff;
+    }
+
+    public void stuffRequestBuffer(StringBuilder requestLineBuffer) throws IOException, RequestInvalidException {
+        while (peek() == CR || peek() == LF || peek() == ' ') {
+            read();
+        }
+        stuffRequestLineBuffer(requestLineBuffer);
+    }
+
+    public boolean stuffRequestHeaderBuffer(StringBuilder stringBuilder) throws IOException {
+        int i = 0;
+        while (peek() == CR || peek() == LF || peek() == ' '){
+            read();
+
+            i++;
+        }
+        if (i >= 2) {
+            return false;
+        }
+        return true;
     }
 
     private void fill() throws IOException {
