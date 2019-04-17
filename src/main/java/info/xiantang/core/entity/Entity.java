@@ -1,6 +1,9 @@
 package info.xiantang.core.entity;
 
+
 /**
+ * @Author: xiantang
+ * @Date: 2019/4/17 14:45
  * 实体类
  * 主要是负责存储类名和类的路径
  * 用来反射

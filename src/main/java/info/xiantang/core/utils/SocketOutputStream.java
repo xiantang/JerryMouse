@@ -1,15 +1,16 @@
 package info.xiantang.core.utils;
 
-import info.xiantang.core.handler.NioRequestHandler;
 import info.xiantang.core.http.HttpResponse;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Date;
-
+/**
+ * @Author: xiantang
+ * @Date: 2019/4/17 14:45
+ */
 public class SocketOutputStream extends Writer{
     private SocketChannel socketChannel;
     private HttpResponse httpResponse;

@@ -1,5 +1,6 @@
 package info.xiantang.core.utils;
 
+import info.xiantang.core.enumeration.HttpStatus;
 import info.xiantang.core.exception.RequestInvalidException;
 import info.xiantang.core.http.HttpRequest;
 
@@ -11,7 +12,11 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;
 
+
+
 /**
+ * @Author: xiantang
+ * @Date: 2019/4/17 14:45
  * 这个类专门负责读取和解析 http 协议
  * 至于在什么时候解析 还没有定
  */
@@ -45,7 +50,8 @@ public class SocketInputStream {
             ch = read();
             if (ch == -1) {
                 // 通過在這裏
-                throw new RequestInvalidException(); //丢弃空包
+                //丢弃空包
+                throw new RequestInvalidException(HttpStatus.NOT_FOUND);
             }
             requestBuffer.append((char) ch);
         } while (ch != CR && ch != LF);
@@ -56,8 +62,9 @@ public class SocketInputStream {
      */
     public void readRequestLine(HttpRequest httpRequest) throws IOException, RequestInvalidException {
         StringBuilder requestLineBuffer = new StringBuilder(1024);
-        while (peek() == CR || peek() == LF || peek() == ' ' )
+        while (peek() == CR || peek() == LF || peek() == ' ') {
             read();
+        }
         stuffRequestLineBuffer(requestLineBuffer);
         String requestLine = requestLineBuffer.toString();
         String method = requestLine.substring(0, requestLine.indexOf("/")).trim();

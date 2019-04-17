@@ -4,7 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *
+ * @Author: xiantang
+ * @Date: 2019/4/17 14:45
  */
 public class Mapping {
     private String name;

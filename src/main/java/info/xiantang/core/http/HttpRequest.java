@@ -11,7 +11,10 @@ import java.io.UnsupportedEncodingException;
 import java.nio.channels.SocketChannel;
 import java.security.Principal;
 import java.util.*;
-
+/**
+ * @Author: xiantang
+ * @Date: 2019/4/17 14:45
+ */
 public class HttpRequest implements HttpServletRequest {
     //http 头中的属性
     private String contentType;

@@ -15,7 +15,10 @@ import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-
+/**
+ * @Author: xiantang
+ * @Date: 2019/4/17 14:45
+ */
 public class NioEndpoint extends Endpoint {
     private ServerSocketChannel server;
     private NioAcceptor acceptor;

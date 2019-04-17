@@ -2,9 +2,19 @@ package info.xiantang.core.exception;
 
 import info.xiantang.core.enumeration.HttpStatus;
 
-public class RequestInvalidException extends  ServletException{
-    private static final HttpStatus status = HttpStatus.BAD_REQUEST;
-    public RequestInvalidException() {
-        super(status);
+import javax.servlet.ServletException;
+/**
+ * @Author: xiantang
+ * @Date: 2019/4/17 14:45
+ */
+public class RequestInvalidException extends ServletException {
+    private HttpStatus status;
+
+    public RequestInvalidException(HttpStatus status){
+        this.status = status;
+    }
+
+    public HttpStatus getStatus() {
+        return status;
     }
 }

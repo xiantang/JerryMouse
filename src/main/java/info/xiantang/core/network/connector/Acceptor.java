@@ -7,7 +7,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 /**
- * 作为所有Acceptor的模板类
+ * @Author: xiantang
+ * @Date: 2019/4/17 14:45
  */
 public abstract class Acceptor {
 
