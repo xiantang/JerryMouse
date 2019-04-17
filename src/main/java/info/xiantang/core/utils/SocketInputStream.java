@@ -26,7 +26,9 @@ public class SocketInputStream {
     private final String httpHeadEnd = "\\r\\n\\r\\n";
     private static final int CR = (int) '\r';
     private static final int LF = (int) '\n';
-    //将数据读到缓冲区
+    /**
+     * 将数据读到缓冲区
+     */
     private ByteBuffer buffer;
     private int pos = 0;
     private int count = 0;

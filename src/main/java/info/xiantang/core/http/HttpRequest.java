@@ -71,19 +71,23 @@ public class HttpRequest implements HttpServletRequest {
         String[] kv = httpHead.split(":");
         String headKey = kv[0].trim().toLowerCase();
         String headValue = kv[1].trim();
-
-        if (headKey.equals("contentType")) {
+        String contentType = "contentType";
+        String contentLength = "contentLength";
+        String connection = "Connection";
+        String keepAlive = "keep-alive";
+        String cookie = "Cookie";
+        if (headKey.equals(contentType)) {
 
             setContentType(headValue);
-        } else if (headKey.equals("contentLength")) {
+        } else if (headKey.equals(contentLength)) {
             setContentLength(Integer.parseInt(headValue));
         }
 
-        else if (headKey.equals("Connection")) {
-            if (!headValue.equals("keep-alive")) {
+        else if (headKey.equals(connection)) {
+            if (!headValue.equals(keepAlive)) {
                 setKeepAlive(false);
             }
-        } else if (headKey.equals("Cookie")) {
+        } else if (headKey.equals(cookie)) {
             headValue = headValue.replaceAll(" ", "");
             String[] cookiesStr = headValue.split(";");
             addCookie(new Cookie(cookiesStr[0], cookiesStr[1]));
@@ -91,7 +95,6 @@ public class HttpRequest implements HttpServletRequest {
 
         setHead(headKey, headValue);
         return true;
-
 
     }
 
