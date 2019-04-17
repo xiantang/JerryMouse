@@ -3,7 +3,10 @@ package info.xiantang.core.network.endpoint;
 import info.xiantang.core.utils.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
-
+/**
+ * @Author: xiantang
+ * @Date: 2019/4/17 14:45
+ */
 public abstract class Endpoint {
     /**
      * 启动服务器
