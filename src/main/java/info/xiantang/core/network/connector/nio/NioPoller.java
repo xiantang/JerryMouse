@@ -14,7 +14,10 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
-
+/**
+ * @Author: xiantang
+ * @Date: 2019/4/17 14:45
+ */
 public class NioPoller implements Runnable {
 
     private NioEndpoint nioEndpoint;
@@ -22,7 +25,10 @@ public class NioPoller implements Runnable {
     private String pollerName;
     private NioWorker worker;
     private Logger logger = Logger.getLogger(NioPoller.class);
-    // 事件队列
+    /**
+     *  事件队列
+     */
+
     private Queue<PollerEvent> events;
 
     public NioPoller(NioEndpoint nioEndpoint, String pollerName) throws IOException {
@@ -40,8 +46,9 @@ public class NioPoller implements Runnable {
 
 
     public void register(SocketChannel socket, boolean isNewSocket, int eventType, NioSocketWrapper nioSocketWrapper) {
-        if (nioSocketWrapper == null)
+        if (nioSocketWrapper == null) {
             nioSocketWrapper = new NioSocketWrapper(nioEndpoint, this, socket, isNewSocket);
+        }
 
         events.offer(new PollerEvent(nioSocketWrapper, eventType));
         // 如果selector 在select 阻塞 就调用wakeup立马返回
@@ -102,10 +109,11 @@ public class NioPoller implements Runnable {
     }
 
 
-
     private static class PollerEvent implements Runnable {
         private Logger logger = Logger.getLogger(PollerEvent.class);
-        // 包装对象
+        /**
+         *  包装对象
+         */
         private NioSocketWrapper wrapper;
         private int eventType;
 
@@ -124,16 +132,13 @@ public class NioPoller implements Runnable {
             logger.debug("将读事件注册到Poller的selector中");
             try {
                 if (wrapper.getSocketChannel().isOpen()) {
-
-
-                    if (eventType == SelectionKey.OP_READ)
+                    if (eventType == SelectionKey.OP_READ) {
                         logger.debug("我注册了一个读事件");
-                    else if (eventType == SelectionKey.OP_WRITE)
+                    } else if (eventType == SelectionKey.OP_WRITE) {
                         logger.debug("我注册了一个读事件");
-                    else
+                    } else {
                         logger.debug("我注册了一个其他事件");
-
-
+                    }
                     wrapper.getSocketChannel().register(wrapper.getPoller().getSelector(), eventType, wrapper);
                 } else {
                     logger.debug("socket已经关闭，无法注册到Poller");

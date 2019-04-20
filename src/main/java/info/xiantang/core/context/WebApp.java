@@ -1,11 +1,8 @@
 package info.xiantang.core.context;
 
 
-
-import info.xiantang.core.network.endpoint.nio.NioEndpoint;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
-
 import javax.servlet.http.HttpServlet;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -15,16 +12,21 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-
+/**
+ * @Author: xiantang
+ * @Date: 2019/4/17 14:45
+ */
 public class WebApp {
 
     private static WebContext webContext;
-    public static final String servletUrl = "file:target/test-classes/"; //放着servlet编译后的文件的文件夹地址
+    /**
+     *放着servlet编译后的文件的文件夹地址
+     */
+    public static final String URL = "file:target/test-classes/";
     private static Logger logger = Logger.getLogger(WebApp.class);
     /*
     初始化webContext存入servlet以及他的映射
      */
-
     static {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -55,7 +57,7 @@ public class WebApp {
         try {
             logger.info("訪問Url為:"+url);
             String className = webContext.getClz("/" + url);
-            URL classUrl = new URL(servletUrl);
+            URL classUrl = new URL(URL);
             ClassLoader classLoader = new URLClassLoader(new URL[]{classUrl});
             Class clz = classLoader.loadClass(className);
             HttpServlet servlet = (HttpServlet) clz.getConstructor().newInstance();
@@ -73,11 +75,8 @@ public class WebApp {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
-
-
         } catch (MalformedURLException e) {
             e.printStackTrace();
-
         }
         return null;
     }

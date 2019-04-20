@@ -26,7 +26,7 @@ public class LoginServlet extends HttpServlet {
 //        }
 
         Writer writer = resp.getWriter();
-        writer.write("aaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+        writer.write("aaaaaaaaaaaaaaaaaaaaaaaaaaaa" + req.getParameterValues("a")[0]);
         writer.flush();
     }
 }

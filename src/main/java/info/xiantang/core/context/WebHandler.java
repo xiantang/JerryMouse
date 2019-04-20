@@ -10,16 +10,21 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
+ * @Author: xiantang
+ * @Date: 2019/4/17 14:45
  * 负责解析web.xml
- *
  */
 public class WebHandler extends DefaultHandler {
     private List<Entity> entities;
     private List<Mapping> mappings;
     private Mapping mapping;
     private Entity entity;
-    private String tag; //存储操作标签
+    /**
+     * 存储操作标签
+     */
+    private String tag;
     private boolean isMapping = false;
 
     @Override
@@ -31,12 +36,14 @@ public class WebHandler extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        String servlet = "servlet";
+        String servletMapping = "servlet-mapping";
         if (qName != null) {
             tag = qName;
-            if (tag.equals("servlet")) {
+            if (tag.equals(servlet)) {
                 entity = new Entity();
                 isMapping = false;
-            } else if (tag.equals("servlet-mapping")) {
+            } else if (tag.equals(servletMapping)) {
                 mapping = new Mapping();
                 isMapping = true;
             }
@@ -45,19 +52,23 @@ public class WebHandler extends DefaultHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
+        String servletName = "servlet-name";
+        String urlPattern = "url-pattern";
+        String servletClass = "servlet-class";
         String contents = new String(ch, start, length);
-        if (tag != null) {// 处理了空
-            if (isMapping) {// 操作servlet-mapping
-                if (tag.equals("servlet-name")) {
+        // 处理了空
+        if (tag != null) {
+            // 操作servlet-mapping
+            if (isMapping) {
+                if (servletName.equals(tag)) {
                     mapping.setName(contents);
-                } else if (tag.equals("url-pattern")) {
+                } else if (urlPattern.equals(tag)) {
                     mapping.addPattern(contents);
                 }
-            }
-            else {
-                if (tag.equals("servlet-name")) {
+            } else {
+                if (servletName.equals(tag)) {
                     entity.setName(contents);
-                } else if (tag.equals("servlet-class")) {
+                } else if (servletClass.equals(tag)) {
                     entity.setClz(contents);
                 }
             }
@@ -66,11 +77,12 @@ public class WebHandler extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
+        String servlet = "servlet";
+        String servletMapping = "servlet-mapping";
         if (qName != null) {
-
-            if (qName.equals("servlet")) {
+            if (qName.equals(servlet)) {
                 entities.add(entity);
-            } else if (qName.equals("servlet-mapping")) {
+            } else if (qName.equals(servletMapping)) {
                 mappings.add(mapping);
             }
         }

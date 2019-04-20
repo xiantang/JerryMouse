@@ -10,7 +10,10 @@ import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.*;
-
+/**
+ * @Author: xiantang
+ * @Date: 2019/4/17 14:45
+ */
 public class HttpResponse implements HttpServletResponse {
     private SocketChannel socketChannel;
     //cookies
