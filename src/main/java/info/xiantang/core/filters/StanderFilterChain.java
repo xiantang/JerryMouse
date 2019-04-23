@@ -2,6 +2,7 @@ package info.xiantang.core.filters;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -19,7 +20,7 @@ public class StanderFilterChain implements FilterChain {
     }
 
     @Override
-    public void doFilter(HttpServletRequest request, HttpServletResponse response) {
+    public void doFilter(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
         Iterator<Filter> iterator = filters.iterator();
         while (iterator.hasNext()) {
             Filter filter = iterator.next();

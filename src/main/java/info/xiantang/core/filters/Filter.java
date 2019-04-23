@@ -9,7 +9,7 @@ import java.io.UnsupportedEncodingException;
  */
 public interface Filter {
 
-    void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws EmptyArgException, UnsupportedEncodingException;
+    void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws UnsupportedEncodingException;
 
     void destroy();
 }
