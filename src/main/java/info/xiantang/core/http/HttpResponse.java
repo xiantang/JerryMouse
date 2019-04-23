@@ -200,6 +200,7 @@ public class HttpResponse implements HttpServletResponse {
         return headersMap.containsKey(s);
     }
 
+    @Override
     @Deprecated
     public String encodeURL(String s) {
         return null;
@@ -241,8 +242,6 @@ public class HttpResponse implements HttpServletResponse {
         headersMap.put(s, s1);
     }
 
-
-
     @Override
     public void setIntHeader(String s, int i) {
         setHeader(s, i+"");
@@ -257,8 +256,6 @@ public class HttpResponse implements HttpServletResponse {
     public void setStatus(int i) {
         status = i;
     }
-
-
 
     @Override
     public int getStatus() {

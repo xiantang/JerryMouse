@@ -33,7 +33,6 @@ public class WebHandler extends DefaultHandler {
         mappings = new ArrayList<>();
     }
 
-
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         String servlet = "servlet";

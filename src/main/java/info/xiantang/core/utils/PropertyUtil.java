@@ -14,6 +14,7 @@ import java.util.Properties;
 public class PropertyUtil {
     private static Properties props;
     private static Logger logger = Logger.getLogger(PropertyUtil.class);
+
     static {
         loadProps();
     }

@@ -3,6 +3,8 @@ package info.xiantang.core.http;
 import info.xiantang.core.exception.RequestInvalidException;
 import info.xiantang.core.utils.PropertyUtil;
 import info.xiantang.core.utils.SocketInputStream;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -19,6 +21,8 @@ import static org.apache.log4j.NDC.peek;
  * @Author: xiantang
  * @Date: 2019/4/17 14:45
  */
+@Getter
+@Setter
 public class HttpRequest implements HttpServletRequest {
 
     private String contentType;
@@ -148,71 +152,21 @@ public class HttpRequest implements HttpServletRequest {
 
     public void setParameter(String key, String value) {
         if (!parametersMap.containsKey(key)) {
-            parametersMap.put(key, new ArrayList<String>());
+            parametersMap.put(key, new ArrayList<>());
         }
         parametersMap.get(key).add(value);
     }
 
     @Override
     public Enumeration<String> getHeaderNames() {
-        Vector<String> headerNames = new Vector<String>();
+        Vector<String> headerNames = new Vector<>();
         headerNames.addAll(headersMap.keySet());
         return headerNames.elements();
     }
 
-
-    //==================================================
     //==================================================
 
-    public void setContentLength(int length) {
-        this.contentLength = length;
-    }
-
-    public void setContentType(String type) {
-        this.contentType = type;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
-    public void setQueryString(String queryString) {
-        this.queryString = queryString;
-    }
-
-    public void setServerName(String name) {
-        this.serverName = name;
-    }
-
-    public void setServerPort(int port) {
-        this.serverPort = port;
-    }
-
-    public void setRequestURL(String requestURL) {
-        this.requestURL = requestURL;
-    }
-
-    public void setRequestURI(String requestURI) {
-        this.requestURI = requestURI;
-    }
-
-    public void setProtocol(String protocol) {
-        this.protocol = protocol;
-    }
-
-
-
-    public void setHead(String key, String value) {
-        headersMap.put(key, value);
-    }
-
-    public void setKeepAlive(boolean keepAlive) {
-        this.keepAlive = keepAlive;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
+    public void setHead(String key, String value) { headersMap.put(key, value); }
 
     public void addCookie(Cookie cookie) {
         cookies.add(cookie);
