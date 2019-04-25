@@ -106,6 +106,9 @@
       <resource>
         <directory>src/main/java</directory><!--指定资源文件目录-->
       </resource>
+      <resource>
+        <directory>src/main/resource</directory><!--指定资源文件目录-->
+      </resource>
     </resources>
   </build>
 
