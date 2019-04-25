@@ -1,7 +1,7 @@
 # JerryMouse
 
 <div align="center">  
-<img src="http://ww1.sinaimg.cn/large/006d4JA0ly1g2epuyjhh8j30ml0n7dgd.jpg" width="40" height="40"/>
+<img src="http://ww1.sinaimg.cn/large/006d4JA0ly1g2epuyjhh8j30ml0n7dgd.jpg" width="100" height="100"/>
 </br>
 </div>
 
