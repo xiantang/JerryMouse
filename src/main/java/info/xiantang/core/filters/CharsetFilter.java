@@ -9,10 +9,14 @@ import java.io.UnsupportedEncodingException;
 /**
  * Created By CaiTieZhu on 2019/4/22
  */
-/** 字符编码过滤器 Created By CaiTieZhu **/
+/** 字符编码过滤器
+ *
+ * RFC2616 规定如何 character 没被设置的话, 默认值必须设置为 ISO-8859-1
+ *
+ * Created By CaiTieZhu **/
 public class CharsetFilter implements Filter {
     private String charset;
-    private String DEFAULT_CHARSET = "UTF-8";
+    private String DEFAULT_CHARSET = "ISO-8859-1";
 
     /** 解析配置文件传入字符集配置 Created By CaiTieZhu **/
     public CharsetFilter(String charset) {
@@ -30,4 +34,8 @@ public class CharsetFilter implements Filter {
 
     @Override
     public void destroy() { }
+
+    public void setCharset(String charset) {
+        this.charset = charset;
+    }
 }
