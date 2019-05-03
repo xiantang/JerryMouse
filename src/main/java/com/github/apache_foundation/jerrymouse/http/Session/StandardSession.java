@@ -1,18 +1,20 @@
-package com.github.apache_foundation.jerrymouse.http;
+package com.github.apache_foundation.jerrymouse.http.Session;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
+import java.io.*;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 /**
  * @Author: xiantang
  * @Date: 2019/4/17 14:45
  */
-public class NioSession implements HttpSession {
+public class StandardSession implements HttpSession, Serializable {
 
     private String id;
     private Map<String, Object> attributes;
@@ -21,7 +23,7 @@ public class NioSession implements HttpSession {
     private Instant creationTime;
     private int maxInactiveInterval;
 
-    public NioSession(String id) {
+    public StandardSession(String id) {
         this.id = id;
         this.attributes = new ConcurrentHashMap<>();
         this.isVaild = true;
@@ -29,6 +31,13 @@ public class NioSession implements HttpSession {
         this.creationTime = Instant.now();
         this.maxInactiveInterval = 3600;
     }
+
+    public StandardSession(String id, Instant lastAccessed, int maxInactiveInterval) {
+        this.id = id;
+        this.lastAccessed = lastAccessed;
+        this.maxInactiveInterval = maxInactiveInterval;
+    }
+
     public String getId() {
         return id;
     }
@@ -136,11 +145,25 @@ public class NioSession implements HttpSession {
         return false;
     }
 
+
+    public byte[] getAttributesByte() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(attributes);
+        return baos.toByteArray();
+    }
+
+    public void setAttributesByte(byte[] bytes) throws IOException, ClassNotFoundException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        attributes = (HashMap)ois.readObject();
+    }
     //--------------------------------------------------------------------------
     //--------------------------------未实现-------------------------------------
     //--------------------------------------------------------------------------
 
     @Override
+    @Deprecated
     public ServletContext getServletContext() {
         return null;
     }
@@ -151,6 +174,7 @@ public class NioSession implements HttpSession {
      * @deprecated
      */
     @Override
+    @Deprecated
     public void putValue(String s, Object o) {
 
     }
@@ -160,6 +184,7 @@ public class NioSession implements HttpSession {
      * @deprecated
      */
     @Override
+    @Deprecated
     public void removeValue(String s) {
 
     }
@@ -175,18 +200,15 @@ public class NioSession implements HttpSession {
     }
 
 
-    /**
-     * @deprecated
-     */
     @Override
+    @Deprecated
     public String[] getValueNames() {
         return new String[0];
     }
 
-    /**
-     * @deprecated
-     */
+
     @Override
+    @Deprecated
     public HttpSessionContext getSessionContext() {
         return null;
     }

@@ -34,6 +34,7 @@ public class HttpRequest implements HttpServletRequest {
     private Map<String, List<String>> parametersMap;
     private boolean parsed = false;
     private SocketInputStream socketInputStream;
+    private HttpSession httpSession;
 
 
     public HttpRequest(SocketInputStream socketInputStream) throws IOException, RequestInvalidException {
@@ -88,6 +89,8 @@ public class HttpRequest implements HttpServletRequest {
             headValue = headValue.replaceAll(" ", "");
             String[] cookiesStr = headValue.split(";");
             addCookie(new Cookie(cookiesStr[0], cookiesStr[1]));
+            if (cookiesStr[0].equals("sessionid")) {
+            }
         }
 
         setHead(headKey, headValue);
@@ -314,6 +317,7 @@ public class HttpRequest implements HttpServletRequest {
 
     @Override
     public HttpSession getSession() {
+
         return null;
     }
 
