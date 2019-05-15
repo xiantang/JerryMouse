@@ -24,6 +24,7 @@ This project is a web server written in Java. It parses GET, POST, PUT, DELETE r
 * Cookie
 * Session
 * Hot Deployment
+* Filter
 
 ## NIO Timing Diagram
 
