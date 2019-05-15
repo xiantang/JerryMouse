@@ -21,10 +21,9 @@ This project is a web server written in Java. It parses GET, POST, PUT, DELETE r
 
 ## TODO
 
-* keep-alive
 * Cookie
 * Session
-
+* Hot Deployment
 
 ## NIO Timing Diagram
 
