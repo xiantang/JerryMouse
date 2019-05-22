@@ -128,9 +128,7 @@ public class HttpResponse implements HttpServletResponse {
 
 
     public void sendStaticResource() throws IOException {
-        byte[] bytes = new byte[BUFFER_SIZE];
         FileInputStream fis = null;
-
         try {
             File file = new File(Constants.WEB_ROOT, request.getRequestURI());
             fis = new FileInputStream(file);
@@ -143,22 +141,14 @@ public class HttpResponse implements HttpServletResponse {
             }
 
         } catch (FileNotFoundException e) {
-            String errorMessage = "HTTP/1.1 404 File Not Found\r\n" +
-                    "Content-Type: text/html\r\n" +
-                    "Content-Length: 23\r\n" +
+            String errorMessage = "<html>" +
+                    "<p> HTTP/1.1 404 File Not Found</p>\r\n" +
+                    "<p> Content-Type: text/html</p>\r\n" +
                     "\r\n" +
-                    "<h1>File Not Found</h1>";
+                    "<h1>File Not Found</h1></html>";
             getBodyBuffer().put(errorMessage.getBytes());
 
-        }finally {
-            if (fis != null) {
-
-            }
         }
-
-
-
-
     }
 
     @Override

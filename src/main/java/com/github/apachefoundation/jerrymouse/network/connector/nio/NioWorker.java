@@ -137,8 +137,10 @@ public class NioWorker {
                     socketChannel.configureBlocking(false);
                 } else {
                     servlet = (HttpServlet) WebApp.getServletFromUrl(request.getRequestURI());
-
                     if (servlet != null) {
+                        servlet.service(request, response);
+                    } else {
+                        servlet = (HttpServlet) WebApp.getServletFromUrl("404");
                         servlet.service(request, response);
                     }
                 }

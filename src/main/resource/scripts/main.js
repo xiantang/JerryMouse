@@ -20,7 +20,7 @@ function setUserName() {
     let myName = prompt('请输入你的名字');
     localStorage.setItem('name', myName);
     setHeading(myName);
-}   
+}
 
 let storedName = "admin";
 if(!storedName) {
