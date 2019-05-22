@@ -10,9 +10,11 @@ import java.io.IOException;
  * @Date: 2019/4/17 14:45
  */
 public class ExceptionHandler {
-    public void handle(ServletException e, SocketWrapper socketWrapper) {
+    public void handle(Exception e, SocketWrapper socketWrapper) {
         try {
             if (e instanceof RequestInvalidException) {
+                socketWrapper.close();
+            } else if (e instanceof IOException) {
                 socketWrapper.close();
             }
         } catch (IOException e1) {

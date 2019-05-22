@@ -1,20 +1,24 @@
 package com.github.apachefoundation.jerrymouse.http;
 
+import com.github.apachefoundation.jerrymouse.constants.Constants;
 import com.github.apachefoundation.jerrymouse.utils.SocketOutputStream;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.channels.SocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 /**
  * @Author: xiantang
  * @Date: 2019/4/17 14:45
  */
 public class HttpResponse implements HttpServletResponse {
+    private static final int BUFFER_SIZE = 1024;
     private SocketChannel socketChannel;
     //cookies
     private ArrayList<Cookie> cookies = new ArrayList<Cookie>();
@@ -38,18 +42,35 @@ public class HttpResponse implements HttpServletResponse {
     //是否可提交
     private boolean isCommitted;
 
+    private OutputStream output;
+
+    public HttpServletRequest getRequest() {
+        return request;
+    }
+
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
+
+    private HttpServletRequest request;
+
     private final String  BLANK = " ";
     private final String CRLF = "\r\n";
 
-    public HttpResponse(SocketChannel socketChannel) {
+    public HttpResponse(SocketChannel socketChannel) throws IOException {
         this.socketChannel = socketChannel;
+        this.output = socketChannel.socket().getOutputStream();
         this.headersMap = new HashMap<>();
-        this.bodyBuffer = ByteBuffer.allocate(2048);
+        this.bodyBuffer = ByteBuffer.allocate(204800);
     }
+
+
+
     @Override
     public String getHeader(String s) {
-        if (containsHeader(s))
+        if (containsHeader(s)) {
             return headersMap.get(s);
+        }
         return null;
     }
 
@@ -107,6 +128,36 @@ public class HttpResponse implements HttpServletResponse {
 
 
     public void sendStaticResource() throws IOException {
+        byte[] bytes = new byte[BUFFER_SIZE];
+        FileInputStream fis = null;
+
+        try {
+            File file = new File(Constants.WEB_ROOT, request.getRequestURI());
+            fis = new FileInputStream(file);
+            FileChannel fileChannel = fis.getChannel();
+            if (file.exists()) {
+                while (true) {
+                    int eof = fileChannel.read(getBodyBuffer());
+                    if(eof == -1 ){ break;}
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            String errorMessage = "HTTP/1.1 404 File Not Found\r\n" +
+                    "Content-Type: text/html\r\n" +
+                    "Content-Length: 23\r\n" +
+                    "\r\n" +
+                    "<h1>File Not Found</h1>";
+            getBodyBuffer().put(errorMessage.getBytes());
+
+        }finally {
+            if (fis != null) {
+
+            }
+        }
+
+
+
 
     }
 
@@ -115,7 +166,6 @@ public class HttpResponse implements HttpServletResponse {
         headersMap.put("character-encoding", s);
         this.characterEncoding = s;
     }
-
     @Override
     public void setContentLength(int i) {
 
@@ -204,7 +254,10 @@ public class HttpResponse implements HttpServletResponse {
     public boolean containsHeader(String s) {
         return headersMap.containsKey(s);
     }
-
+    @Override
+    public ServletOutputStream getOutputStream() throws IOException {
+        return null;
+    }
     @Deprecated
     public String encodeURL(String s) {
         return null;
@@ -286,10 +339,7 @@ public class HttpResponse implements HttpServletResponse {
         return contentType;
     }
 
-    @Override
-    public ServletOutputStream getOutputStream() throws IOException {
-        return null;
-    }
+
 
 
 

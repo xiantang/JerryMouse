@@ -124,13 +124,23 @@ public class NioWorker {
                 SocketInputStream requestSocketInputStream = new SocketInputStream(socketChannel);
                 HttpServletRequest request = new HttpRequest(requestSocketInputStream);
                 HttpServletResponse response = new HttpResponse(socketChannel);
+                ((HttpResponse) response).setRequest(request);
                 nioSocketWrapper.setResponse(response);
                 nioSocketWrapper.setRequest(request);
                 // TODO 静态资源支持
-                servlet = (HttpServlet) WebApp.getServletFromUrl(request.getRequestURI());
+                if (request.getRequestURI().endsWith("html") ||
+                        request.getRequestURI().endsWith("js") ||
+                        request.getRequestURI().endsWith("png") ||
+                    request.getRequestURI().endsWith("css")) {
+                    socketChannel.configureBlocking(true);
+                    ((HttpResponse) response).sendStaticResource();
+                    socketChannel.configureBlocking(false);
+                } else {
+                    servlet = (HttpServlet) WebApp.getServletFromUrl(request.getRequestURI());
 
-                if (servlet != null) {
-                    servlet.service(request, response);
+                    if (servlet != null) {
+                        servlet.service(request, response);
+                    }
                 }
                 logger.debug("开始注册写事件");
                 endpoint.registerToPoller(client, false, SelectionKey.OP_WRITE, nioSocketWrapper);
@@ -139,7 +149,7 @@ public class NioWorker {
                 response.getWriter().close();
 
             } catch (IOException e) {
-                e.printStackTrace();
+                exceptionHandler.handle(e, nioSocketWrapper);
             } catch (ServletException e) {
                 exceptionHandler.handle(e, nioSocketWrapper);
             }

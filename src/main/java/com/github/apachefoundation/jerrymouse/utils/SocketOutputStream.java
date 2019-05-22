@@ -49,16 +49,17 @@ public class SocketOutputStream extends Writer{
 
     @Override
     public void flush() throws IOException {
-
+        httpResponse.setHeader("Date", String.valueOf(new Date()));
+        httpResponse.setHeader("Server", "X Server/0.0.1;charset=UTF-8");
+//        httpResponse.setHeader("Content-Type", "image/png");
+        httpResponse.setContentLength(bufferUsedCap);
     }
 
 
     @Override
     public void close() throws IOException {
-        httpResponse.setHeader("Date", String.valueOf(new Date()));
-        httpResponse.setHeader("Server", "X Server/0.0.1;charset=UTF-8");
-        httpResponse.setHeader("Content-Type", "text/html");
-        httpResponse.setContentLength(bufferUsedCap);
+
+
         logger.debug("close 完成");
     }
 }
