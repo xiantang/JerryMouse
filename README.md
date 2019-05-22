@@ -18,6 +18,7 @@ This project is a web server written in Java. It parses GET, POST, PUT, DELETE r
 * GET/POST
 * web.xml Parse
 * NIO
+* static resources
 
 ## TODO
 
