@@ -219,8 +219,9 @@ public class HttpResponse implements HttpServletResponse {
 
     @Override
     public void addHeader(String s, String s1) {
-        if (!containsHeader(s))
+        if (!containsHeader(s)) {
             setHeader(s, s1);
+        }
     }
 
     @Override

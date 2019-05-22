@@ -1,6 +1,8 @@
 package com.github.apachefoundation.jerrymouse.network.connector.nio;
 
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
+import com.github.apachefoundation.jerrymouse.http.RequestFacade;
+import com.github.apachefoundation.jerrymouse.http.ResponseFacade;
 import com.github.apachefoundation.jerrymouse.network.endpoint.nio.NioEndpoint;
 import com.github.apachefoundation.jerrymouse.network.wrapper.nio.NioSocketWrapper;
 import com.github.apachefoundation.jerrymouse.context.WebApp;
@@ -125,6 +127,8 @@ public class NioWorker {
                 HttpServletRequest request = new HttpRequest(requestSocketInputStream);
                 HttpServletResponse response = new HttpResponse(socketChannel);
                 ((HttpResponse) response).setRequest(request);
+                HttpServletRequest requestFacade = new RequestFacade(request);
+                HttpServletResponse responseFacade = new ResponseFacade(response);
                 nioSocketWrapper.setResponse(response);
                 nioSocketWrapper.setRequest(request);
                 // TODO 静态资源支持
@@ -138,12 +142,14 @@ public class NioWorker {
                 } else {
                     servlet = (HttpServlet) WebApp.getServletFromUrl(request.getRequestURI());
                     if (servlet != null) {
-                        servlet.service(request, response);
+//                        System.out.println(requestFacade);
+                        servlet.service(requestFacade, responseFacade);
                     } else {
                         servlet = (HttpServlet) WebApp.getServletFromUrl("404");
-                        servlet.service(request, response);
+                        servlet.service(requestFacade, responseFacade);
                     }
                 }
+                logger.info("[" + response.getStatus() + "] " +request.getMethod()+ " /"  + request.getRequestURI());
                 logger.debug("开始注册写事件");
                 endpoint.registerToPoller(client, false, SelectionKey.OP_WRITE, nioSocketWrapper);
                 logger.debug("写事件完成注册");

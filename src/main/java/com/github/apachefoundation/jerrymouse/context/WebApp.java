@@ -55,7 +55,7 @@ public class WebApp {
     public static HttpServlet getServletFromUrl(String url) {
 
         try {
-            logger.info("访问URL为:"+url);
+
             String className = webContext.getClz("/" + url);
             URL classUrl = new URL(URL);
             ClassLoader classLoader = new URLClassLoader(new URL[]{classUrl});
@@ -63,7 +63,7 @@ public class WebApp {
             HttpServlet servlet = (HttpServlet) clz.getConstructor().newInstance();
             return servlet;
         } catch (NullPointerException e) {
-            logger.debug("頁面未找到");
+            logger.debug("页面未找到");
 
         } catch (InstantiationException e) {
             e.printStackTrace();
