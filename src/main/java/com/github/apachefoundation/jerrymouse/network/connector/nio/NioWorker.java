@@ -9,6 +9,7 @@ import com.github.apachefoundation.jerrymouse.context.WebApp;
 import com.github.apachefoundation.jerrymouse.exception.handler.ExceptionHandler;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 import com.github.apachefoundation.jerrymouse.network.wrapper.SocketWrapper;
+import com.github.apachefoundation.jerrymouse.processor.StaticResourceProcessor;
 import com.github.apachefoundation.jerrymouse.utils.SocketInputStream;
 import org.apache.log4j.Logger;
 
@@ -137,7 +138,9 @@ public class NioWorker {
                         request.getRequestURI().endsWith("png") ||
                     request.getRequestURI().endsWith("css")) {
                     socketChannel.configureBlocking(true);
-                    ((HttpResponse) response).sendStaticResource();
+//                    ((HttpResponse) response).sendStaticResource();
+                    StaticResourceProcessor srp = new StaticResourceProcessor();
+                    srp.process((HttpRequest) request, (HttpResponse) response);
                     socketChannel.configureBlocking(false);
                 } else {
                     servlet = (HttpServlet) WebApp.getServletFromUrl(request.getRequestURI());

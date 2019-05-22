@@ -156,6 +156,11 @@ public class HttpRequest implements HttpServletRequest {
     }
 
 
+    @Override
+    public String[] getParameterValues(String s) {
+        return parametersMap.get(s).toArray(new String[0]);
+    }
+
     //==================================================
     //==================================================
 
@@ -413,10 +418,7 @@ public class HttpRequest implements HttpServletRequest {
 
 
 
-    @Override
-    public String[] getParameterValues(String s) {
-        return parametersMap.get(s).toArray(new String[0]);
-    }
+
 
 
     @Override
