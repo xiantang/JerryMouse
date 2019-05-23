@@ -11,12 +11,12 @@ import java.util.Date;
  * @Author: xiantang
  * @Date: 2019/4/17 14:45
  */
-public class SocketOutputStream extends Writer{
+public class SocketOutputBuffer extends Writer{
     private SocketChannel socketChannel;
     private HttpResponse httpResponse;
     private int bufferUsedCap = 0;
-    private Logger logger = Logger.getLogger(SocketOutputStream.class);
-    public SocketOutputStream(SocketChannel socketChannel, HttpResponse httpResponse) {
+    private Logger logger = Logger.getLogger(SocketOutputBuffer.class);
+    public SocketOutputBuffer(SocketChannel socketChannel, HttpResponse httpResponse) {
         this.socketChannel = socketChannel;
         this.httpResponse  = httpResponse;
     }
@@ -50,16 +50,13 @@ public class SocketOutputStream extends Writer{
     @Override
     public void flush() throws IOException {
         httpResponse.setHeader("Date", String.valueOf(new Date()));
-        httpResponse.setHeader("Server", "X Server/0.0.1;charset=UTF-8");
-//        httpResponse.setHeader("Content-Type", "image/png");
+        httpResponse.setHeader("JerryMouse", "X Server/0.0.1;charset=UTF-8");
         httpResponse.setContentLength(bufferUsedCap);
     }
 
 
     @Override
     public void close() throws IOException {
-
-
         logger.debug("close 完成");
     }
 }
