@@ -55,7 +55,6 @@ public class WebApp {
     public static HttpServlet getServletFromUrl(String url) {
 
         try {
-
             String className = webContext.getClz("/" + url);
             URL classUrl = new URL(URL);
             ClassLoader classLoader = new URLClassLoader(new URL[]{classUrl});
