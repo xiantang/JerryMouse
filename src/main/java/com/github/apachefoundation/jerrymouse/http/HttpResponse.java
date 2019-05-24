@@ -120,7 +120,7 @@ public class HttpResponse implements HttpServletResponse {
         return resp.toString();
     }
     @Override
-    public PrintWriter getWriter() throws IOException {
+    public PrintWriter getWriter()  {
         return new PrintWriter(new SocketOutputBuffer(socketChannel, this));
     }
 
