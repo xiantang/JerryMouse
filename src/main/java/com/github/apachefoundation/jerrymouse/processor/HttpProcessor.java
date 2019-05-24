@@ -28,46 +28,77 @@ public class HttpProcessor {
 
     private HttpResponse response;
     private HttpRequest request;
+    private boolean finishRequest;
+    private boolean keepalive;
+    /**
+    是否在处理过程中有错误
+     */
+    private boolean ok;
 
     private Logger logger = Logger.getLogger(HttpProcessor.class);
     public void process(SocketChannel socketChannel, NioSocketWrapper nioSocketWrapper) {
-
+        SocketInputBuffer inputBuffer = new SocketInputBuffer(socketChannel);
         NioEndpoint endpoint = nioSocketWrapper.getServer();
         SocketChannel client = nioSocketWrapper.getSocketChannel();
         ExceptionHandler exceptionHandler = new ExceptionHandler();
+        finishRequest = true;
+        ok = true;
+        keepalive = true;
         try {
-            SocketInputBuffer inputBuffer = new SocketInputBuffer(socketChannel);
+
             request = new HttpRequest(inputBuffer);
             response = new HttpResponse(socketChannel);
             ((HttpResponse) response).setRequest(request);
             nioSocketWrapper.setResponse(response);
             nioSocketWrapper.setRequest(request);
+            //关闭之后才可以完全奖body写入
+        } catch (
+                IOException e) {
+            ok = false;
+            exceptionHandler.handle(e, nioSocketWrapper);
+        } catch (
+                ServletException e) {
+            ok = false;
+            exceptionHandler.handle(e, nioSocketWrapper);
+        }
+        try {
             parseRequest(inputBuffer);
+        } catch (RequestInvalidException e) {
+            ok = false;
+            exceptionHandler.handle(e, nioSocketWrapper);
+        } catch (IOException e) {
+            ok = false;
+            exceptionHandler.handle(e, nioSocketWrapper);
+        }
+        try {
+            if (ok) {
             // 正则匹配
             String uri = request.getRequestURI();
             String regEx = ".*?(jpg|js|css|gif|png|ico|html)$";
             Pattern pattern = Pattern.compile(regEx);
             Matcher matcher = pattern.matcher(uri);
-            if (matcher.matches()) {
-                StaticResourceProcessor srp = new StaticResourceProcessor();
-                srp.process((HttpRequest) request, (HttpResponse) response);
-            } else {
-                ServletProcessor sp = new ServletProcessor();
-                sp.process((HttpRequest) request, (HttpResponse) response);
+                if (matcher.matches()) {
+                    StaticResourceProcessor srp = new StaticResourceProcessor();
+                    srp.process((HttpRequest) request, (HttpResponse) response);
+                } else {
+                    ServletProcessor sp = new ServletProcessor();
+                    sp.process((HttpRequest) request, (HttpResponse) response);
+                }
+                logger.info("[" + response.getStatus() + "] " + request.getMethod() + " /" + request.getRequestURI());
+                logger.debug("开始注册写事件");
+                if (keepalive) {
+                    endpoint.registerToPoller(client, false, SelectionKey.OP_WRITE, nioSocketWrapper);
+                }
+                logger.debug("写事件完成注册");
             }
-            logger.info("[" + response.getStatus() + "] " + request.getMethod() + " /" + request.getRequestURI());
-            logger.debug("开始注册写事件");
-            endpoint.registerToPoller(client, false, SelectionKey.OP_WRITE, nioSocketWrapper);
-            logger.debug("写事件完成注册");
-            //关闭之后才可以完全奖body写入
-            response.getWriter().close();
-        } catch (
-                IOException e) {
-            exceptionHandler.handle(e, nioSocketWrapper);
-        } catch (
-                ServletException e) {
+        }
+        catch (IOException e) {
             exceptionHandler.handle(e, nioSocketWrapper);
         }
+        catch (ServletException e) {
+            exceptionHandler.handle(e, nioSocketWrapper);
+        }
+        response.getWriter().close();
 
     }
 
