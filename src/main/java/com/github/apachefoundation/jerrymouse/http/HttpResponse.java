@@ -1,7 +1,7 @@
 package com.github.apachefoundation.jerrymouse.http;
 
 import com.github.apachefoundation.jerrymouse.constants.Constants;
-import com.github.apachefoundation.jerrymouse.utils.SocketOutputStream;
+import com.github.apachefoundation.jerrymouse.utils.SocketOutputBuffer;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
@@ -11,7 +11,6 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 /**
  * @Author: xiantang
@@ -42,7 +41,7 @@ public class HttpResponse implements HttpServletResponse {
     //是否可提交
     private boolean isCommitted;
 
-    private OutputStream output;
+
 
     public HttpServletRequest getRequest() {
         return request;
@@ -59,7 +58,6 @@ public class HttpResponse implements HttpServletResponse {
 
     public HttpResponse(SocketChannel socketChannel) throws IOException {
         this.socketChannel = socketChannel;
-        this.output = socketChannel.socket().getOutputStream();
         this.headersMap = new HashMap<>();
         this.bodyBuffer = ByteBuffer.allocate(204800);
     }
@@ -122,8 +120,8 @@ public class HttpResponse implements HttpServletResponse {
         return resp.toString();
     }
     @Override
-    public PrintWriter getWriter() throws IOException {
-        return new PrintWriter(new SocketOutputStream(socketChannel, this));
+    public PrintWriter getWriter()  {
+        return new PrintWriter(new SocketOutputBuffer(socketChannel, this));
     }
 
 

@@ -22,7 +22,6 @@ This project is a web server written in Java. It parses GET, POST, PUT, DELETE r
 
 ## TODO
 
-* Cookie
 * Session
 * Hot Deployment
 * Filter

@@ -1,19 +1,13 @@
 package com.github.apachefoundation.jerrymouse.network.connector.nio;
 
-import com.github.apachefoundation.jerrymouse.http.HttpRequest;
-import com.github.apachefoundation.jerrymouse.http.RequestFacade;
-import com.github.apachefoundation.jerrymouse.http.ResponseFacade;
 import com.github.apachefoundation.jerrymouse.network.endpoint.nio.NioEndpoint;
 import com.github.apachefoundation.jerrymouse.network.wrapper.nio.NioSocketWrapper;
 import com.github.apachefoundation.jerrymouse.context.WebApp;
 import com.github.apachefoundation.jerrymouse.exception.handler.ExceptionHandler;
-import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 import com.github.apachefoundation.jerrymouse.network.wrapper.SocketWrapper;
-import com.github.apachefoundation.jerrymouse.utils.SocketInputStream;
+import com.github.apachefoundation.jerrymouse.processor.HttpProcessor;
 import org.apache.log4j.Logger;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -85,7 +79,7 @@ public class NioWorker {
 
     public void executeRead(NioSocketWrapper nioSocketWrapper) {
         try {
-            readThreadPool.execute(new Reader(nioSocketWrapper,exceptionHandler));
+            readThreadPool.execute(new Reader(nioSocketWrapper));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -103,68 +97,19 @@ public class NioWorker {
 
     public class Reader implements Runnable {
 
-        private HttpServlet servlet;
-        private SocketChannel client;
-        private NioEndpoint endpoint;
         private NioSocketWrapper nioSocketWrapper;
-        private ExceptionHandler exceptionHandler;
-        private Logger logger = Logger.getLogger(Reader.class);
 
-        public Reader(SocketWrapper socketWrapper, ExceptionHandler exceptionHandler) throws IOException {
+        public Reader(SocketWrapper socketWrapper) throws IOException {
             this.nioSocketWrapper = (NioSocketWrapper)socketWrapper;
-            this.exceptionHandler = exceptionHandler;
-            SocketChannel socketChannel = nioSocketWrapper.getSocketChannel();
-            this.endpoint =nioSocketWrapper.getServer();
-            this.client = nioSocketWrapper.getSocketChannel();
         }
 
         @Override
         public void run() {
-            try {
-
-                SocketChannel socketChannel = nioSocketWrapper.getSocketChannel();
-                SocketInputStream requestSocketInputStream = new SocketInputStream(socketChannel);
-                HttpServletRequest request = new HttpRequest(requestSocketInputStream);
-                HttpServletResponse response = new HttpResponse(socketChannel);
-                ((HttpResponse) response).setRequest(request);
-                HttpServletRequest requestFacade = new RequestFacade(request);
-                HttpServletResponse responseFacade = new ResponseFacade(response);
-                nioSocketWrapper.setResponse(response);
-                nioSocketWrapper.setRequest(request);
-                // TODO 静态资源支持
-                if (request.getRequestURI().endsWith("html") ||
-                        request.getRequestURI().endsWith("js") ||
-                        request.getRequestURI().endsWith("png") ||
-                    request.getRequestURI().endsWith("css")) {
-                    socketChannel.configureBlocking(true);
-                    ((HttpResponse) response).sendStaticResource();
-                    socketChannel.configureBlocking(false);
-                } else {
-                    servlet = (HttpServlet) WebApp.getServletFromUrl(request.getRequestURI());
-                    if (servlet != null) {
-//                        System.out.println(requestFacade);
-                        servlet.service(requestFacade, responseFacade);
-                    } else {
-                        servlet = (HttpServlet) WebApp.getServletFromUrl("404");
-                        servlet.service(requestFacade, responseFacade);
-                    }
-                }
-                logger.info("[" + response.getStatus() + "] " +request.getMethod()+ " /"  + request.getRequestURI());
-                logger.debug("开始注册写事件");
-                endpoint.registerToPoller(client, false, SelectionKey.OP_WRITE, nioSocketWrapper);
-                logger.debug("写事件完成注册");
-                //关闭之后才可以完全奖body写入
-                response.getWriter().close();
-
-            } catch (IOException e) {
-                exceptionHandler.handle(e, nioSocketWrapper);
-            } catch (ServletException e) {
-                exceptionHandler.handle(e, nioSocketWrapper);
-            }
-
-
-
+            SocketChannel socketChannel = nioSocketWrapper.getSocketChannel();
+            HttpProcessor httpProcessor = new HttpProcessor();
+            httpProcessor.process(socketChannel, nioSocketWrapper);
         }
+
     }
 
     public class Writer implements Runnable {

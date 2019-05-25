@@ -17,7 +17,7 @@ import java.nio.channels.SocketChannel;
  * 这个类专门负责读取和解析 http 协议
  * 至于在什么时候解析 还没有定
  */
-public class SocketInputStream {
+public class SocketInputBuffer {
     private SocketChannel socketChannel;
     private final String httpHeadEnd = "\\r\\n\\r\\n";
     private static final int CR = (int) '\r';
@@ -31,10 +31,11 @@ public class SocketInputStream {
 
 
 
-    public SocketInputStream(SocketChannel socketChannel) {
+    public SocketInputBuffer(SocketChannel socketChannel) {
         this.socketChannel = socketChannel;
         this.buffer = ByteBuffer.allocate(2048);
     }
+
 
     /**
      * 填充requestLineBuffer
@@ -56,12 +57,7 @@ public class SocketInputStream {
         } while (ch != CR && ch != LF);
     }
 
-    /*
-     * 读取并解析 http 的第一行
-     */
-    public void readRequestLine(HttpRequest httpRequest) throws IOException, RequestInvalidException {
 
-    }
 
     public String decode(String value, String enc) {
         try {
@@ -70,27 +66,6 @@ public class SocketInputStream {
             e.printStackTrace();
         }
         return null;
-    }
-
-    /*
-     * 读取一个请求头
-     */
-
-    private void readHttpBody(HttpRequest httpRequest) throws IOException {
-        int contentLength = httpRequest.getContentLength();
-        StringBuilder httpBody = new StringBuilder();
-        if (contentLength >= 0) {
-            for (int i = 0; i < contentLength; i++) {
-                int ch = read();
-                if (ch == -1){
-                    continue; //丢弃空包
-                }
-                httpBody.append(ch);
-            }
-            httpRequest.setBody(httpBody.toString());
-        } else {
-            //变长body 日后支持
-        }
     }
 
 

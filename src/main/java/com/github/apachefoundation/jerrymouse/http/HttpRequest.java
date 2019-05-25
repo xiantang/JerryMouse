@@ -2,7 +2,7 @@ package com.github.apachefoundation.jerrymouse.http;
 
 import com.github.apachefoundation.jerrymouse.exception.RequestInvalidException;
 import com.github.apachefoundation.jerrymouse.utils.PropertyUtil;
-import com.github.apachefoundation.jerrymouse.utils.SocketInputStream;
+import com.github.apachefoundation.jerrymouse.utils.SocketInputBuffer;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -34,101 +34,20 @@ public class HttpRequest implements HttpServletRequest {
     private ArrayList<Cookie> cookies = new ArrayList<Cookie>();
     private Map<String, String> headersMap;
     private Map<String, List<String>> parametersMap;
-    private boolean parsed = false;
-    private SocketInputStream socketInputStream;
-    private HttpSession httpSession;
+    private SocketInputBuffer inputBuffer;
 
 
-    public HttpRequest(SocketInputStream socketInputStream) throws IOException, RequestInvalidException {
+
+    public HttpRequest(SocketInputBuffer inputBuffer) throws IOException, RequestInvalidException {
         headersMap = new HashMap<>();
         parametersMap = new HashMap<>();
         serverName = PropertyUtil.getProperty("server.name");
         serverPort = Integer.parseInt(PropertyUtil.getProperty("server.port"));
-        this.socketInputStream = socketInputStream;
-        parseFirstRequestLine();
-        parseRequestHeaders();
+        this.inputBuffer = inputBuffer;
     }
 
-    /**
-     * 解析头信息
-     */
-    private void parseRequestHeaders() throws IOException, RequestInvalidException {
-        boolean flag = true;
-        while (flag) {
-            flag = parseRequestHeader();
-        }
-    }
 
-    private boolean parseRequestHeader() throws RequestInvalidException, IOException {
-        StringBuilder httpHeadBuffer = new StringBuilder(1024);
 
-        if (!socketInputStream.stuffRequestHeaderBuffer(httpHeadBuffer)) {
-            return false;
-        }
-        socketInputStream.stuffRequestLineBuffer(httpHeadBuffer);
-
-        String httpHead = httpHeadBuffer.toString().trim();
-        String[] kv = httpHead.split(":");
-        String headKey = kv[0].trim().toLowerCase();
-        String headValue = kv[1].trim();
-
-        if (CONTENT_TYPE.equals(headKey)) {
-            setContentType(headValue);
-        } else if (CONTENT_LENGTH.equals(headKey)) {
-            setContentLength(Integer.parseInt(headValue));
-        } else if (CONNECTION.equals(headKey)) {
-            if (!KEEPALIVE.equals(headValue)) {
-                setKeepAlive(false);
-            }
-        } else if (COOKIE.equals(headKey)) {
-            headValue = headValue.replaceAll(" ", "");
-            String[] cookiesStr = headValue.split(";");
-            addCookie(new Cookie(cookiesStr[0], cookiesStr[1]));
-            if (cookiesStr[0].equals("sessionid")) {
-            }
-        }
-
-        setHead(headKey, headValue);
-        return true;
-
-    }
-
-    /**
-     * 解析第一条的信息
-     * @throws IOException
-     * @throws RequestInvalidException
-     */
-    private void parseFirstRequestLine() throws IOException, RequestInvalidException {
-        StringBuilder requestLineBuffer = new StringBuilder(1024);
-        socketInputStream.stuffRequestBuffer(requestLineBuffer);
-        String requestLine = requestLineBuffer.toString();
-        String method = requestLine.substring(0, requestLine.indexOf("/")).trim();
-        setMethod(method);
-        int startidx = requestLine.indexOf("/") + 1;
-        int endurix = requestLine.indexOf("?");
-        int endurlx = requestLine.indexOf("HTTP/");
-        String requestURL = requestLine.substring(startidx, endurlx).trim();
-        setRequestURL(requestURL);
-        String protocol   = requestLine.substring(endurlx);
-        setProtocol(protocol);
-        if (endurix == -1) {
-            setRequestURI(requestURL);
-        } else {
-            String requestURI = requestLine.substring(startidx, endurix).trim();
-            setRequestURI(requestURI);
-            String param      = requestLine.substring(endurix + 1, endurlx);
-            setQueryString(param);
-            // 剖析 url 参数
-            String[] keyValues = param.split("&");
-            for (String queryStr : keyValues) {
-                String[] kv = queryStr.split("=");
-                kv = Arrays.copyOf(kv, 2);
-                String key = kv[0];
-                String value = kv[1]==null?null:socketInputStream.decode(kv[1],"utf-8");
-                setParameter(key, value);
-            }
-        }
-    }
 
     @Override
     public Map<String, String[]> getParameterMap() {
@@ -155,6 +74,11 @@ public class HttpRequest implements HttpServletRequest {
         return headerNames.elements();
     }
 
+
+    @Override
+    public String[] getParameterValues(String s) {
+        return parametersMap.get(s).toArray(new String[0]);
+    }
 
     //==================================================
     //==================================================
@@ -413,10 +337,7 @@ public class HttpRequest implements HttpServletRequest {
 
 
 
-    @Override
-    public String[] getParameterValues(String s) {
-        return parametersMap.get(s).toArray(new String[0]);
-    }
+
 
 
     @Override

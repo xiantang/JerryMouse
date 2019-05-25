@@ -34,7 +34,13 @@ public class RequestFacade implements HttpServletRequest {
         return request.getParameterMap();
     }
 
+    @Override
+    public String[] getParameterValues(String s) {
+        return request.getParameterValues(s);
+    }
 
+    //==================================================
+    //==================================================
 
 
     @Override
@@ -244,10 +250,7 @@ public class RequestFacade implements HttpServletRequest {
         return null;
     }
 
-    @Override
-    public String[] getParameterValues(String s) {
-        return new String[0];
-    }
+
 
 
 
