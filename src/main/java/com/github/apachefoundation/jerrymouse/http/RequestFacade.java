@@ -39,6 +39,11 @@ public class RequestFacade implements HttpServletRequest {
         return request.getParameterValues(s);
     }
 
+    @Override
+    public String getRemoteAddr() {
+        return request.getRemoteAddr();
+    }
+
     //==================================================
     //==================================================
 
@@ -279,10 +284,7 @@ public class RequestFacade implements HttpServletRequest {
         return null;
     }
 
-    @Override
-    public String getRemoteAddr() {
-        return null;
-    }
+
 
     @Override
     public String getRemoteHost() {
