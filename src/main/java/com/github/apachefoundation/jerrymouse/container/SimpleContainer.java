@@ -30,6 +30,7 @@ import java.net.URLClassLoader;
  */
 public class SimpleContainer implements Container {
 
+
     private static WebContext webContext;
     /**
      *放着servlet编译后的文件的文件夹地址
@@ -77,6 +78,10 @@ public class SimpleContainer implements Container {
     @Override
     public Loader getLoader() {
         return null;
+    }
+    @Override
+    public void setLoader(Loader loader) {
+
     }
 
     private HttpServlet getServletFromUrl(String url){

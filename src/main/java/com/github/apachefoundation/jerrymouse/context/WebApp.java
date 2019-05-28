@@ -45,39 +45,5 @@ public class WebApp {
         }
     }
 
-//    /**
-//     * 通过url返回特定的servlet
-//
-//     * 这里更新了 改用 URLClassLoader
-//     * @param url
-//     * @return
-//     */
-//    public static HttpServlet getServletFromUrl(String url) {
-//
-//        try {
-//            String className = webContext.getClz("/" + url);
-//            URL classUrl = new URL(URL);
-//            // 创建一个类加载器
-//            ClassLoader classLoader = new URLClassLoader(new URL[]{classUrl});
-//            Class clz = classLoader.loadClass(className);
-//            HttpServlet servlet = (HttpServlet) clz.getConstructor().newInstance();
-//            return servlet;
-//        } catch (NullPointerException e) {
-//            logger.debug("页面未找到");
-//
-//        } catch (InstantiationException e) {
-//            e.printStackTrace();
-//        } catch (InvocationTargetException e) {
-//            e.printStackTrace();
-//        } catch (NoSuchMethodException e) {
-//            e.printStackTrace();
-//        } catch (IllegalAccessException e) {
-//            e.printStackTrace();
-//        } catch (ClassNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (MalformedURLException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
+
 }

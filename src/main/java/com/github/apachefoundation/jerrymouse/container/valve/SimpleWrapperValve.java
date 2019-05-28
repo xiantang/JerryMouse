@@ -9,6 +9,7 @@ import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @Author: xiantang
@@ -19,8 +20,11 @@ public class SimpleWrapperValve implements Valve, Contained {
 
     private Container container;
 
-    public SimpleWrapperValve(Container container) {
-        this.container = container;
+//    public SimpleWrapperValve(Container container) {
+//        this.container = container;
+//    }
+
+    public SimpleWrapperValve() {
     }
 
     @Override
@@ -35,8 +39,21 @@ public class SimpleWrapperValve implements Valve, Contained {
     ) throws ServletException, IOException {
         SimpleWrapper simpleWrapper = (SimpleWrapper) getContainer();
         HttpServlet servlet = null;
-        servlet = simpleWrapper.allocate();
-        servlet.service(request, response);
+        try {
+            servlet = simpleWrapper.allocate();
+            servlet.service(request, response);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
     @Override
     public void setContainer(Container container) {

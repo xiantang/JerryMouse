@@ -5,10 +5,12 @@ import com.github.apachefoundation.jerrymouse.context.WebContext;
 import com.github.apachefoundation.jerrymouse.context.WebHandler;
 import org.xml.sax.SAXException;
 
+import javax.servlet.http.HttpServlet;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -51,7 +53,13 @@ public class SimpleLoader implements Loader {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+    }
 
-
+    public HttpServlet load(String url) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        String className = webContext.getClz("/" + url);
+        URL classUrl = new URL(WEB_ROOT);
+        Class clz = classLoader.loadClass(className);
+        HttpServlet servlet = (HttpServlet) clz.getConstructor().newInstance();
+        return servlet;
     }
 }

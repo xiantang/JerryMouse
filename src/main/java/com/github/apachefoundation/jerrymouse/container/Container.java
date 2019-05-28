@@ -21,6 +21,8 @@ public interface Container {
 
     public Container findChild(String name);
 
+    void setLoader(Loader loader);
+
     public Loader getLoader();
 
     public Container[] findChildren();
