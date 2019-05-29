@@ -1,6 +1,6 @@
 package com.github.apachefoundation.jerrymouse.container.pipeline;
 
-import com.github.apachefoundation.jerrymouse.container.wrapper.Wrapper;
+import com.github.apachefoundation.jerrymouse.container.Container;
 import com.github.apachefoundation.jerrymouse.container.valve.Valve;
 import com.github.apachefoundation.jerrymouse.container.valve.ValveContext;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
@@ -17,21 +17,22 @@ import java.util.List;
  */
 public class SimplePipeline implements Pipeline {
 
-    private Wrapper wrapper;
+    private Container container;
     private Valve basic;
     private List<Valve> valves = new ArrayList<>();
-    private StandardValveContext standardValveContext;
+    private ValveContext valveContext;
 //    private
 
 
-    public SimplePipeline() {
-        this.standardValveContext = new StandardValveContext();
+    public SimplePipeline(ValveContext valveContext) {
+        this.valveContext = valveContext;
 
     }
 
-    public SimplePipeline(Wrapper wrapper) {
-        this();
-        this.wrapper = wrapper;
+
+    public SimplePipeline(Container container,ValveContext valveContext) {
+        this(valveContext);
+        this.container = container;
     }
 
     @Override
@@ -42,18 +43,18 @@ public class SimplePipeline implements Pipeline {
     @Override
     public void setBasic(Valve basic) {
         this.basic = basic;
-        standardValveContext.set(getBasic(),(Valve[]) valves.toArray(new Valve[valves.size()]));
+        valveContext.set(getBasic(),(Valve[]) valves.toArray(new Valve[valves.size()]));
     }
 
     @Override
     public void addValve(Valve valve) {
         valves.add(valve);
-        standardValveContext.set(getBasic(),(Valve[]) valves.toArray(new Valve[valves.size()]));
+        valveContext.set(getBasic(),(Valve[]) valves.toArray(new Valve[valves.size()]));
     }
 
     @Override
     public void invoke(HttpRequest request, HttpResponse response) throws ServletException, IOException {
-        standardValveContext.invokeNext(request, response);
+        valveContext.invokeNext(request, response);
     }
 
     @Override
@@ -62,34 +63,6 @@ public class SimplePipeline implements Pipeline {
     }
 
 
-    public final class StandardValveContext implements ValveContext {
-        protected int stage = 0;
-        protected Valve basic = null;
-        protected Valve[] valves = null;
 
-        @Override
-        public String getInfo() {
-            return null;
-        }
-
-        @Override
-        public void invokeNext(HttpRequest request, HttpResponse response) throws ServletException, IOException {
-            int subscript = stage;
-            stage += 1;
-            if (subscript < valves.length) {
-                valves[subscript].invoke(request, response, this);
-            } else if ((subscript == valves.length)) {
-                basic.invoke(request, response, this);
-            } else {
-                throw new ServletException("standardPipeline.noValve");
-            }
-        }
-
-        public void set(Valve basic, Valve[] valves) {
-            stage = 0;
-            this.basic = basic;
-            this.valves = valves;
-        }
-    }
 }
 

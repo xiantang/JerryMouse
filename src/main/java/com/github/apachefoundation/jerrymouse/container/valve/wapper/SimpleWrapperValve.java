@@ -1,7 +1,9 @@
-package com.github.apachefoundation.jerrymouse.container.valve;
+package com.github.apachefoundation.jerrymouse.container.valve.wapper;
 
 import com.github.apachefoundation.jerrymouse.container.Contained;
 import com.github.apachefoundation.jerrymouse.container.Container;
+import com.github.apachefoundation.jerrymouse.container.valve.Valve;
+import com.github.apachefoundation.jerrymouse.container.valve.ValveContext;
 import com.github.apachefoundation.jerrymouse.container.wrapper.SimpleWrapper;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;

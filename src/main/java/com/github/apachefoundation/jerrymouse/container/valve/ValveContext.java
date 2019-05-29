@@ -14,4 +14,6 @@ public interface ValveContext {
     public String getInfo();
 
     public void invokeNext(HttpRequest request, HttpResponse response) throws ServletException, IOException;
+
+    void set(Valve basic, Valve[] valves);
 }

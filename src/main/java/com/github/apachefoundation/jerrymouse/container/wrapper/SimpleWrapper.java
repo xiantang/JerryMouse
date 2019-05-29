@@ -5,11 +5,10 @@ import com.github.apachefoundation.jerrymouse.container.loader.Loader;
 import com.github.apachefoundation.jerrymouse.container.loader.SimpleLoader;
 import com.github.apachefoundation.jerrymouse.container.pipeline.Pipeline;
 import com.github.apachefoundation.jerrymouse.container.pipeline.SimplePipeline;
-import com.github.apachefoundation.jerrymouse.container.valve.SimpleWrapperValve;
+import com.github.apachefoundation.jerrymouse.container.pipeline.StandardValveContext;
 import com.github.apachefoundation.jerrymouse.container.valve.Valve;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
-import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.servlet.ServletException;
@@ -27,7 +26,7 @@ public class SimpleWrapper implements  Wrapper, Pipeline {
 
     private Loader loader;
     private Container container;
-    private SimplePipeline pipeline = new SimplePipeline(this);
+    private SimplePipeline pipeline = new SimplePipeline(this,new StandardValveContext());
     private HttpRequest request;
     private HttpResponse response;
     /**
@@ -40,7 +39,7 @@ public class SimpleWrapper implements  Wrapper, Pipeline {
 
 
 
-    
+
     public SimpleWrapper() {
         // 先设置基础阀
 
