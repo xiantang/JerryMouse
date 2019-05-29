@@ -18,4 +18,9 @@ public interface Wrapper extends Container {
     public HttpServlet allocate() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, MalformedURLException, ClassNotFoundException;
 
     public void load();
+
+    public String getName();
+
+    public String setName(String name);
+
 }

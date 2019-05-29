@@ -51,9 +51,6 @@ public class NioPoller implements Runnable {
         }
 
         events.offer(new PollerEvent(nioSocketWrapper, eventType));
-        // 如果selector 在select 阻塞 就调用wakeup立马返回
-        // 通过调用wakeup() 使线程抛出ClosedSelectorException 提前返回
-        selector.wakeup();
     }
 
     @Override
