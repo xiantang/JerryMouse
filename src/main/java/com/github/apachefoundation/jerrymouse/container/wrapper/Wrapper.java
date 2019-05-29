@@ -1,4 +1,6 @@
-package com.github.apachefoundation.jerrymouse.container;
+package com.github.apachefoundation.jerrymouse.container.wrapper;
+
+import com.github.apachefoundation.jerrymouse.container.Container;
 
 import javax.servlet.http.HttpServlet;
 import java.lang.reflect.InvocationTargetException;

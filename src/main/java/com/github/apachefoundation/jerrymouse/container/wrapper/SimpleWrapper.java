@@ -1,5 +1,6 @@
-package com.github.apachefoundation.jerrymouse.container;
+package com.github.apachefoundation.jerrymouse.container.wrapper;
 
+import com.github.apachefoundation.jerrymouse.container.Container;
 import com.github.apachefoundation.jerrymouse.container.loader.Loader;
 import com.github.apachefoundation.jerrymouse.container.loader.SimpleLoader;
 import com.github.apachefoundation.jerrymouse.container.pipeline.Pipeline;
@@ -8,6 +9,8 @@ import com.github.apachefoundation.jerrymouse.container.valve.SimpleWrapperValve
 import com.github.apachefoundation.jerrymouse.container.valve.Valve;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
+import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,7 +22,7 @@ import java.net.MalformedURLException;
  * @Author: xiantang
  * @Date: 2019/5/24 21:14
  */
-public class SimpleWrapper implements Container, Wrapper, Pipeline {
+public class SimpleWrapper implements  Wrapper, Pipeline {
 
 
     private Loader loader;
@@ -27,11 +30,20 @@ public class SimpleWrapper implements Container, Wrapper, Pipeline {
     private SimplePipeline pipeline = new SimplePipeline(this);
     private HttpRequest request;
     private HttpResponse response;
+    /**
+     * 设置映射
+     * name servlet的name
+     * servlet-class servlet目标的类文件
+     */
+    private String name;
+    private String servletClass;
+
+
+
+    
     public SimpleWrapper() {
         // 先设置基础阀
-        Valve swv = new SimpleWrapperValve();
-        ((SimpleWrapperValve) swv).setContainer(this);
-        pipeline.setBasic(swv);
+
 
     }
 
@@ -78,6 +90,7 @@ public class SimpleWrapper implements Container, Wrapper, Pipeline {
 
     @Override
     public HttpServlet allocate() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, MalformedURLException, ClassNotFoundException {
+        //FIXME 每次请求都要重新加载一遍servlet 效率很低
         SimpleLoader simpleLoader = (SimpleLoader) loader;
         return simpleLoader.load(request.getRequestURI());
     }
@@ -92,22 +105,25 @@ public class SimpleWrapper implements Container, Wrapper, Pipeline {
 
     @Override
     public void addChild(Container container) {
+        throw new NotImplementedException();
 
     }
 
     @Override
     public void removeChild(Container container) {
+        throw new NotImplementedException();
 
     }
 
     @Override
     public Container findChild(String name) {
-        return null;
+        throw new NotImplementedException();
+
     }
 
     @Override
     public Container[] findChildren() {
-        return new Container[0];
+        throw new NotImplementedException();
     }
 
 

@@ -132,6 +132,7 @@ public class NioWorker {
             try {
                 response.flushBuffer();
                 logger.debug("写入完成");
+                // 判断是否keep-alive
                 if (request.getParameter(connection) == null || !request.getParameter("connection").equals("false")) {
                     endpoint.registerToPoller(client, false, SelectionKey.OP_READ, nioSocketWrapper);
                 } else {

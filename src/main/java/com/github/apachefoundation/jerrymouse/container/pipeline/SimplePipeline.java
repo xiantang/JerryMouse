@@ -1,6 +1,6 @@
 package com.github.apachefoundation.jerrymouse.container.pipeline;
 
-import com.github.apachefoundation.jerrymouse.container.Wrapper;
+import com.github.apachefoundation.jerrymouse.container.wrapper.Wrapper;
 import com.github.apachefoundation.jerrymouse.container.valve.Valve;
 import com.github.apachefoundation.jerrymouse.container.valve.ValveContext;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
@@ -9,7 +9,6 @@ import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**

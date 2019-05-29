@@ -1,12 +1,11 @@
 package com.github.apachefoundation.jerrymouse.processor;
 
 import com.github.apachefoundation.jerrymouse.container.Container;
-import com.github.apachefoundation.jerrymouse.container.SimpleContainer;
-import com.github.apachefoundation.jerrymouse.container.SimpleWrapper;
+import com.github.apachefoundation.jerrymouse.container.valve.SimpleWrapperValve;
+import com.github.apachefoundation.jerrymouse.container.wrapper.SimpleWrapper;
 import com.github.apachefoundation.jerrymouse.container.loader.SimpleLoader;
 import com.github.apachefoundation.jerrymouse.container.valve.ClientIpLoggerValve;
 import com.github.apachefoundation.jerrymouse.container.valve.HeaderLoggerValve;
-import com.github.apachefoundation.jerrymouse.container.valve.SimpleWrapperValve;
 import com.github.apachefoundation.jerrymouse.container.valve.Valve;
 import com.github.apachefoundation.jerrymouse.exception.RequestInvalidException;
 import com.github.apachefoundation.jerrymouse.exception.handler.ExceptionHandler;
@@ -94,9 +93,11 @@ public class HttpProcessor {
 //                    simpleContainer.invoke(request,response);
                     Container container = new SimpleWrapper();
                     container.setLoader(new SimpleLoader());
+                    Valve swv = new SimpleWrapperValve();
                     Valve valve1 = new ClientIpLoggerValve();
                     Valve valve2 = new HeaderLoggerValve();
-
+                    ((SimpleWrapperValve) swv).setContainer(container);
+                    ((SimpleWrapper) container).setBasic(swv);
                     ((SimpleWrapper) container).addValve(valve1);
                     ((SimpleWrapper) container).addValve(valve2);
 
@@ -105,9 +106,9 @@ public class HttpProcessor {
                 }
                 logger.info("[" + response.getStatus() + "] " + request.getMethod() + " /" + request.getRequestURI());
                 logger.debug("开始注册写事件");
-                if (keepalive) {
-                    endpoint.registerToPoller(client, false, SelectionKey.OP_WRITE, nioSocketWrapper);
-                }
+
+                endpoint.registerToPoller(client, false, SelectionKey.OP_WRITE, nioSocketWrapper);
+
                 logger.debug("写事件完成注册");
             }
         }
@@ -164,6 +165,7 @@ public class HttpProcessor {
 
 
     private boolean parseRequestHeader(SocketInputBuffer socketInputBuffer) throws RequestInvalidException, IOException {
+
         StringBuilder httpHeadBuffer = new StringBuilder(1024);
 
         if (!socketInputBuffer.stuffRequestHeaderBuffer(httpHeadBuffer)) {
