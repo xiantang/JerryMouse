@@ -51,9 +51,6 @@ public class NioPoller implements Runnable {
         }
 
         events.offer(new PollerEvent(nioSocketWrapper, eventType));
-        // 如果selector 在select 阻塞 就调用wakeup立马返回
-        // 通过调用wakeup() 使线程抛出ClosedSelectorException 提前返回
-        selector.wakeup();
     }
 
     @Override
@@ -102,7 +99,7 @@ public class NioPoller implements Runnable {
     }
 
     private void events() {
-        logger.debug("当前队列大小为 " + events.size());
+//        logger.debug("当前队列大小为 " + events.size());
         PollerEvent pollerEvent;
         for (int i = 0, size = events.size(); i < size && (pollerEvent = events.poll()) != null; i++) {
             new Thread(pollerEvent).start();

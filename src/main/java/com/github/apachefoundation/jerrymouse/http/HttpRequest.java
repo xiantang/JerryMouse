@@ -35,6 +35,7 @@ public class HttpRequest implements HttpServletRequest {
     private Map<String, String> headersMap;
     private Map<String, List<String>> parametersMap;
     private SocketInputBuffer inputBuffer;
+    private String remoteAddr;
 
 
 
@@ -74,6 +75,14 @@ public class HttpRequest implements HttpServletRequest {
         return headerNames.elements();
     }
 
+    @Override
+    public String getRemoteAddr() {
+        return remoteAddr;
+    }
+
+    public void setRemoteAddr(String remoteAddr) {
+        this.remoteAddr = remoteAddr;
+    }
 
     @Override
     public String[] getParameterValues(String s) {
@@ -374,10 +383,7 @@ public class HttpRequest implements HttpServletRequest {
         return null;
     }
 
-    @Override
-    public String getRemoteAddr() {
-        return null;
-    }
+
 
     @Override
     public String getRemoteHost() {

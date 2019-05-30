@@ -6,6 +6,8 @@ import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.SocketAddress;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -28,12 +30,17 @@ public class SocketInputBuffer {
     private ByteBuffer buffer;
     private int pos = 0;
     private int count = 0;
+    private String remoteAddr;
 
-
+    public String getRemoteAddr() {
+        return remoteAddr;
+    }
 
     public SocketInputBuffer(SocketChannel socketChannel) {
         this.socketChannel = socketChannel;
         this.buffer = ByteBuffer.allocate(2048);
+        InetAddress addr = socketChannel.socket().getLocalAddress();
+        this.remoteAddr = addr.getHostAddress();
     }
 
 

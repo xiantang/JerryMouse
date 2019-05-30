@@ -1,12 +1,18 @@
 package com.github.apachefoundation.jerrymouse.context;
 
 
+import com.github.apachefoundation.jerrymouse.container.wrapper.SimpleWrapper;
+import com.github.apachefoundation.jerrymouse.container.wrapper.Wrapper;
 import com.github.apachefoundation.jerrymouse.entity.Mapping;
 import com.github.apachefoundation.jerrymouse.entity.Entity;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,10 +23,10 @@ import java.util.List;
  * 负责解析web.xml
  */
 public class WebHandler extends DefaultHandler {
-    private List<Entity> entities;
+    private List<Wrapper> wrappers;
     private List<Mapping> mappings;
     private Mapping mapping;
-    private Entity entity;
+    private Wrapper wrapper;
     /**
      * 存储操作标签
      */
@@ -29,7 +35,7 @@ public class WebHandler extends DefaultHandler {
 
     @Override
     public void startDocument() throws SAXException {
-        entities = new ArrayList<>();
+        wrappers = new ArrayList<>();
         mappings = new ArrayList<>();
     }
 
@@ -41,7 +47,7 @@ public class WebHandler extends DefaultHandler {
         if (qName != null) {
             tag = qName;
             if (tag.equals(servlet)) {
-                entity = new Entity();
+                wrapper = new SimpleWrapper();
                 isMapping = false;
             } else if (tag.equals(servletMapping)) {
                 mapping = new Mapping();
@@ -67,9 +73,9 @@ public class WebHandler extends DefaultHandler {
                 }
             } else {
                 if (servletName.equals(tag)) {
-                    entity.setName(contents);
+                    wrapper.setName(contents);
                 } else if (servletClass.equals(tag)) {
-                    entity.setClz(contents);
+                    wrapper.setServletClass(contents);
                 }
             }
         }
@@ -81,7 +87,7 @@ public class WebHandler extends DefaultHandler {
         String servletMapping = "servlet-mapping";
         if (qName != null) {
             if (qName.equals(servlet)) {
-                entities.add(entity);
+                wrappers.add((Wrapper) wrapper);
             } else if (qName.equals(servletMapping)) {
                 mappings.add(mapping);
             }
@@ -89,11 +95,41 @@ public class WebHandler extends DefaultHandler {
         tag = null;
     }
 
-    public List<Entity> getEntities() {
-        return entities;
+    public List<Wrapper> getWrappers() {
+        return wrappers;
     }
 
     public List<Mapping> getMappings() {
         return mappings;
+    }
+
+    public static void main(String[] args) {
+        try {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParser parse = factory.newSAXParser();
+            WebHandler phandler = new WebHandler();
+            // 当前线程的类加载器
+            parse.parse(Thread.currentThread().getContextClassLoader()
+                    .getResourceAsStream("web.xml"), phandler);
+            for (Wrapper w : phandler.getWrappers()
+            ) {
+                System.out.println(w.getName());
+                System.out.println(w.getServletClass());
+            }
+
+            for (Mapping m :
+                    phandler.getMappings()) {
+                System.out.println(m.getName());
+                System.out.println(m.getPatterns());
+
+            }
+
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
