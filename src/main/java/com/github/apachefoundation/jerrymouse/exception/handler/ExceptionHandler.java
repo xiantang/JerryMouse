@@ -16,6 +16,8 @@ public class ExceptionHandler {
                 socketWrapper.close();
             } else if (e instanceof IOException) {
                 socketWrapper.close();
+               e.printStackTrace();
+
             }
         } catch (IOException e1) {
             e1.printStackTrace();

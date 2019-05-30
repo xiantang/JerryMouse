@@ -1,5 +1,13 @@
 package com.github.apachefoundation.jerrymouse.processor;
 
+import com.github.apachefoundation.jerrymouse.container.Container;
+import com.github.apachefoundation.jerrymouse.container.context.Context;
+import com.github.apachefoundation.jerrymouse.container.valve.wapper.SimpleWrapperValve;
+import com.github.apachefoundation.jerrymouse.container.wrapper.SimpleWrapper;
+import com.github.apachefoundation.jerrymouse.container.loader.SimpleLoader;
+import com.github.apachefoundation.jerrymouse.container.valve.wapper.ClientIpLoggerValve;
+import com.github.apachefoundation.jerrymouse.container.valve.wapper.HeaderLoggerValve;
+import com.github.apachefoundation.jerrymouse.container.valve.Valve;
 import com.github.apachefoundation.jerrymouse.exception.RequestInvalidException;
 import com.github.apachefoundation.jerrymouse.exception.handler.ExceptionHandler;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
@@ -28,8 +36,7 @@ public class HttpProcessor {
 
     private HttpResponse response;
     private HttpRequest request;
-    private boolean finishRequest;
-    private boolean keepalive;
+
     /**
     是否在处理过程中有错误
      */
@@ -37,16 +44,16 @@ public class HttpProcessor {
 
     private Logger logger = Logger.getLogger(HttpProcessor.class);
     public void process(SocketChannel socketChannel, NioSocketWrapper nioSocketWrapper) {
-        SocketInputBuffer inputBuffer = new SocketInputBuffer(socketChannel);
+        ExceptionHandler exceptionHandler = new ExceptionHandler();
+        SocketInputBuffer inputBuffer = null;
         NioEndpoint endpoint = nioSocketWrapper.getServer();
         SocketChannel client = nioSocketWrapper.getSocketChannel();
-        ExceptionHandler exceptionHandler = new ExceptionHandler();
-        finishRequest = true;
         ok = true;
-        keepalive = true;
         try {
+            inputBuffer = new SocketInputBuffer(socketChannel);
 
             request = new HttpRequest(inputBuffer);
+
             response = new HttpResponse(socketChannel);
             ((HttpResponse) response).setRequest(request);
             nioSocketWrapper.setResponse(response);
@@ -70,6 +77,7 @@ public class HttpProcessor {
             ok = false;
             exceptionHandler.handle(e, nioSocketWrapper);
         }
+        logger.debug("request 构建完成"+request.getRequestURI());
         try {
             if (ok) {
             // 正则匹配
@@ -81,14 +89,14 @@ public class HttpProcessor {
                     StaticResourceProcessor srp = new StaticResourceProcessor();
                     srp.process((HttpRequest) request, (HttpResponse) response);
                 } else {
-                    ServletProcessor sp = new ServletProcessor();
-                    sp.process((HttpRequest) request, (HttpResponse) response);
+                    Context context = (Context) nioSocketWrapper.getServer().getContext();
+                    context.invoke(request, response);
                 }
                 logger.info("[" + response.getStatus() + "] " + request.getMethod() + " /" + request.getRequestURI());
                 logger.debug("开始注册写事件");
-                if (keepalive) {
-                    endpoint.registerToPoller(client, false, SelectionKey.OP_WRITE, nioSocketWrapper);
-                }
+
+                endpoint.registerToPoller(client, false, SelectionKey.OP_WRITE, nioSocketWrapper);
+
                 logger.debug("写事件完成注册");
             }
         }
@@ -96,10 +104,9 @@ public class HttpProcessor {
             exceptionHandler.handle(e, nioSocketWrapper);
         }
         catch (ServletException e) {
+            //FIXME 这里的异常处理有问题
             exceptionHandler.handle(e, nioSocketWrapper);
         }
-        response.getWriter().close();
-
     }
 
     private void parseRequest(SocketInputBuffer socketInputBuffer) throws IOException, RequestInvalidException {
@@ -108,6 +115,7 @@ public class HttpProcessor {
         String requestLine = requestLineBuffer.toString();
         String method = requestLine.substring(0, requestLine.indexOf("/")).trim();
         request.setMethod(method);
+        request.setRemoteAddr(socketInputBuffer.getRemoteAddr());
         int startidx = requestLine.indexOf("/") + 1;
         int endurix = requestLine.indexOf("?");
         int endurlx = requestLine.indexOf("HTTP/");
@@ -132,18 +140,15 @@ public class HttpProcessor {
                 request.setParameter(key, value);
             }
         }
-
         boolean flag = true;
         while (flag) {
             flag = parseRequestHeader(socketInputBuffer);
         }
-
-
-
     }
 
 
     private boolean parseRequestHeader(SocketInputBuffer socketInputBuffer) throws RequestInvalidException, IOException {
+
         StringBuilder httpHeadBuffer = new StringBuilder(1024);
 
         if (!socketInputBuffer.stuffRequestHeaderBuffer(httpHeadBuffer)) {
