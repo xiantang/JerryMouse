@@ -1,6 +1,5 @@
 package com.github.apachefoundation.jerrymouse.container.context;
 
-import com.github.apachefoundation.jerrymouse.container.Contained;
 import com.github.apachefoundation.jerrymouse.container.Container;
 import com.github.apachefoundation.jerrymouse.container.loader.Loader;
 import com.github.apachefoundation.jerrymouse.container.mapper.Mapper;
@@ -9,19 +8,12 @@ import com.github.apachefoundation.jerrymouse.container.pipeline.Pipeline;
 import com.github.apachefoundation.jerrymouse.container.pipeline.SimplePipeline;
 import com.github.apachefoundation.jerrymouse.container.pipeline.StandardValveContext;
 import com.github.apachefoundation.jerrymouse.container.valve.Valve;
-import com.github.apachefoundation.jerrymouse.container.wrapper.SimpleWrapper;
 import com.github.apachefoundation.jerrymouse.container.wrapper.Wrapper;
-import com.github.apachefoundation.jerrymouse.context.WebContext;
-import com.github.apachefoundation.jerrymouse.context.WebHandler;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
-import org.xml.sax.SAXException;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.servlet.ServletException;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
