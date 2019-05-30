@@ -5,7 +5,7 @@
 </br>
 </div>
 
-[Readme in English](https://github.com/xiantang/JerryMouse/blob/master/README_en.md)
+[Readme in English](https://github.com/apache-foundation/JerryMouse/blob/master/REDME_en.md)
 ## 简介 
 这个项目是一个使用 Java 实现的一个NIO HTTP 服务器，可以解析 GET , POST 等 HTTP 请求
 并且支持长连接和支持静态资源的解析，实现了 servlet-api 支持 Servlet 的装载。 
