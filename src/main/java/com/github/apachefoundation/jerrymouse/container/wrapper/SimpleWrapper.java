@@ -21,14 +21,13 @@ import java.net.MalformedURLException;
  * @Author: xiantang
  * @Date: 2019/5/24 21:14
  */
-public class SimpleWrapper implements  Wrapper, Pipeline {
+public class SimpleWrapper implements Wrapper, Pipeline {
 
 
     private Loader loader;
     private Container container;
-    private SimplePipeline pipeline = new SimplePipeline(this,new StandardValveContext());
-    private HttpRequest request;
-    private HttpResponse response;
+    private SimplePipeline pipeline = new SimplePipeline(this, new StandardValveContext());
+
     /**
      * 设置映射
      * name servlet的name
@@ -36,14 +35,39 @@ public class SimpleWrapper implements  Wrapper, Pipeline {
      */
     private String name;
     private String servletClass;
+    private HttpServlet servlet = null;
 
+    @Override
+    public Container getContainer() {
+        return container;
+    }
 
+    @Override
+    public void setContainer(Container container) {
+        this.container = container;
+    }
 
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getServletClass() {
+        return servletClass;
+    }
+    @Override
+    public void setServletClass(String servletClass) {
+        this.servletClass = servletClass;
+    }
 
     public SimpleWrapper() {
         // 先设置基础阀
-
-
     }
 
     @Override
@@ -62,8 +86,10 @@ public class SimpleWrapper implements  Wrapper, Pipeline {
     }
 
     @Override
-    public void load() {
+    public void load() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, MalformedURLException, ClassNotFoundException {
 
+        SimpleLoader simpleLoader = (SimpleLoader) loader;
+        servlet = simpleLoader.load(servletClass);
     }
 
     @Override
@@ -88,18 +114,18 @@ public class SimpleWrapper implements  Wrapper, Pipeline {
 
 
     @Override
-    public HttpServlet allocate() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, MalformedURLException, ClassNotFoundException {
+    public HttpServlet allocate(){
         //FIXME 每次请求都要重新加载一遍servlet 效率很低
-        SimpleLoader simpleLoader = (SimpleLoader) loader;
-        return simpleLoader.load(request.getRequestURI());
+        if (servlet != null) {
+            return servlet;
+        }
+        return null;
     }
 
 
     @Override
     public void invoke(HttpRequest request, HttpResponse response) throws ServletException, IOException {
-        this.request = request;
-        this.response = response;
-        pipeline.invoke(request,response);
+        pipeline.invoke(request, response);
     }
 
     @Override

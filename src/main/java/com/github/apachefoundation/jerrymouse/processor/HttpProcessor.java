@@ -1,6 +1,7 @@
 package com.github.apachefoundation.jerrymouse.processor;
 
 import com.github.apachefoundation.jerrymouse.container.Container;
+import com.github.apachefoundation.jerrymouse.container.context.Context;
 import com.github.apachefoundation.jerrymouse.container.valve.wapper.SimpleWrapperValve;
 import com.github.apachefoundation.jerrymouse.container.wrapper.SimpleWrapper;
 import com.github.apachefoundation.jerrymouse.container.loader.SimpleLoader;
@@ -35,8 +36,7 @@ public class HttpProcessor {
 
     private HttpResponse response;
     private HttpRequest request;
-    private boolean finishRequest;
-    private boolean keepalive;
+
     /**
     是否在处理过程中有错误
      */
@@ -48,13 +48,12 @@ public class HttpProcessor {
         SocketInputBuffer inputBuffer = null;
         NioEndpoint endpoint = nioSocketWrapper.getServer();
         SocketChannel client = nioSocketWrapper.getSocketChannel();
-        finishRequest = true;
         ok = true;
-        keepalive = true;
         try {
             inputBuffer = new SocketInputBuffer(socketChannel);
 
             request = new HttpRequest(inputBuffer);
+
             response = new HttpResponse(socketChannel);
             ((HttpResponse) response).setRequest(request);
             nioSocketWrapper.setResponse(response);
@@ -78,6 +77,7 @@ public class HttpProcessor {
             ok = false;
             exceptionHandler.handle(e, nioSocketWrapper);
         }
+        logger.debug("request 构建完成"+request.getRequestURI());
         try {
             if (ok) {
             // 正则匹配
@@ -89,20 +89,8 @@ public class HttpProcessor {
                     StaticResourceProcessor srp = new StaticResourceProcessor();
                     srp.process((HttpRequest) request, (HttpResponse) response);
                 } else {
-//                    SimpleContainer simpleContainer = new SimpleContainer();
-//                    simpleContainer.invoke(request,response);
-                    Container container = new SimpleWrapper();
-                    container.setLoader(new SimpleLoader());
-                    Valve swv = new SimpleWrapperValve();
-                    Valve valve1 = new ClientIpLoggerValve();
-                    Valve valve2 = new HeaderLoggerValve();
-                    ((SimpleWrapperValve) swv).setContainer(container);
-                    ((SimpleWrapper) container).setBasic(swv);
-                    ((SimpleWrapper) container).addValve(valve1);
-                    ((SimpleWrapper) container).addValve(valve2);
-
-                    container.invoke(request, response);
-
+                    Context context = (Context) nioSocketWrapper.getServer().getContext();
+                    context.invoke(request, response);
                 }
                 logger.info("[" + response.getStatus() + "] " + request.getMethod() + " /" + request.getRequestURI());
                 logger.debug("开始注册写事件");
@@ -116,10 +104,9 @@ public class HttpProcessor {
             exceptionHandler.handle(e, nioSocketWrapper);
         }
         catch (ServletException e) {
+            //FIXME 这里的异常处理有问题
             exceptionHandler.handle(e, nioSocketWrapper);
         }
-        response.getWriter().close();
-
     }
 
     private void parseRequest(SocketInputBuffer socketInputBuffer) throws IOException, RequestInvalidException {
@@ -153,14 +140,10 @@ public class HttpProcessor {
                 request.setParameter(key, value);
             }
         }
-
         boolean flag = true;
         while (flag) {
             flag = parseRequestHeader(socketInputBuffer);
         }
-
-
-
     }
 
 

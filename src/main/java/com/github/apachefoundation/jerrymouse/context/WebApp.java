@@ -3,15 +3,12 @@ package com.github.apachefoundation.jerrymouse.context;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
-import javax.servlet.http.HttpServlet;
+
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
+
 /**
  * @Author: xiantang
  * @Date: 2019/4/17 14:45
@@ -35,7 +32,7 @@ public class WebApp {
             // 当前线程的类加载器
             parse.parse(Thread.currentThread().getContextClassLoader()
                     .getResourceAsStream("web.xml"), phandler);
-            webContext = new WebContext( phandler.getEntities(),phandler.getMappings());
+//            webContext = new WebContext( phandler.getWrappers(),phandler.getMappings());
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } catch (IOException e) {

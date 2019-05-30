@@ -17,6 +17,13 @@ public final class StandardValveContext implements ValveContext {
     protected Valve basic = null;
     protected Valve[] valves = null;
 
+
+
+    @Override
+    public void setStage(int stage) {
+        this.stage = stage;
+    }
+
     @Override
     public String getInfo() {
         return null;

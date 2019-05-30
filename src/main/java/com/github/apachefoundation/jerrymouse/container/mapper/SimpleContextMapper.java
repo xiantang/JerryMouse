@@ -10,7 +10,12 @@ import com.github.apachefoundation.jerrymouse.http.HttpRequest;
  * @Date: 2019/5/29 19:24
  */
 public class SimpleContextMapper implements Mapper {
+
     private SimpleContext context = null;
+
+    public SimpleContextMapper(SimpleContext context) {
+        this.context = context;
+    }
 
     @Override
     public Container getContainer() {
@@ -34,10 +39,10 @@ public class SimpleContextMapper implements Mapper {
 
     @Override
     public Container map(HttpRequest request, boolean update) {
-        String relativeUrl = request.getRequestURI();
+        String relativeUrl = "/"+request.getRequestURI();
         Wrapper wrapper = null;
         String name = context.findServletMapping(relativeUrl);
-        if (name == null) {
+        if (name != null) {
             wrapper = (Wrapper) context.findChild(name);
         }
         return wrapper;

@@ -17,10 +17,18 @@ public interface Wrapper extends Container {
      */
     public HttpServlet allocate() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, MalformedURLException, ClassNotFoundException;
 
-    public void load();
+    void setServletClass(String servletClass);
+
+    public void load() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, MalformedURLException, ClassNotFoundException;
+
+    Container getContainer();
+
+    void setContainer(Container container);
 
     public String getName();
 
-    public String setName(String name);
+    public void setName(String name);
+
+    public String getServletClass();
 
 }

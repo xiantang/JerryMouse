@@ -11,6 +11,8 @@ import java.io.IOException;
  * @Date: 2019/5/24 20:08
  */
 public interface ValveContext {
+    void setStage(int stage);
+
     public String getInfo();
 
     public void invokeNext(HttpRequest request, HttpResponse response) throws ServletException, IOException;

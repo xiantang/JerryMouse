@@ -23,28 +23,7 @@ public class SimpleLoader implements Loader {
     public static final String WEB_ROOT = "file:target/test-classes/";
     private ClassLoader classLoader = null;
     private Container container = null;
-    private static WebContext webContext;
 
-    /*
-    初始化webContext存入servlet以及他的映射
-     */
-    static {
-        try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            SAXParser parse = factory.newSAXParser();
-            WebHandler phandler = new WebHandler();
-            // 当前线程的类加载器
-            parse.parse(Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream("web.xml"), phandler);
-            webContext = new WebContext( phandler.getEntities(),phandler.getMappings());
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        }
-    }
 
     public SimpleLoader() {
         try {
@@ -55,8 +34,7 @@ public class SimpleLoader implements Loader {
         }
     }
 
-    public HttpServlet load(String url) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        String className = webContext.getClz("/" + url);
+    public HttpServlet load(String className) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         URL classUrl = new URL(WEB_ROOT);
         Class clz = classLoader.loadClass(className);
         HttpServlet servlet = (HttpServlet) clz.getConstructor().newInstance();

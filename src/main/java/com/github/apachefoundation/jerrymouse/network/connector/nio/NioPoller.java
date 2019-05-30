@@ -99,7 +99,7 @@ public class NioPoller implements Runnable {
     }
 
     private void events() {
-        logger.debug("当前队列大小为 " + events.size());
+//        logger.debug("当前队列大小为 " + events.size());
         PollerEvent pollerEvent;
         for (int i = 0, size = events.size(); i < size && (pollerEvent = events.poll()) != null; i++) {
             new Thread(pollerEvent).start();

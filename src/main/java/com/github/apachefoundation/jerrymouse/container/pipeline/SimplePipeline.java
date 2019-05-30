@@ -54,6 +54,8 @@ public class SimplePipeline implements Pipeline {
 
     @Override
     public void invoke(HttpRequest request, HttpResponse response) throws ServletException, IOException {
+        // 每次调用把stage设置为0
+        valveContext.setStage(0);
         valveContext.invokeNext(request, response);
     }
 

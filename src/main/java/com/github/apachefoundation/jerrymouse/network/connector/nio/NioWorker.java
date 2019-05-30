@@ -79,6 +79,7 @@ public class NioWorker {
 
     public void executeRead(NioSocketWrapper nioSocketWrapper) {
         try {
+
             readThreadPool.execute(new Reader(nioSocketWrapper));
         } catch (IOException e) {
             e.printStackTrace();
@@ -105,6 +106,7 @@ public class NioWorker {
 
         @Override
         public void run() {
+            logger.debug("执行写");
             SocketChannel socketChannel = nioSocketWrapper.getSocketChannel();
             HttpProcessor httpProcessor = new HttpProcessor();
             httpProcessor.process(socketChannel, nioSocketWrapper);

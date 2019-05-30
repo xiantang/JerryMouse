@@ -37,21 +37,8 @@ public class SimpleWrapperValve implements Valve, Contained {
     ) throws ServletException, IOException {
         SimpleWrapper simpleWrapper = (SimpleWrapper) getContainer();
         HttpServlet servlet = null;
-        try {
-            servlet = simpleWrapper.allocate();
-            servlet.service(request, response);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-
+        servlet = simpleWrapper.allocate();
+        servlet.service(request, response);
     }
     @Override
     public void setContainer(Container container) {
