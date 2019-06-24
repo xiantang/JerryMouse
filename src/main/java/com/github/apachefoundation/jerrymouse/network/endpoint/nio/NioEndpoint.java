@@ -5,18 +5,15 @@ import com.github.apachefoundation.jerrymouse.container.Container;
 import com.github.apachefoundation.jerrymouse.container.context.Context;
 import com.github.apachefoundation.jerrymouse.container.context.SimpleContext;
 import com.github.apachefoundation.jerrymouse.container.loader.Loader;
-import com.github.apachefoundation.jerrymouse.container.loader.SimpleLoader;
-import com.github.apachefoundation.jerrymouse.container.mapper.Mapper;
+import com.github.apachefoundation.jerrymouse.container.loader.WebappLoader;
 import com.github.apachefoundation.jerrymouse.container.pipeline.Pipeline;
 import com.github.apachefoundation.jerrymouse.container.valve.Valve;
 import com.github.apachefoundation.jerrymouse.container.valve.context.SimpleContextValve;
 import com.github.apachefoundation.jerrymouse.container.valve.wapper.SimpleWrapperValve;
 import com.github.apachefoundation.jerrymouse.container.wrapper.Wrapper;
-import com.github.apachefoundation.jerrymouse.context.WebContext;
 import com.github.apachefoundation.jerrymouse.context.WebHandler;
 import com.github.apachefoundation.jerrymouse.entity.Mapping;
 import com.github.apachefoundation.jerrymouse.exception.RequestInvalidException;
-import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.network.wrapper.nio.NioSocketWrapper;
 import com.github.apachefoundation.jerrymouse.network.connector.nio.NioAcceptor;
 import com.github.apachefoundation.jerrymouse.network.connector.nio.NioPoller;
@@ -25,7 +22,6 @@ import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 
-import javax.servlet.http.HttpServlet;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -37,7 +33,6 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -148,7 +143,7 @@ public class NioEndpoint extends Endpoint {
         ((SimpleContext) context).setBasic(simpleContextValve);
         List<Mapping> mappings = phandler.getMappings();
         List<Wrapper> wrappers = phandler.getWrappers();
-        Loader loader = new SimpleLoader();
+        Loader loader = new WebappLoader();
         try {
             for (Wrapper wrapper : wrappers
             ) {

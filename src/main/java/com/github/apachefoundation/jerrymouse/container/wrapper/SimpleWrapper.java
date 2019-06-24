@@ -2,7 +2,7 @@ package com.github.apachefoundation.jerrymouse.container.wrapper;
 
 import com.github.apachefoundation.jerrymouse.container.Container;
 import com.github.apachefoundation.jerrymouse.container.loader.Loader;
-import com.github.apachefoundation.jerrymouse.container.loader.SimpleLoader;
+import com.github.apachefoundation.jerrymouse.container.loader.WebappLoader;
 import com.github.apachefoundation.jerrymouse.container.pipeline.Pipeline;
 import com.github.apachefoundation.jerrymouse.container.pipeline.SimplePipeline;
 import com.github.apachefoundation.jerrymouse.container.pipeline.StandardValveContext;
@@ -15,7 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
+
 
 /**
  * @Author: xiantang
@@ -86,9 +86,9 @@ public class SimpleWrapper implements Wrapper, Pipeline {
     }
 
     @Override
-    public void load() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, MalformedURLException, ClassNotFoundException {
+    public void load() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, ClassNotFoundException {
 
-        SimpleLoader simpleLoader = (SimpleLoader) loader;
+        WebappLoader simpleLoader = (WebappLoader) loader;
         servlet = simpleLoader.load(servletClass);
     }
 
@@ -115,7 +115,6 @@ public class SimpleWrapper implements Wrapper, Pipeline {
 
     @Override
     public HttpServlet allocate(){
-        //FIXME 每次请求都要重新加载一遍servlet 效率很低
         if (servlet != null) {
             return servlet;
         }

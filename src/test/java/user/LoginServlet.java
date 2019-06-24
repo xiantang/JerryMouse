@@ -14,17 +14,6 @@ import java.util.Enumeration;
 public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        System.out.println(req.getMethod());
-//        System.out.println(req.getRequestURI());
-//        System.out.println(req.getQueryString());
-//        Enumeration<String> headers = req.getHeaderNames();
-//
-//        while (headers.hasMoreElements()) {
-//            String header = headers.nextElement();
-//            System.out.println(header);
-//            System.out.println(req.getHeader(header));
-//        }
-
         Writer writer = resp.getWriter();
         writer.write("hello world");
         writer.flush();
