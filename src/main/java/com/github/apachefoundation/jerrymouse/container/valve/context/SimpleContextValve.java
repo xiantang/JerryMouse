@@ -49,8 +49,8 @@ public class SimpleContextValve implements Valve, Contained {
         }
         if (wrapper == null) {
             //TODO 加载无法访问的静态html 或者 servlet
-            System.out.println("404");
-            return;
+            request.setRequestURI("404");
+            wrapper = (Wrapper) context.map(request, true);
         }
 
         wrapper.invoke(request, response);
