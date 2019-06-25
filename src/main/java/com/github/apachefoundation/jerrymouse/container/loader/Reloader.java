@@ -11,13 +11,4 @@ public interface Reloader {
 
     public boolean modified();
 
-    public void setReloadable(boolean reloadable);
-
-    public boolean getReloadable();
-
-    public void addPropertyChangeListener();
-
-    public String[] findRepositories();
-
-
 }

@@ -144,6 +144,9 @@ public class NioEndpoint extends Endpoint {
         List<Mapping> mappings = phandler.getMappings();
         List<Wrapper> wrappers = phandler.getWrappers();
         Loader loader = new WebappLoader();
+
+        context.setLoader(loader);
+        // 确保是同样的Loader
         try {
             for (Wrapper wrapper : wrappers
             ) {
@@ -161,7 +164,7 @@ public class NioEndpoint extends Endpoint {
                     ((Context) context).addServletMapping(pattern, map.getName());
                 }
             }
-
+            ((SimpleContext) context).backgroundProcess();
 
         } catch (NoSuchMethodException e) {
             e.printStackTrace();

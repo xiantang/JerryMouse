@@ -2,6 +2,7 @@ package com.github.apachefoundation.jerrymouse.container.context;
 
 import com.github.apachefoundation.jerrymouse.container.Container;
 import com.github.apachefoundation.jerrymouse.container.loader.Loader;
+import com.github.apachefoundation.jerrymouse.container.loader.WebappLoader;
 import com.github.apachefoundation.jerrymouse.container.mapper.Mapper;
 import com.github.apachefoundation.jerrymouse.container.mapper.SimpleContextMapper;
 import com.github.apachefoundation.jerrymouse.container.pipeline.Pipeline;
@@ -25,9 +26,6 @@ import java.util.Map;
  * @Date: 2019/5/29 16:24
  */
 public class SimpleContext implements Context, Pipeline {
-
-
-
 
 
     private Pipeline pipeline = new SimplePipeline(this, new StandardValveContext());
@@ -83,9 +81,7 @@ public class SimpleContext implements Context, Pipeline {
 
     @Override
     public Container map(HttpRequest request, boolean b) {
-
         return mapper.map(request, b);
-
     }
 
 
@@ -131,5 +127,10 @@ public class SimpleContext implements Context, Pipeline {
     @Override
     public void removeValve(Valve valve) {
         throw new NotImplementedException();
+    }
+
+
+    public void backgroundProcess() {
+        ((WebappLoader) loader).start();
     }
 }

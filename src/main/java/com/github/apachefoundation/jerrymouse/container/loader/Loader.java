@@ -22,8 +22,6 @@ public interface Loader {
 
     public void addRepository(String repository);
 
-    public String[] findRepository();
-
     public boolean modified();
 
     public void setReloadable(boolean reloadable);

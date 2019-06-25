@@ -1,13 +1,15 @@
 package com.github.apachefoundation.jerrymouse.container.loader;
 
 import com.github.apachefoundation.jerrymouse.container.Container;
+import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServlet;
-import java.lang.reflect.Constructor;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLClassLoader;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author: xiantang
@@ -16,41 +18,73 @@ import java.net.URLClassLoader;
 public class WebappLoader extends Thread implements Loader {
 
 
-
-    private ClassLoader parentClassLoader;
-
-
+    private boolean threadDone = false;
+    private boolean reloadable = true;
+    private Logger logger = Logger.getLogger(WebappLoader.class);
     private ClassLoader classLoader = null;
+    private Set<String> repositories;
+    private Map<String, Long> fileMap;
+
     public static final String WEB_ROOT = "file:target/test-classes/";
 
+    private void scanClasses() {
+
+        File file = new File("./target/test-classes/");
+        List<File> res = new ArrayList<>();
+        res = findAllFiles(res, file);
+//        for (File f:res) {
+//            fileMap.put(f.getPath(), f.lastModified());
+//        }
+    }
+
+    private List<File> findAllFiles(List res,File file) {
+        File[] fs = file.listFiles();
+        for (File f : fs) {
+            if (f.isDirectory()) {
+                res = findAllFiles(res,f);
+            } else {
+                res.add(f);
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public void run() {
+        while (!threadDone){
+            try {
+                TimeUnit.SECONDS.sleep(5);
+                logger.debug("检查代码是否更新");
+                scanClasses();
+                if (!this.modified()) {
+                    continue;
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     @Override
     public synchronized void start() {
+        logger.debug("开启新的线程执行类的载入");
         super.start();
     }
 
 
     public WebappLoader() {
+        createClassLoader();
+        repositories = new HashSet<>();
+    }
+
+    private WebappClassLoader createClassLoader()  {
         try {
             URL classUrl = new URL(WEB_ROOT);
-            classLoader = new URLClassLoader(new URL[]{classUrl});
+            classLoader = new WebappClassLoader(new URL[]{classUrl});
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-    }
-
-    private WebappClassLoader createClassLoader() throws Exception {
-        Class clazz = Class.forName("");
-        WebappClassLoader classLoader = null;
-        if (parentClassLoader == null) {
-            classLoader = (WebappClassLoader) clazz.newInstance();
-        } else {
-            Class[] argTypes = {ClassLoader.class};
-            Object[] args = {parentClassLoader};
-            Constructor constructor = clazz.getConstructor(argTypes);
-            classLoader = (WebappClassLoader) constructor.newInstance(args);
-        }
-        return classLoader;
+        return (WebappClassLoader) classLoader;
     }
 
 
@@ -63,7 +97,7 @@ public class WebappLoader extends Thread implements Loader {
 
     @Override
     public ClassLoader getClassLoader() {
-        return null;
+        return classLoader;
     }
 
     @Override
@@ -78,13 +112,9 @@ public class WebappLoader extends Thread implements Loader {
 
     @Override
     public void addRepository(String repository) {
-
+        repositories.add(repository);
     }
 
-    @Override
-    public String[] findRepository() {
-        return new String[0];
-    }
 
     @Override
     public boolean modified() {
@@ -93,12 +123,12 @@ public class WebappLoader extends Thread implements Loader {
 
     @Override
     public void setReloadable(boolean reloadable) {
-
+        this.reloadable = reloadable;
     }
 
     @Override
     public boolean getReloadable() {
-        return false;
+        return reloadable;
     }
 
     @Override
@@ -108,6 +138,6 @@ public class WebappLoader extends Thread implements Loader {
 
     @Override
     public String[] findRepositories() {
-        return new String[0];
+        return repositories.toArray(new String[repositories.size()]);
     }
 }
