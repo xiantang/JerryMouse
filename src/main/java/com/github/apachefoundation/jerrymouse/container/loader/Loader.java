@@ -1,7 +1,6 @@
 package com.github.apachefoundation.jerrymouse.container.loader;
 
 import com.github.apachefoundation.jerrymouse.container.Container;
-import org.xml.sax.helpers.DefaultHandler;
 
 import javax.servlet.http.HttpServlet;
 import java.lang.reflect.InvocationTargetException;
@@ -18,7 +17,7 @@ public interface Loader {
 
     public Container getContainer();
 
-    public void setContainer();
+    public void setContainer(Container context);
 
     public void addRepository(String repository);
 

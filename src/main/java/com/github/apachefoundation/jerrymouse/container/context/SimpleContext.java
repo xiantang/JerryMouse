@@ -16,6 +16,8 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,13 +29,37 @@ import java.util.Map;
  */
 public class SimpleContext implements Context, Pipeline {
 
+    @Override
+    public void load() {
+        for (Container container : containers) {
+            try {
+                ((Wrapper) container).load();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public void reload() {
+
+    }
 
     private Pipeline pipeline = new SimplePipeline(this, new StandardValveContext());
     /**
      * 设置默认的mapper
      */
     private Mapper mapper = new SimpleContextMapper(this);
-    private List<Mapper> mappers = new LinkedList<>();
     private Loader loader = null;
     private List<Container> containers = new LinkedList<>();
     private Map<String, String> urlMap = new HashMap<>();
@@ -47,7 +73,6 @@ public class SimpleContext implements Context, Pipeline {
 
     @Override
     public void setBasic(Valve valve) {
-
         pipeline.setBasic(valve);
     }
 

@@ -144,41 +144,29 @@ public class NioEndpoint extends Endpoint {
         List<Mapping> mappings = phandler.getMappings();
         List<Wrapper> wrappers = phandler.getWrappers();
         Loader loader = new WebappLoader();
-
         context.setLoader(loader);
+        loader.setContainer(context);
         // 确保是同样的Loader
-        try {
-            for (Wrapper wrapper : wrappers
-            ) {
-                wrapper.setLoader(loader);
-                wrapper.load();
-                SimpleWrapperValve simpleWrapperValve = new SimpleWrapperValve();
-                ((Contained) simpleWrapperValve).setContainer(wrapper);
-                ((Pipeline) wrapper).setBasic(simpleWrapperValve);
-                context.addChild(wrapper);
-            }
-            for (Mapping map :
-                    mappings) {
-                for (String pattern : map.getPatterns()
-                ) {
-                    ((Context) context).addServletMapping(pattern, map.getName());
-                }
-            }
-            ((SimpleContext) context).backgroundProcess();
 
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+
+        for (Wrapper wrapper : wrappers
+        ) {
+            wrapper.setLoader(loader);
+            SimpleWrapperValve simpleWrapperValve = new SimpleWrapperValve();
+            ((Contained) simpleWrapperValve).setContainer(wrapper);
+            ((Pipeline) wrapper).setBasic(simpleWrapperValve);
+            context.addChild(wrapper);
         }
+        for (Mapping map :
+                mappings) {
+            for (String pattern : map.getPatterns()
+            ) {
+                ((Context) context).addServletMapping(pattern, map.getName());
+            }
+        }
+        ((SimpleContext) context).load();
+        ((SimpleContext) context).backgroundProcess();
+
 
 
 

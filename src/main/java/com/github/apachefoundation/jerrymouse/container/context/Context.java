@@ -17,4 +17,8 @@ public interface Context extends Container {
     String findServletMapping(String uri);
 
     Container map(HttpRequest request, boolean b);
+
+    void load();
+
+    void reload();
 }
