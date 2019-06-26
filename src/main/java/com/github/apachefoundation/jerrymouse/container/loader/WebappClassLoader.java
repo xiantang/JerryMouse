@@ -22,6 +22,9 @@ public class WebappClassLoader extends ClassLoader implements Reloader {
 
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
+        if (!name.contains("class")) {
+            name = "./target/test-classes/" + name.replace(".", "/") + ".class";
+        }
         try {
             return findClass0(getBytes(name));
         } catch (IOException e) {
@@ -38,7 +41,6 @@ public class WebappClassLoader extends ClassLoader implements Reloader {
 
     private byte[] getBytes(String filename) throws IOException {
         File file = new File(filename);
-
         long len = file.length();
         byte raw[] = new byte[(int) len];
         FileInputStream fin = new FileInputStream(file);
