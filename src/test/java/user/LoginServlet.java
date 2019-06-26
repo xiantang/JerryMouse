@@ -15,7 +15,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Writer writer = resp.getWriter();
-        writer.write("hello world!!!!!!");
+        writer.write("hello world!!!!");
         writer.flush();
     }
 }

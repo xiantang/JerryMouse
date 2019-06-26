@@ -2,6 +2,7 @@ package com.github.apachefoundation.jerrymouse.container.context;
 
 import com.github.apachefoundation.jerrymouse.container.Container;
 import com.github.apachefoundation.jerrymouse.container.loader.Loader;
+import com.github.apachefoundation.jerrymouse.container.loader.WebappClassLoader;
 import com.github.apachefoundation.jerrymouse.container.loader.WebappLoader;
 import com.github.apachefoundation.jerrymouse.container.mapper.Mapper;
 import com.github.apachefoundation.jerrymouse.container.mapper.SimpleContextMapper;
@@ -12,9 +13,11 @@ import com.github.apachefoundation.jerrymouse.container.valve.Valve;
 import com.github.apachefoundation.jerrymouse.container.wrapper.Wrapper;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
+import org.apache.log4j.Logger;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import javax.servlet.ServletException;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -28,7 +31,13 @@ import java.util.Map;
  * @Date: 2019/5/29 16:24
  */
 public class SimpleContext implements Context, Pipeline {
-
+    private List<File> modifiedFiles;
+    private Logger logger = Logger.getLogger(SimpleContext.class);
+    private Mapper mapper = new SimpleContextMapper(this);
+    private Loader loader = null;
+    private List<Container> containers = new LinkedList<>();
+    private Map<String, String> urlMap = new HashMap<>();
+    private Map<String, Wrapper> wrapperMap = new HashMap<>();
     @Override
     public void load() {
         for (Container container : containers) {
@@ -51,19 +60,35 @@ public class SimpleContext implements Context, Pipeline {
     }
 
     @Override
-    public void reload() {
+    public void reload() throws NoSuchMethodException, IllegalAccessException, InstantiationException, MalformedURLException, InvocationTargetException, ClassNotFoundException {
+        WebappLoader webappLoader = (WebappLoader) getLoader();
+        webappLoader.setClassLoader(new WebappClassLoader());
+        logger.debug("为WebappLoader 重新设置ClassLoader成员");
+        for (File file : modifiedFiles) {
+            reload0(file.getPath());
+        }
+    }
 
+    private void reload0(String path) throws NoSuchMethodException, IllegalAccessException, InstantiationException, ClassNotFoundException, InvocationTargetException, MalformedURLException {
+        for(Map.Entry<String, Wrapper> entry : wrapperMap.entrySet()) {
+            Wrapper value = entry.getValue();
+            String servletClass = value.getServletClass();
+            String curClass = path.replace(".\\target\\test-classes\\", "")
+                    .replace("\\", ".")
+                    .replace(".class", "");
+            if (servletClass.equals(curClass)) {
+                value.setLoader(getLoader());
+                value.load();
+                logger.debug("已重新加载 " + servletClass);
+            }
+        }
     }
 
     private Pipeline pipeline = new SimplePipeline(this, new StandardValveContext());
     /**
      * 设置默认的mapper
      */
-    private Mapper mapper = new SimpleContextMapper(this);
-    private Loader loader = null;
-    private List<Container> containers = new LinkedList<>();
-    private Map<String, String> urlMap = new HashMap<>();
-    private Map<String, Wrapper> wrapperMap = new HashMap<>();
+
 
 
     @Override
@@ -103,6 +128,11 @@ public class SimpleContext implements Context, Pipeline {
     public String findServletMapping(String uri) {
         return urlMap.get(uri);
     }
+
+    public void setModifiedFiles(List<File> res) {
+        modifiedFiles = res;
+    }
+
 
     @Override
     public Container map(HttpRequest request, boolean b) {

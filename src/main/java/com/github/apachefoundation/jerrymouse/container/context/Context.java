@@ -5,6 +5,9 @@ import com.github.apachefoundation.jerrymouse.container.mapper.Mapper;
 import com.github.apachefoundation.jerrymouse.container.wrapper.Wrapper;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+
 /**
  * @Author: xiantang
  * @Date: 2019/5/29 14:59
@@ -20,5 +23,5 @@ public interface Context extends Container {
 
     void load();
 
-    void reload();
+    void reload() throws NoSuchMethodException, IllegalAccessException, InstantiationException, MalformedURLException, InvocationTargetException, ClassNotFoundException;
 }

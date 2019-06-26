@@ -1,6 +1,7 @@
 package com.github.apachefoundation.jerrymouse.container.loader;
 
 import com.github.apachefoundation.jerrymouse.container.Container;
+import com.github.apachefoundation.jerrymouse.container.context.SimpleContext;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServlet;
@@ -25,6 +26,9 @@ public class WebappLoader extends Thread implements Loader {
     private Set<String> repositories;
     private Map<String, Long> fileMap;
 
+    /**
+     * TODO 这个先写死了
+     */
     public static final String WEB_ROOT = "file:target/test-classes/";
 
     private void scanClasses() {
@@ -39,6 +43,10 @@ public class WebappLoader extends Thread implements Loader {
                 fileMap.put(f.getPath(), f.lastModified());
                 modifiedFiles.add(f);
             }
+        }
+        if (modifiedFiles.size() > 0) {
+            ((WebappClassLoader) classLoader).setModified(true);
+            ((SimpleContext) getContainer()).setModifiedFiles(modifiedFiles);
         }
 
     }
@@ -62,12 +70,26 @@ public class WebappLoader extends Thread implements Loader {
         while (!threadDone){
             try {
                 TimeUnit.SECONDS.sleep(5);
-                logger.debug("检查代码是否更新");
                 scanClasses();
                 if (!((WebappClassLoader)classLoader).modified()) {
                     continue;
                 } else {
-                    logger.debug("更新代码");
+                    try {
+                        ((SimpleContext) getContainer()).reload();
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InstantiationException e) {
+                        e.printStackTrace();
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    ((WebappClassLoader) classLoader).setModified(false);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -99,11 +121,14 @@ public class WebappLoader extends Thread implements Loader {
         return (WebappClassLoader) classLoader;
     }
 
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+    }
+
 
     @Override
     public HttpServlet load(String className) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Class clz = ((WebappClassLoader)classLoader).load("./target/test-classes/"+className.replace(".","/")+".class");
-
+        Class clz = ((WebappClassLoader)classLoader).loadClass("./target/test-classes/"+className.replace(".","/")+".class");
         HttpServlet servlet = (HttpServlet) clz.getConstructor().newInstance();
         return servlet;
     }

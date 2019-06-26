@@ -3,35 +3,36 @@ package com.github.apachefoundation.jerrymouse.container.loader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.net.URLStreamHandlerFactory;
+import java.util.List;
+
 
 /**
  * @Author: xiantang
  * @Date: 2019/6/24 22:09
  */
 public class WebappClassLoader extends ClassLoader implements Reloader {
+    private boolean modified = false;
+
+
 
     @Override
     public void addRepository(String repository) {
 
     }
 
-    public Class<?> findClass(byte[] b) throws ClassNotFoundException {
-
-        return defineClass(null, b, 0, b.length);
-    }
-
-
-
-    public Class<?> load(String name) throws ClassNotFoundException {
+    @Override
+    protected Class<?> findClass(String name) throws ClassNotFoundException {
         try {
-            return findClass(getBytes(name));
+            return findClass0(getBytes(name));
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public Class<?> findClass0(byte[] b) throws ClassNotFoundException {
+
+        return defineClass(null, b, 0, b.length);
     }
 
 
@@ -56,8 +57,15 @@ public class WebappClassLoader extends ClassLoader implements Reloader {
 
     @Override
     public boolean modified() {
-        return false;
+        return modified;
     }
+
+
+    public void setModified(boolean b) {
+        this.modified = b;
+    }
+
+
 
 
 }
