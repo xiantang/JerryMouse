@@ -1,10 +1,9 @@
 package user;
 
+import com.github.apachefoundation.jerrymouse.http.HttpRequest;
+import com.github.apachefoundation.jerrymouse.http.HttpResponse;
+import com.github.apachefoundation.jerrymouse.servlet.HttpServlet;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 
@@ -13,13 +12,13 @@ import java.io.Writer;
  */
 public class RegisterServlet extends HttpServlet {
     private final String CRLF = "\r\n";
+
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpRequest req, HttpResponse resp) throws IOException {
         Writer writer = resp.getWriter();
-        writer.write("<body>aaaaa<img src=\"divcss5-logo-201305.gif\" width=\"165\" height=\"60\" /> </body>");
+        new Sum();
+        writer.write("<body>aaaaa</body>");
         writer.flush();
-
-
     }
 
 }

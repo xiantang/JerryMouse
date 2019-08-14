@@ -9,7 +9,6 @@ import com.github.apachefoundation.jerrymouse.container.wrapper.Wrapper;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 
-import javax.servlet.ServletException;
 import java.io.IOException;
 
 /**
@@ -36,8 +35,7 @@ public class SimpleContextValve implements Valve, Contained {
     }
 
     @Override
-    public void invoke(HttpRequest request, HttpResponse response, ValveContext valveContext) throws ServletException, IOException {
-        String relativeUrl = request.getRequestURI().toLowerCase();
+    public void invoke(HttpRequest request, HttpResponse response, ValveContext valveContext) throws Exception {
         Context context = (Context) getContainer();
         Wrapper wrapper = null;
         try {
@@ -48,13 +46,9 @@ public class SimpleContextValve implements Valve, Contained {
             return;
         }
         if (wrapper == null) {
-            //TODO 加载无法访问的静态html 或者 servlet
-            System.out.println("404");
-            return;
+            request.setRequestURI("404");
+            wrapper = (Wrapper) context.map(request, true);
         }
-
         wrapper.invoke(request, response);
-
-
     }
 }

@@ -2,12 +2,10 @@ package com.github.apachefoundation.jerrymouse.utils;
 
 import com.github.apachefoundation.jerrymouse.enumeration.HttpStatus;
 import com.github.apachefoundation.jerrymouse.exception.RequestInvalidException;
-import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
-import java.net.SocketAddress;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;

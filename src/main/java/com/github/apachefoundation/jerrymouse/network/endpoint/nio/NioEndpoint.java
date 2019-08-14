@@ -5,18 +5,15 @@ import com.github.apachefoundation.jerrymouse.container.Container;
 import com.github.apachefoundation.jerrymouse.container.context.Context;
 import com.github.apachefoundation.jerrymouse.container.context.SimpleContext;
 import com.github.apachefoundation.jerrymouse.container.loader.Loader;
-import com.github.apachefoundation.jerrymouse.container.loader.SimpleLoader;
-import com.github.apachefoundation.jerrymouse.container.mapper.Mapper;
+import com.github.apachefoundation.jerrymouse.container.loader.WebappLoader;
 import com.github.apachefoundation.jerrymouse.container.pipeline.Pipeline;
 import com.github.apachefoundation.jerrymouse.container.valve.Valve;
 import com.github.apachefoundation.jerrymouse.container.valve.context.SimpleContextValve;
 import com.github.apachefoundation.jerrymouse.container.valve.wapper.SimpleWrapperValve;
 import com.github.apachefoundation.jerrymouse.container.wrapper.Wrapper;
-import com.github.apachefoundation.jerrymouse.context.WebContext;
 import com.github.apachefoundation.jerrymouse.context.WebHandler;
 import com.github.apachefoundation.jerrymouse.entity.Mapping;
 import com.github.apachefoundation.jerrymouse.exception.RequestInvalidException;
-import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.network.wrapper.nio.NioSocketWrapper;
 import com.github.apachefoundation.jerrymouse.network.connector.nio.NioAcceptor;
 import com.github.apachefoundation.jerrymouse.network.connector.nio.NioPoller;
@@ -25,7 +22,6 @@ import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
 
-import javax.servlet.http.HttpServlet;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -37,7 +33,6 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -148,39 +143,30 @@ public class NioEndpoint extends Endpoint {
         ((SimpleContext) context).setBasic(simpleContextValve);
         List<Mapping> mappings = phandler.getMappings();
         List<Wrapper> wrappers = phandler.getWrappers();
-        Loader loader = new SimpleLoader();
-        try {
-            for (Wrapper wrapper : wrappers
-            ) {
-                wrapper.setLoader(loader);
-                wrapper.load();
-                SimpleWrapperValve simpleWrapperValve = new SimpleWrapperValve();
-                ((Contained) simpleWrapperValve).setContainer(wrapper);
-                ((Pipeline) wrapper).setBasic(simpleWrapperValve);
-                context.addChild(wrapper);
-            }
-            for (Mapping map :
-                    mappings) {
-                for (String pattern : map.getPatterns()
-                ) {
-                    ((Context) context).addServletMapping(pattern, map.getName());
-                }
-            }
+        Loader loader = new WebappLoader();
+        context.setLoader(loader);
+        loader.setContainer(context);
+        // 确保是同样的Loader
 
 
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+        for (Wrapper wrapper : wrappers
+        ) {
+            wrapper.setLoader(loader);
+            SimpleWrapperValve simpleWrapperValve = new SimpleWrapperValve();
+            ((Contained) simpleWrapperValve).setContainer(wrapper);
+            ((Pipeline) wrapper).setBasic(simpleWrapperValve);
+            context.addChild(wrapper);
         }
+        for (Mapping map :
+                mappings) {
+            for (String pattern : map.getPatterns()
+            ) {
+                ((Context) context).addServletMapping(pattern, map.getName());
+            }
+        }
+        ((SimpleContext) context).load();
+        ((SimpleContext) context).backgroundProcess();
+
 
 
 
@@ -197,10 +183,7 @@ public class NioEndpoint extends Endpoint {
 
 
     public void registerToPoller(SocketChannel socket, boolean isNewSocket, int eventType, NioSocketWrapper nioSocketWrapper) throws IOException {
-//        server.configureBlocking(false);
         getPoller().register(socket, isNewSocket, eventType, nioSocketWrapper);
-//        server.configureBlocking(true);
-
     }
 
 

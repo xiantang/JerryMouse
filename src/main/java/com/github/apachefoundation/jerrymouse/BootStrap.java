@@ -3,7 +3,6 @@ package com.github.apachefoundation.jerrymouse;
 import com.github.apachefoundation.jerrymouse.network.endpoint.Endpoint;
 import com.github.apachefoundation.jerrymouse.utils.PropertyUtil;
 
-import static com.github.apachefoundation.jerrymouse.constants.Constants.WEB_ROOT;
 
 /**
  * @Author: xiantang

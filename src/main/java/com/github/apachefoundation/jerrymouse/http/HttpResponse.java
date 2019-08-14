@@ -3,10 +3,7 @@ package com.github.apachefoundation.jerrymouse.http;
 import com.github.apachefoundation.jerrymouse.constants.Constants;
 import com.github.apachefoundation.jerrymouse.utils.SocketOutputBuffer;
 
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -16,7 +13,7 @@ import java.util.*;
  * @Author: xiantang
  * @Date: 2019/4/17 14:45
  */
-public class HttpResponse implements HttpServletResponse {
+public class HttpResponse {
     private static final int BUFFER_SIZE = 1024;
     private SocketChannel socketChannel;
     //cookies
@@ -43,15 +40,15 @@ public class HttpResponse implements HttpServletResponse {
 
 
 
-    public HttpServletRequest getRequest() {
+    public HttpRequest getRequest() {
         return request;
     }
 
-    public void setRequest(HttpServletRequest request) {
+    public void setRequest(HttpRequest request) {
         this.request = request;
     }
 
-    private HttpServletRequest request;
+    private HttpRequest request;
 
     private final String  BLANK = " ";
     private final String CRLF = "\r\n";
@@ -63,8 +60,6 @@ public class HttpResponse implements HttpServletResponse {
     }
 
 
-
-    @Override
     public String getHeader(String s) {
         if (containsHeader(s)) {
             return headersMap.get(s);
@@ -72,7 +67,6 @@ public class HttpResponse implements HttpServletResponse {
         return null;
     }
 
-    @Override
     public Collection<String> getHeaders(String s) {
         if (containsHeader(s)) {
             ArrayList arrayList = new ArrayList();
@@ -119,7 +113,7 @@ public class HttpResponse implements HttpServletResponse {
         resp.append(CRLF);
         return resp.toString();
     }
-    @Override
+
     public PrintWriter getWriter()  {
         return new PrintWriter(new SocketOutputBuffer(socketChannel, this));
     }
@@ -149,19 +143,17 @@ public class HttpResponse implements HttpServletResponse {
         }
     }
 
-    @Override
     public void setCharacterEncoding(String s) {
         headersMap.put("character-encoding", s);
         this.characterEncoding = s;
     }
-    @Override
+
     public void setContentLength(int i) {
 
         headersMap.put("content-length", i + "");
         this.contentLength = i;
     }
 
-    @Override
     public void setContentLengthLong(long l) {
 
         headersMap.put("content-length", l + "");
@@ -169,7 +161,6 @@ public class HttpResponse implements HttpServletResponse {
         this.contentLengthLong = l;
     }
 
-    @Override
     public void setContentType(String s) {
 
         headersMap.put("content-type", s);
@@ -177,19 +168,17 @@ public class HttpResponse implements HttpServletResponse {
         this.contentType = s;
     }
 
-    @Override
     public void setBufferSize(int i) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(i);
         byteBuffer.put(bodyBuffer);
         bodyBuffer = byteBuffer;
     }
 
-    @Override
     public void setStatus(int i, String s) {
         status = i;
         statusInfo = s;
     }
-    @Override
+
     public int getBufferSize() {
         return bodyBuffer.capacity();
     }
@@ -200,7 +189,6 @@ public class HttpResponse implements HttpServletResponse {
      * position 指的是下一个要被读写的元素的数组下标索引，该值会随get()和put()的调用自动更新
      * @throws IOException
      */
-    @Override
     public void flushBuffer() throws IOException {
 
         // 獲取put之後的position
@@ -215,134 +203,86 @@ public class HttpResponse implements HttpServletResponse {
         socketChannel.write(bodyBuffer);
     }
 
-    @Override
     public void addHeader(String s, String s1) {
         if (!containsHeader(s)) {
             setHeader(s, s1);
         }
     }
 
-    @Override
     public void sendError(int i, String s) throws IOException {
         status = i;
         errorInfo = s;
     }
 
-    @Override
     public void sendError(int i) throws IOException {
         status = i;
     }
 
-
-    @Override
     public void addCookie(Cookie cookie) {
         cookies.add(cookie);
     }
 
-    @Override
     public boolean containsHeader(String s) {
         return headersMap.containsKey(s);
     }
-    @Override
-    public ServletOutputStream getOutputStream() throws IOException {
-        return null;
-    }
+
     @Deprecated
     public String encodeURL(String s) {
         return null;
     }
 
-    @Override
-    public String encodeRedirectURL(String s) {
-        return null;
-    }
-
-    @Override
-    public String encodeUrl(String s) {
-        return null;
-    }
-
-    @Override
-    public String encodeRedirectUrl(String s) {
-        return null;
-    }
-
-
-    @Override
     public void sendRedirect(String s) throws IOException {
         //重定向 日后实现
     }
 
-    @Override
     public void setDateHeader(String s, long l) {
         setHeader("Date", String.valueOf(new Date(l)));
     }
 
-    @Override
     public void addDateHeader(String s, long l) {
         addHeader("Date", String.valueOf(new Date(l)));
     }
 
-    @Override
     public void setHeader(String s, String s1) {
         headersMap.put(s, s1);
     }
 
-
-
-    @Override
     public void setIntHeader(String s, int i) {
         setHeader(s, i+"");
     }
 
-    @Override
     public void addIntHeader(String s, int i) {
         addHeader(s, i+"");
     }
 
-    @Override
     public void setStatus(int i) {
         status = i;
     }
 
-
-
-    @Override
     public int getStatus() {
         return status;
     }
 
-
-    @Override
     public Collection<String> getHeaderNames() {
         return headersMap.keySet();
     }
 
-    @Override
     public String getCharacterEncoding() {
         return characterEncoding;
     }
 
-    @Override
     public String getContentType() {
         return contentType;
     }
 
-
-
-
-
-    @Override
     public void resetBuffer() {
         bodyBuffer.reset();
     }
 
-    @Override
     public boolean isCommitted() {
         return isCommitted;
     }
 
-    @Override
     public void reset() {
         bodyBuffer.reset();
     }
@@ -351,15 +291,11 @@ public class HttpResponse implements HttpServletResponse {
         return bodyBuffer;
     }
 
-    @Override
     public void setLocale(Locale locale) {
 
     }
 
-    @Override
     public Locale getLocale() {
         return null;
     }
-
-
 }
