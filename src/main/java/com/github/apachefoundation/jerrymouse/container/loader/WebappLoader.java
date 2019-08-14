@@ -1,14 +1,13 @@
 package com.github.apachefoundation.jerrymouse.container.loader;
 
+import com.github.apachefoundation.jerrymouse.servlet.HttpServlet;
 import com.github.apachefoundation.jerrymouse.container.Container;
 import com.github.apachefoundation.jerrymouse.container.context.SimpleContext;
 import org.apache.log4j.Logger;
 
-import javax.servlet.http.HttpServlet;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 

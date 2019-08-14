@@ -1,7 +1,8 @@
 package com.github.apachefoundation.jerrymouse.filters;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.github.apachefoundation.jerrymouse.http.HttpRequest;
+import com.github.apachefoundation.jerrymouse.http.HttpResponse;
+
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -9,7 +10,7 @@ import java.io.UnsupportedEncodingException;
  */
 public interface Filter {
 
-    void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws UnsupportedEncodingException;
+    void doFilter(HttpRequest request, HttpResponse response, FilterChain chain) throws UnsupportedEncodingException;
 
     void destroy();
 }

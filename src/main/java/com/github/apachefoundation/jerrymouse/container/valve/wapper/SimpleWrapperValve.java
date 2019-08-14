@@ -7,11 +7,9 @@ import com.github.apachefoundation.jerrymouse.container.valve.ValveContext;
 import com.github.apachefoundation.jerrymouse.container.wrapper.SimpleWrapper;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
+import com.github.apachefoundation.jerrymouse.servlet.HttpServlet;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * @Author: xiantang
@@ -33,8 +31,8 @@ public class SimpleWrapperValve implements Valve, Contained {
     @Override
     public void invoke(HttpRequest request,
                        HttpResponse response,
-                       ValveContext valveContext
-    ) throws ServletException, IOException {
+                       ValveContext valveContext) throws IOException
+    {
         SimpleWrapper simpleWrapper = (SimpleWrapper) getContainer();
         HttpServlet servlet = null;
         servlet = simpleWrapper.allocate();

@@ -3,7 +3,6 @@ package com.github.apachefoundation.jerrymouse.exception.handler;
 import com.github.apachefoundation.jerrymouse.exception.RequestInvalidException;
 import com.github.apachefoundation.jerrymouse.network.wrapper.SocketWrapper;
 
-import javax.servlet.ServletException;
 import java.io.IOException;
 /**
  * @Author: xiantang

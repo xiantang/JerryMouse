@@ -10,7 +10,6 @@ import com.github.apachefoundation.jerrymouse.network.wrapper.nio.NioSocketWrapp
 import com.github.apachefoundation.jerrymouse.utils.SocketInputBuffer;
 import org.apache.log4j.Logger;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
@@ -48,7 +47,7 @@ public class HttpProcessor {
             request = new HttpRequest(inputBuffer);
 
             response = new HttpResponse(socketChannel);
-            ((HttpResponse) response).setRequest(request);
+            response.setRequest(request);
             nioSocketWrapper.setResponse(response);
             nioSocketWrapper.setRequest(request);
             //关闭之后才可以完全奖body写入
@@ -56,11 +55,10 @@ public class HttpProcessor {
                 IOException e) {
             ok = false;
             exceptionHandler.handle(e, nioSocketWrapper);
-        } catch (
-                ServletException e) {
-            ok = false;
-            exceptionHandler.handle(e, nioSocketWrapper);
+        } catch (RequestInvalidException e) {
+            e.printStackTrace();
         }
+
         try {
             parseRequest(inputBuffer);
         } catch (RequestInvalidException e) {
@@ -80,7 +78,7 @@ public class HttpProcessor {
             Matcher matcher = pattern.matcher(uri);
                 if (matcher.matches()) {
                     StaticResourceProcessor srp = new StaticResourceProcessor();
-                    srp.process((HttpRequest) request, (HttpResponse) response);
+                    srp.process(request, response);
                 } else {
                     Context context = (Context) nioSocketWrapper.getServer().getContext();
                     context.invoke(request, response);
@@ -95,10 +93,8 @@ public class HttpProcessor {
         }
         catch (IOException e) {
             exceptionHandler.handle(e, nioSocketWrapper);
-        }
-        catch (ServletException e) {
-            //FIXME 这里的异常处理有问题
-            exceptionHandler.handle(e, nioSocketWrapper);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -4,7 +4,6 @@ import com.github.apachefoundation.jerrymouse.container.valve.Valve;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 
-import javax.servlet.ServletException;
 import java.io.IOException;
 
 /**
@@ -13,14 +12,14 @@ import java.io.IOException;
  * @Date: 2019/5/24 19:44
  */
 public interface Pipeline {
-    public Valve getBasic();
+    Valve getBasic();
 
-    public void setBasic(Valve valve);
+    void setBasic(Valve valve);
 
-    public void addValve(Valve valve);
+    void addValve(Valve valve);
 
-    public void invoke(HttpRequest request, HttpResponse response) throws ServletException, IOException;
+    void invoke(HttpRequest request, HttpResponse response) throws Exception;
 
-    public void removeValve(Valve valve);
+    void removeValve(Valve valve);
 
 }

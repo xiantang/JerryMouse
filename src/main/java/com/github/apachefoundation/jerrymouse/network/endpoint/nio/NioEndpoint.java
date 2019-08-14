@@ -183,10 +183,7 @@ public class NioEndpoint extends Endpoint {
 
 
     public void registerToPoller(SocketChannel socket, boolean isNewSocket, int eventType, NioSocketWrapper nioSocketWrapper) throws IOException {
-//        server.configureBlocking(false);
         getPoller().register(socket, isNewSocket, eventType, nioSocketWrapper);
-//        server.configureBlocking(true);
-
     }
 
 

@@ -1,9 +1,9 @@
 package com.github.apachefoundation.jerrymouse.filters;
 
+import com.github.apachefoundation.jerrymouse.http.HttpRequest;
+import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 import com.github.apachefoundation.jerrymouse.utils.StringUtils;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -24,7 +24,7 @@ public class CharsetFilter implements Filter {
     }
 
     @Override
-    public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws UnsupportedEncodingException {
+    public void doFilter(HttpRequest request, HttpResponse response, FilterChain chain) throws UnsupportedEncodingException {
         if (StringUtils.isNullOrEmpty(charset)) {
             // 设置默认字符集为 UTF-8
             charset = DEFAULT_CHARSET;

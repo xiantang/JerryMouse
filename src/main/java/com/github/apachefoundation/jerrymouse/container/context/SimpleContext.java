@@ -16,7 +16,6 @@ import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 import org.apache.log4j.Logger;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -103,7 +102,7 @@ public class SimpleContext implements Context, Pipeline {
 
 
     @Override
-    public void invoke(HttpRequest request, HttpResponse response) throws ServletException, IOException {
+    public void invoke(HttpRequest request, HttpResponse response) throws Exception {
         pipeline.invoke(request, response);
     }
 

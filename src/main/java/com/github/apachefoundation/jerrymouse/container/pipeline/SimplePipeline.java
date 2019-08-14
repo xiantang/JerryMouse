@@ -6,7 +6,6 @@ import com.github.apachefoundation.jerrymouse.container.valve.ValveContext;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +52,7 @@ public class SimplePipeline implements Pipeline {
     }
 
     @Override
-    public void invoke(HttpRequest request, HttpResponse response) throws ServletException, IOException {
+    public void invoke(HttpRequest request, HttpResponse response) throws Exception {
         // 每次调用把stage设置为0
         valveContext.setStage(0);
         valveContext.invokeNext(request, response);

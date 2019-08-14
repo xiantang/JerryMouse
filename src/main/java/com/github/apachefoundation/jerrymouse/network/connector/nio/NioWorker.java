@@ -1,5 +1,7 @@
 package com.github.apachefoundation.jerrymouse.network.connector.nio;
 
+import com.github.apachefoundation.jerrymouse.http.HttpRequest;
+import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 import com.github.apachefoundation.jerrymouse.network.endpoint.nio.NioEndpoint;
 import com.github.apachefoundation.jerrymouse.network.wrapper.nio.NioSocketWrapper;
 import com.github.apachefoundation.jerrymouse.context.WebApp;
@@ -8,8 +10,6 @@ import com.github.apachefoundation.jerrymouse.network.wrapper.SocketWrapper;
 import com.github.apachefoundation.jerrymouse.processor.HttpProcessor;
 import org.apache.log4j.Logger;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -128,8 +128,8 @@ public class NioWorker {
 
         @Override
         public void run() {
-            HttpServletResponse response = nioSocketWrapper.getResponse();
-            HttpServletRequest request = nioSocketWrapper.getRequest();
+            HttpResponse response = nioSocketWrapper.getResponse();
+            HttpRequest request = nioSocketWrapper.getRequest();
             String connection = "connection";
             try {
                 response.flushBuffer();

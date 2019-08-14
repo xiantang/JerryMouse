@@ -8,9 +8,6 @@ import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 import org.apache.log4j.Logger;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
-
 /**
  * @Author: xiantang
  * @Date: 2019/5/25 21:21
@@ -37,7 +34,7 @@ public class ClientIpLoggerValve implements Valve, Contained {
     }
 
     @Override
-    public void invoke(HttpRequest request, HttpResponse response, ValveContext valveContext) throws ServletException, IOException {
+    public void invoke(HttpRequest request, HttpResponse response, ValveContext valveContext) throws Exception {
         valveContext.invokeNext(request, response);
 
         String remoteIp = request.getRemoteAddr();

@@ -5,8 +5,6 @@ import com.github.apachefoundation.jerrymouse.container.valve.ValveContext;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
 
 /**
  * @Author: xiantang
@@ -30,7 +28,7 @@ public final class StandardValveContext implements ValveContext {
     }
 
     @Override
-    public void invokeNext(HttpRequest request, HttpResponse response) throws ServletException, IOException {
+    public void invokeNext(HttpRequest request, HttpResponse response) throws Exception {
         int subscript = stage;
         stage += 1;
         if (subscript < valves.length) {
@@ -38,7 +36,7 @@ public final class StandardValveContext implements ValveContext {
         } else if ((subscript == valves.length)) {
             basic.invoke(request, response, this);
         } else {
-            throw new ServletException("standardPipeline.noValve");
+            throw new Exception("standardPipeline.noValve");
         }
     }
 

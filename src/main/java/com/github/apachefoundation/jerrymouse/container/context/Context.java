@@ -2,7 +2,6 @@ package com.github.apachefoundation.jerrymouse.container.context;
 
 import com.github.apachefoundation.jerrymouse.container.Container;
 import com.github.apachefoundation.jerrymouse.container.mapper.Mapper;
-import com.github.apachefoundation.jerrymouse.container.wrapper.Wrapper;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 
 import java.lang.reflect.InvocationTargetException;

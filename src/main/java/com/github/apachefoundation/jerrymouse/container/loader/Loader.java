@@ -1,8 +1,8 @@
 package com.github.apachefoundation.jerrymouse.container.loader;
 
+import com.github.apachefoundation.jerrymouse.servlet.HttpServlet;
 import com.github.apachefoundation.jerrymouse.container.Container;
 
-import javax.servlet.http.HttpServlet;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -11,23 +11,23 @@ import java.lang.reflect.InvocationTargetException;
  */
 public interface Loader {
 
-    public HttpServlet load(String className) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
+    HttpServlet load(String className) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
 
-    public ClassLoader getClassLoader();
+    ClassLoader getClassLoader();
 
-    public Container getContainer();
+    Container getContainer();
 
-    public void setContainer(Container context);
+    void setContainer(Container context);
 
-    public void addRepository(String repository);
+    void addRepository(String repository);
 
-    public boolean modified();
+    boolean modified();
 
-    public void setReloadable(boolean reloadable);
+    void setReloadable(boolean reloadable);
 
-    public boolean getReloadable();
+    boolean getReloadable();
 
-    public void addPropertyChangeListener();
+    void addPropertyChangeListener();
 
-    public String[] findRepositories();
+    String[] findRepositories();
 }

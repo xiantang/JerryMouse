@@ -1,11 +1,11 @@
 package com.github.apachefoundation.jerrymouse.network.wrapper.nio;
 
+import com.github.apachefoundation.jerrymouse.http.HttpRequest;
+import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 import com.github.apachefoundation.jerrymouse.network.connector.nio.NioPoller;
 import com.github.apachefoundation.jerrymouse.network.endpoint.nio.NioEndpoint;
 import com.github.apachefoundation.jerrymouse.network.wrapper.SocketWrapper;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.channels.SocketChannel;
 /**
@@ -16,8 +16,8 @@ public class NioSocketWrapper implements SocketWrapper {
 
     private final NioEndpoint server;
     private final NioPoller poller;
-    private HttpServletResponse response;
-    private HttpServletRequest request;
+    private HttpResponse response;
+    private HttpRequest request;
 
     private volatile boolean newSocket;
 
@@ -46,19 +46,19 @@ public class NioSocketWrapper implements SocketWrapper {
         this.newSocket = isNewSocket;
     }
 
-    public void setResponse(HttpServletResponse response) {
+    public void setResponse(HttpResponse response) {
         this.response = response;
     }
 
-    public HttpServletResponse getResponse() {
+    public HttpResponse getResponse() {
         return response;
     }
 
-    public HttpServletRequest getRequest() {
+    public HttpRequest getRequest() {
         return request;
     }
 
-    public void setRequest(HttpServletRequest request) {
+    public void setRequest(HttpRequest request) {
         this.request = request;
     }
 

@@ -1,5 +1,7 @@
 package com.github.apachefoundation.jerrymouse.container.wrapper;
 
+import com.github.apachefoundation.jerrymouse.http.HttpRequest;
+import com.github.apachefoundation.jerrymouse.servlet.HttpServlet;
 import com.github.apachefoundation.jerrymouse.container.Container;
 import com.github.apachefoundation.jerrymouse.container.loader.Loader;
 import com.github.apachefoundation.jerrymouse.container.loader.WebappLoader;
@@ -7,12 +9,9 @@ import com.github.apachefoundation.jerrymouse.container.pipeline.Pipeline;
 import com.github.apachefoundation.jerrymouse.container.pipeline.SimplePipeline;
 import com.github.apachefoundation.jerrymouse.container.pipeline.StandardValveContext;
 import com.github.apachefoundation.jerrymouse.container.valve.Valve;
-import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
@@ -123,7 +122,7 @@ public class SimpleWrapper implements Wrapper, Pipeline {
 
 
     @Override
-    public void invoke(HttpRequest request, HttpResponse response) throws ServletException, IOException {
+    public void invoke(HttpRequest request, HttpResponse response) throws Exception {
         pipeline.invoke(request, response);
     }
 

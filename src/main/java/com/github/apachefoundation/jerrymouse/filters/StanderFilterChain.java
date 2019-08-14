@@ -1,7 +1,8 @@
 package com.github.apachefoundation.jerrymouse.filters;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.github.apachefoundation.jerrymouse.http.HttpRequest;
+import com.github.apachefoundation.jerrymouse.http.HttpResponse;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -20,7 +21,7 @@ public class StanderFilterChain implements FilterChain {
     }
 
     @Override
-    public void doFilter(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+    public void doFilter(HttpRequest request, HttpResponse response) throws UnsupportedEncodingException {
         Iterator<Filter> iterator = filters.iterator();
         while (iterator.hasNext()) {
             Filter filter = iterator.next();
