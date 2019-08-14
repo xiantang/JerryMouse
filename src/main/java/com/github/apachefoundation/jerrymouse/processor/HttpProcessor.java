@@ -44,7 +44,7 @@ public class HttpProcessor {
         try {
             inputBuffer = new SocketInputBuffer(socketChannel);
 
-            request = new HttpRequest(inputBuffer);
+            request = new HttpRequest();
 
             response = new HttpResponse(socketChannel);
             response.setRequest(request);
@@ -55,16 +55,11 @@ public class HttpProcessor {
                 IOException e) {
             ok = false;
             exceptionHandler.handle(e, nioSocketWrapper);
-        } catch (RequestInvalidException e) {
-            e.printStackTrace();
         }
 
         try {
             parseRequest(inputBuffer);
-        } catch (RequestInvalidException e) {
-            ok = false;
-            exceptionHandler.handle(e, nioSocketWrapper);
-        } catch (IOException e) {
+        } catch (RequestInvalidException | IOException e) {
             ok = false;
             exceptionHandler.handle(e, nioSocketWrapper);
         }
@@ -167,7 +162,7 @@ public class HttpProcessor {
                 request.addCookie(new Cookie(kav[0], kav[1]));
             }
         }
-        request.setHead(headKey, headValue);
+        request.setHeader(headKey, headValue);
         return true;
 
     }
