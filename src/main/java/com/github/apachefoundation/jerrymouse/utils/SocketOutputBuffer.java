@@ -57,6 +57,6 @@ public class SocketOutputBuffer extends Writer{
 
     @Override
     public void close() throws IOException {
-        logger.debug("close 完成");
+//        logger.debug("close 完成");
     }
 }

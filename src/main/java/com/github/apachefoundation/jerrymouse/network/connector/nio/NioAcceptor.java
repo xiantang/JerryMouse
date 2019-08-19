@@ -18,14 +18,10 @@ public class NioAcceptor implements Runnable {
 
     @Override
     public void run() {
-
         while (nioEndpoint.isRunning()) {
-
             SocketChannel client;
             try {
-
                 // 若沒有事件就緒則不往下執行
-
                 client = nioEndpoint.accept();
                 if (client == null) {
                     continue;
@@ -34,14 +30,11 @@ public class NioAcceptor implements Runnable {
                 client.configureBlocking(false);
 
                 // 注册到Poller 中去
-
                 nioEndpoint.registerToPoller(client,true, SelectionKey.OP_READ, null);
-
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-
     }
 }
