@@ -111,7 +111,6 @@ public class NioEndpoint extends Endpoint {
     private void initAcceptor() {
         acceptor = new NioAcceptor(this);
         Thread t = new Thread(acceptor);
-
         t.start();
         logger.info("初始化Acceptor完成");
 
@@ -148,19 +147,15 @@ public class NioEndpoint extends Endpoint {
         loader.setContainer(context);
         // 确保是同样的Loader
 
-
-        for (Wrapper wrapper : wrappers
-        ) {
+        for (Wrapper wrapper : wrappers) {
             wrapper.setLoader(loader);
             SimpleWrapperValve simpleWrapperValve = new SimpleWrapperValve();
             ((Contained) simpleWrapperValve).setContainer(wrapper);
             ((Pipeline) wrapper).setBasic(simpleWrapperValve);
             context.addChild(wrapper);
         }
-        for (Mapping map :
-                mappings) {
-            for (String pattern : map.getPatterns()
-            ) {
+        for (Mapping map : mappings) {
+            for (String pattern : map.getPatterns()) {
                 ((Context) context).addServletMapping(pattern, map.getName());
             }
         }
@@ -207,13 +202,6 @@ public class NioEndpoint extends Endpoint {
 
     @Override
     public void close() {
-
-    }
-
-    public static void main(String[] args) throws IOException, RequestInvalidException {
-        NioEndpoint nioEndpoint = new NioEndpoint();
-        nioEndpoint.initContext();
-        Container container = nioEndpoint.getContext();
 
     }
 }

@@ -6,7 +6,6 @@ import com.github.apachefoundation.jerrymouse.container.valve.ValveContext;
 import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,14 +19,10 @@ public class SimplePipeline implements Pipeline {
     private Valve basic;
     private List<Valve> valves = new ArrayList<>();
     private ValveContext valveContext;
-//    private
-
 
     public SimplePipeline(ValveContext valveContext) {
         this.valveContext = valveContext;
-
     }
-
 
     public SimplePipeline(Container container,ValveContext valveContext) {
         this(valveContext);

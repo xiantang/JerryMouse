@@ -98,7 +98,7 @@ public class WebappLoader extends Thread implements Loader {
 
     @Override
     public synchronized void start() {
-        logger.debug("开启新的线程执行类的载入");
+//        logger.debug("开启新的线程执行类的载入");
         super.start();
     }
 
