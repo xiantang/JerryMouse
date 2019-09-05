@@ -79,7 +79,6 @@ public class NioWorker {
 
     public void executeRead(NioSocketWrapper nioSocketWrapper) {
         try {
-
             readThreadPool.execute(new Reader(nioSocketWrapper));
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,12 +86,8 @@ public class NioWorker {
     }
 
     public void executeWrite(NioSocketWrapper nioSocketWrapper) {
-        try {
-            logger.debug("注册写");
-            writeThreadPool.execute(new Writer(nioSocketWrapper,exceptionHandler));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        logger.debug("注册写");
+        writeThreadPool.execute(new Writer(nioSocketWrapper));
     }
 
 
@@ -106,7 +101,7 @@ public class NioWorker {
 
         @Override
         public void run() {
-            logger.debug("执行写");
+            logger.debug("执行读");
             SocketChannel socketChannel = nioSocketWrapper.getSocketChannel();
             HttpProcessor httpProcessor = new HttpProcessor();
             httpProcessor.process(socketChannel, nioSocketWrapper);
@@ -120,9 +115,9 @@ public class NioWorker {
         private NioEndpoint endpoint;
         private NioSocketWrapper nioSocketWrapper;
         private  Logger logger = Logger.getLogger(Writer.class);
-        public Writer(SocketWrapper socketWrapper, ExceptionHandler exceptionHandler) throws IOException {
+        public Writer(SocketWrapper socketWrapper) {
             this.nioSocketWrapper = (NioSocketWrapper)socketWrapper;
-            this.endpoint =(NioEndpoint) nioSocketWrapper.getServer();
+            this.endpoint = nioSocketWrapper.getServer();
             this.client = nioSocketWrapper.getSocketChannel();
         }
 

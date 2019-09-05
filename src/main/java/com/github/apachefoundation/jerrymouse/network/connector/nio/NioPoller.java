@@ -67,8 +67,8 @@ public class NioPoller implements Runnable {
 
                 // 获得所有已就绪事件Key集合
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
-                for (Iterator<SelectionKey> it = selectedKeys.iterator(); it.hasNext(); ) {
 
+                for (Iterator<SelectionKey> it = selectedKeys.iterator(); it.hasNext(); ) {
                     SelectionKey key = it.next();
                     // 先判断是否有效
                     if (key.isValid()) {
@@ -88,7 +88,6 @@ public class NioPoller implements Runnable {
                         }
                     }
                     it.remove();
-
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -99,7 +98,6 @@ public class NioPoller implements Runnable {
     }
 
     private void events() {
-//        logger.debug("当前队列大小为 " + events.size());
         PollerEvent pollerEvent;
         for (int i = 0, size = events.size(); i < size && (pollerEvent = events.poll()) != null; i++) {
             new Thread(pollerEvent).start();
@@ -125,7 +123,6 @@ public class NioPoller implements Runnable {
             return wrapper;
         }
 
-
         @Override
         public void run() {
             logger.debug("将读事件注册到Poller的selector中");
@@ -147,7 +144,6 @@ public class NioPoller implements Runnable {
             }
 
         }
-
 
     }
 }

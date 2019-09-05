@@ -35,6 +35,7 @@ public class HttpProcessor {
     private boolean ok;
 
     private Logger logger = Logger.getLogger(HttpProcessor.class);
+
     public void process(SocketChannel socketChannel, NioSocketWrapper nioSocketWrapper) {
         ExceptionHandler exceptionHandler = new ExceptionHandler();
         SocketInputBuffer inputBuffer = null;
@@ -78,7 +79,7 @@ public class HttpProcessor {
                     Context context = (Context) nioSocketWrapper.getServer().getContext();
                     context.invoke(request, response);
                 }
-                logger.info("[" + response.getStatus() + "] " + request.getMethod() + " /" + request.getRequestURI());
+                logger.debug("[" + response.getStatus() + "] " + request.getMethod() + " /" + request.getRequestURI());
                 logger.debug("开始注册写事件");
 
                 endpoint.registerToPoller(client, false, SelectionKey.OP_WRITE, nioSocketWrapper);
@@ -164,6 +165,5 @@ public class HttpProcessor {
         }
         request.setHeader(headKey, headValue);
         return true;
-
     }
 }
