@@ -4,17 +4,16 @@ package com.github.apachefoundation.jerrymouse.context;
 import com.github.apachefoundation.jerrymouse.container.wrapper.SimpleWrapper;
 import com.github.apachefoundation.jerrymouse.container.wrapper.Wrapper;
 import com.github.apachefoundation.jerrymouse.entity.Mapping;
-import com.github.apachefoundation.jerrymouse.entity.Entity;
+
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -34,7 +33,7 @@ public class WebHandler extends DefaultHandler {
     private boolean isMapping = false;
 
     @Override
-    public void startDocument() throws SAXException {
+    public void startDocument() {
         wrappers = new ArrayList<>();
         mappings = new ArrayList<>();
     }
@@ -57,7 +56,7 @@ public class WebHandler extends DefaultHandler {
     }
 
     @Override
-    public void characters(char[] ch, int start, int length) throws SAXException {
+    public void characters(char[] ch, int start, int length)  {
         String servletName = "servlet-name";
         String urlPattern = "url-pattern";
         String servletClass = "servlet-class";
@@ -82,12 +81,12 @@ public class WebHandler extends DefaultHandler {
     }
 
     @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) {
         String servlet = "servlet";
         String servletMapping = "servlet-mapping";
         if (qName != null) {
             if (qName.equals(servlet)) {
-                wrappers.add((Wrapper) wrapper);
+                wrappers.add(wrapper);
             } else if (qName.equals(servletMapping)) {
                 mappings.add(mapping);
             }
@@ -107,28 +106,25 @@ public class WebHandler extends DefaultHandler {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parse = factory.newSAXParser();
-            WebHandler phandler = new WebHandler();
+            WebHandler pHandler = new WebHandler();
             // 当前线程的类加载器
-            parse.parse(Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream("web.xml"), phandler);
-            for (Wrapper w : phandler.getWrappers()
+            parse.parse(Objects.requireNonNull(Thread.currentThread().getContextClassLoader()
+                    .getResourceAsStream("web.xml")), pHandler);
+            for (Wrapper w : pHandler.getWrappers()
             ) {
                 System.out.println(w.getName());
                 System.out.println(w.getServletClass());
             }
 
             for (Mapping m :
-                    phandler.getMappings()) {
+                    pHandler.getMappings()) {
                 System.out.println(m.getName());
                 System.out.println(m.getPatterns());
 
             }
 
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (Exception e) {
+            // TODO 替换为log的error 方便在日志中打印
             e.printStackTrace();
         }
     }

@@ -1,6 +1,5 @@
 package com.github.apachefoundation.jerrymouse.http;
 
-import javax.servlet.http.Cookie;
 import java.util.*;
 
 
@@ -12,7 +11,6 @@ public class HttpRequest {
 
     private String method;
     private String requestURI;
-    private ArrayList<Cookie> cookies = new ArrayList<>();
     private Map<String, String> headersMap;
     private Map<String, String> parametersMap;
     private String remoteAddr;
@@ -85,10 +83,6 @@ public class HttpRequest {
         this.keepAlive = keepAlive;
     }
 
-    public void addCookie(Cookie cookie) {
-        cookies.add(cookie);
-    }
-
 
     public String getMethod() {
         return method;
@@ -99,10 +93,6 @@ public class HttpRequest {
         return requestURI;
     }
 
-
-    public void setCharacterEncoding(String s) {
-
-    }
 
 
     /**

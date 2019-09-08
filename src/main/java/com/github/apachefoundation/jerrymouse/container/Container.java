@@ -21,5 +21,4 @@ public interface Container {
 
     Loader getLoader();
 
-    Container[] findChildren();
 }

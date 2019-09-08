@@ -37,7 +37,7 @@ public class SimpleContextValve implements Valve, Contained {
     @Override
     public void invoke(HttpRequest request, HttpResponse response, ValveContext valveContext) throws Exception {
         Context context = (Context) getContainer();
-        Wrapper wrapper = null;
+        Wrapper wrapper;
         try {
             wrapper = (Wrapper) context.map(request, true);
         } catch (IllegalArgumentException e) {

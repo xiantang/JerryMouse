@@ -16,11 +16,6 @@ public class WebappClassLoader extends ClassLoader implements Reloader {
 
 
     @Override
-    public void addRepository(String repository) {
-
-    }
-
-    @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
         if (!name.contains("class")) {
             name = "./target/test-classes/" + name.replace(".", "/") + ".class";
@@ -33,7 +28,7 @@ public class WebappClassLoader extends ClassLoader implements Reloader {
         return null;
     }
 
-    public Class<?> findClass0(byte[] b) throws ClassNotFoundException {
+    public Class<?> findClass0(byte[] b) {
 
         return defineClass(null, b, 0, b.length);
     }
@@ -50,11 +45,6 @@ public class WebappClassLoader extends ClassLoader implements Reloader {
         }
         fin.close();
         return raw;
-    }
-
-    @Override
-    public String[] findRepository() {
-        return new String[0];
     }
 
     @Override

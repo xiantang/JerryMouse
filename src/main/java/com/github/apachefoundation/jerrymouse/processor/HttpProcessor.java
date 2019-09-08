@@ -10,7 +10,6 @@ import com.github.apachefoundation.jerrymouse.network.wrapper.nio.NioSocketWrapp
 import com.github.apachefoundation.jerrymouse.utils.SocketInputBuffer;
 import org.apache.log4j.Logger;
 
-import javax.servlet.http.Cookie;
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -156,12 +155,7 @@ public class HttpProcessor {
         } else if (COOKIE.equals(headKey)) {
             headValue = headValue.replaceAll(" ", "");
             String[] cookiesStr = headValue.split(";");
-            for (int i = 0; i < cookiesStr.length; i++) {
-                String cookieStr = cookiesStr[i];
-                String[] kav = cookieStr.split("=");
-                // TODO 添加sessionid的解析
-                request.addCookie(new Cookie(kav[0], kav[1]));
-            }
+            // TODO 添加sessionid的解析
         }
         request.setHeader(headKey, headValue);
         return true;

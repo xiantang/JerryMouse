@@ -42,15 +42,7 @@ public abstract class Endpoint {
                 .append("Endpoint");
         try {
             return (Endpoint)Class.forName(sb.toString()).getConstructor().newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         throw new IllegalArgumentException(connector);

@@ -12,13 +12,10 @@ public interface Mapper  {
     /**
      * 返回与该映射器相关联的servlet容器实例
      */
-    public Container getContainer();
+    Container getContainer();
 
-    public void setContainer(Container container);
+    void setContainer(Container container);
 
-    public void setProtocol(String protocol);
-
-    public String getProtocol();
 
     /**
      * 返回要处理某个特定请求的子容器的实例
@@ -26,6 +23,6 @@ public interface Mapper  {
      * @param update
      * @return
      */
-    public Container map(HttpRequest request, boolean update);
+    Container map(HttpRequest request, boolean update);
 
 }

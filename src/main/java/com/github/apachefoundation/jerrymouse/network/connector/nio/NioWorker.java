@@ -4,8 +4,6 @@ import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 import com.github.apachefoundation.jerrymouse.network.endpoint.nio.NioEndpoint;
 import com.github.apachefoundation.jerrymouse.network.wrapper.nio.NioSocketWrapper;
-import com.github.apachefoundation.jerrymouse.context.WebApp;
-import com.github.apachefoundation.jerrymouse.exception.handler.ExceptionHandler;
 import com.github.apachefoundation.jerrymouse.network.wrapper.SocketWrapper;
 import com.github.apachefoundation.jerrymouse.processor.HttpProcessor;
 import org.apache.log4j.Logger;
@@ -22,16 +20,14 @@ import java.util.concurrent.*;
 public class NioWorker {
 
     /**
-     * 读 处理请求的线程池
+     * 读处理请求的线程池
      */
     private ExecutorService readThreadPool;
     /**
      * 写 线程池
      */
     private ExecutorService writeThreadPool;
-    private  Logger logger = Logger.getLogger(WebApp.class);
-    private ExceptionHandler exceptionHandler;
-
+    private  Logger logger = Logger.getLogger(NioWorker.class);
 
     /**
      * 初始化Readers
@@ -72,7 +68,6 @@ public class NioWorker {
     }
 
     public NioWorker() {
-        this.exceptionHandler = new ExceptionHandler();
         initReader();
         initWriter();
     }

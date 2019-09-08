@@ -13,7 +13,4 @@ public class RequestInvalidException extends Exception {
         this.status = status;
     }
 
-    public HttpStatus getStatus() {
-        return status;
-    }
 }

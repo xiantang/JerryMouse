@@ -13,21 +13,8 @@ public interface Loader {
 
     HttpServlet load(String className) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException;
 
-    ClassLoader getClassLoader();
-
     Container getContainer();
 
     void setContainer(Container context);
 
-    void addRepository(String repository);
-
-    boolean modified();
-
-    void setReloadable(boolean reloadable);
-
-    boolean getReloadable();
-
-    void addPropertyChangeListener();
-
-    String[] findRepositories();
 }
