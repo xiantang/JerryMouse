@@ -3,7 +3,7 @@ package com.github.apachefoundation.jerrymouse.http;
 import com.github.apachefoundation.jerrymouse.constants.Constants;
 import com.github.apachefoundation.jerrymouse.utils.SocketOutputBuffer;
 
-import javax.servlet.http.Cookie;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -17,7 +17,7 @@ public class HttpResponse {
     private static final int BUFFER_SIZE = 1024;
     private SocketChannel socketChannel;
     //cookies
-    private ArrayList<Cookie> cookies = new ArrayList<Cookie>();
+
     //http header 字段
     private Map<String, String> headersMap;
     //状态字 默认200了
@@ -50,8 +50,8 @@ public class HttpResponse {
 
     private HttpRequest request;
 
-    private final String  BLANK = " ";
-    private final String CRLF = "\r\n";
+    private static final String  BLANK = " ";
+    private static final String CRLF = "\r\n";
 
     public HttpResponse(SocketChannel socketChannel) throws IOException {
         this.socketChannel = socketChannel;
@@ -59,22 +59,6 @@ public class HttpResponse {
         this.bodyBuffer = ByteBuffer.allocate(204800);
     }
 
-
-    public String getHeader(String s) {
-        if (containsHeader(s)) {
-            return headersMap.get(s);
-        }
-        return null;
-    }
-
-    public Collection<String> getHeaders(String s) {
-        if (containsHeader(s)) {
-            ArrayList arrayList = new ArrayList();
-            arrayList.add(headersMap.get(s));
-            return arrayList;
-        }
-        return null;
-    }
 
     /**
      * 這裏需要修改
@@ -119,8 +103,9 @@ public class HttpResponse {
     }
 
 
+    // TODO: 这里的代码可以将静态文件读入cache
     public void sendStaticResource() throws IOException {
-        FileInputStream fis = null;
+        FileInputStream fis;
         try {
             File file = new File(Constants.WEB_ROOT, request.getRequestURI());
             fis = new FileInputStream(file);
@@ -143,10 +128,6 @@ public class HttpResponse {
         }
     }
 
-    public void setCharacterEncoding(String s) {
-        headersMap.put("character-encoding", s);
-        this.characterEncoding = s;
-    }
 
     public void setContentLength(int i) {
 
@@ -154,19 +135,7 @@ public class HttpResponse {
         this.contentLength = i;
     }
 
-    public void setContentLengthLong(long l) {
 
-        headersMap.put("content-length", l + "");
-
-        this.contentLengthLong = l;
-    }
-
-    public void setContentType(String s) {
-
-        headersMap.put("content-type", s);
-
-        this.contentType = s;
-    }
 
     public void setBufferSize(int i) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(i);
@@ -174,10 +143,6 @@ public class HttpResponse {
         bodyBuffer = byteBuffer;
     }
 
-    public void setStatus(int i, String s) {
-        status = i;
-        statusInfo = s;
-    }
 
     public int getBufferSize() {
         return bodyBuffer.capacity();
@@ -203,99 +168,19 @@ public class HttpResponse {
         socketChannel.write(bodyBuffer);
     }
 
-    public void addHeader(String s, String s1) {
-        if (!containsHeader(s)) {
-            setHeader(s, s1);
-        }
-    }
 
-    public void sendError(int i, String s) throws IOException {
-        status = i;
-        errorInfo = s;
-    }
-
-    public void sendError(int i) throws IOException {
-        status = i;
-    }
-
-    public void addCookie(Cookie cookie) {
-        cookies.add(cookie);
-    }
-
-    public boolean containsHeader(String s) {
-        return headersMap.containsKey(s);
-    }
-
-    @Deprecated
-    public String encodeURL(String s) {
-        return null;
-    }
-
-    public void sendRedirect(String s) throws IOException {
-        //重定向 日后实现
-    }
-
-    public void setDateHeader(String s, long l) {
-        setHeader("Date", String.valueOf(new Date(l)));
-    }
-
-    public void addDateHeader(String s, long l) {
-        addHeader("Date", String.valueOf(new Date(l)));
-    }
 
     public void setHeader(String s, String s1) {
         headersMap.put(s, s1);
-    }
-
-    public void setIntHeader(String s, int i) {
-        setHeader(s, i+"");
-    }
-
-    public void addIntHeader(String s, int i) {
-        addHeader(s, i+"");
-    }
-
-    public void setStatus(int i) {
-        status = i;
     }
 
     public int getStatus() {
         return status;
     }
 
-    public Collection<String> getHeaderNames() {
-        return headersMap.keySet();
-    }
-
-    public String getCharacterEncoding() {
-        return characterEncoding;
-    }
-
-    public String getContentType() {
-        return contentType;
-    }
-
-    public void resetBuffer() {
-        bodyBuffer.reset();
-    }
-
-    public boolean isCommitted() {
-        return isCommitted;
-    }
-
-    public void reset() {
-        bodyBuffer.reset();
-    }
 
     public ByteBuffer getBodyBuffer() {
         return bodyBuffer;
     }
 
-    public void setLocale(Locale locale) {
-
-    }
-
-    public Locale getLocale() {
-        return null;
-    }
 }

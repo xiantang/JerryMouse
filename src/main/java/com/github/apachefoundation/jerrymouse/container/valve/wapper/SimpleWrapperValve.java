@@ -29,12 +29,10 @@ public class SimpleWrapperValve implements Valve, Contained {
     }
 
     @Override
-    public void invoke(HttpRequest request,
-                       HttpResponse response,
-                       ValveContext valveContext) throws IOException
-    {
+    public void invoke(HttpRequest request, HttpResponse response,
+                       ValveContext valveContext) throws IOException {
         SimpleWrapper simpleWrapper = (SimpleWrapper) getContainer();
-        HttpServlet servlet = null;
+        HttpServlet servlet;
         servlet = simpleWrapper.allocate();
         servlet.service(request, response);
     }

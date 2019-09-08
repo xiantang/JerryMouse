@@ -144,10 +144,6 @@ public class SimpleWrapper implements Wrapper, Pipeline {
 
     }
 
-    @Override
-    public Container[] findChildren() {
-        throw new NotImplementedException();
-    }
 
 
 }

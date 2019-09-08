@@ -19,16 +19,11 @@ public class WebappLoader extends Thread implements Loader {
 
     private Container container;
     private boolean threadDone = false;
-    private boolean reloadable = true;
     private Logger logger = Logger.getLogger(WebappLoader.class);
     private ClassLoader classLoader = null;
     private Set<String> repositories;
     private Map<String, Long> fileMap;
 
-    /**
-     * TODO 这个先写死了
-     */
-    public static final String WEB_ROOT = "file:target/test-classes/";
 
     private void scanClasses() {
 
@@ -36,7 +31,7 @@ public class WebappLoader extends Thread implements Loader {
         List<File> res = new ArrayList<>();
         List<File> modifiedFiles = new ArrayList<>();
         res = findAllFiles(res, file);
-        for (File f:res) {
+        for (File f : res) {
             if (f.lastModified() > fileMap.get(f.getPath())) {
                 System.out.println(f.getPath());
                 fileMap.put(f.getPath(), f.lastModified());
@@ -51,12 +46,12 @@ public class WebappLoader extends Thread implements Loader {
     }
 
 
-
-    private List<File> findAllFiles(List res,File file) {
+    private List<File> findAllFiles(List res, File file) {
         File[] fs = file.listFiles();
+        assert fs != null;
         for (File f : fs) {
             if (f.isDirectory()) {
-                res = findAllFiles(res,f);
+                res = findAllFiles(res, f);
             } else {
                 res.add(f);
             }
@@ -66,40 +61,22 @@ public class WebappLoader extends Thread implements Loader {
 
     @Override
     public void run() {
-        while (!threadDone){
+        while (!threadDone) {
             try {
                 TimeUnit.SECONDS.sleep(5);
                 scanClasses();
-                if (!((WebappClassLoader)classLoader).modified()) {
-                    continue;
-                } else {
+                if (((WebappClassLoader) classLoader).modified()) {
                     try {
                         ((SimpleContext) getContainer()).reload();
-                    } catch (NoSuchMethodException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InstantiationException e) {
-                        e.printStackTrace();
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
+                    } catch (Exception e) {
+                        logger.error(e.getStackTrace());
                     }
                     ((WebappClassLoader) classLoader).setModified(false);
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error(e.getStackTrace());
             }
         }
-    }
-
-    @Override
-    public synchronized void start() {
-//        logger.debug("开启新的线程执行类的载入");
-        super.start();
     }
 
 
@@ -110,12 +87,12 @@ public class WebappLoader extends Thread implements Loader {
         File file = new File("./target/test-classes/");
         List<File> res = new ArrayList<>();
         res = findAllFiles(res, file);
-        for (File f:res) {
+        for (File f : res) {
             fileMap.put(f.getPath(), f.lastModified());
         }
     }
 
-    private WebappClassLoader createClassLoader()  {
+    private WebappClassLoader createClassLoader() {
         classLoader = new WebappClassLoader();
         return (WebappClassLoader) classLoader;
     }
@@ -127,15 +104,12 @@ public class WebappLoader extends Thread implements Loader {
 
     @Override
     public HttpServlet load(String className) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Class clz = ((WebappClassLoader)classLoader).loadClass("./target/test-classes/"+className.replace(".","/")+".class");
+        Class clz = ((WebappClassLoader) classLoader).loadClass("./target/test-classes/" + className.replace(".", "/") + ".class");
         HttpServlet servlet = (HttpServlet) clz.getConstructor().newInstance();
         return servlet;
     }
 
-    @Override
-    public ClassLoader getClassLoader() {
-        return classLoader;
-    }
+
 
     @Override
     public Container getContainer() {
@@ -147,34 +121,5 @@ public class WebappLoader extends Thread implements Loader {
         this.container = context;
     }
 
-    @Override
-    public void addRepository(String repository) {
-        repositories.add(repository);
-    }
 
-
-    @Override
-    public boolean modified() {
-        return false;
-    }
-
-    @Override
-    public void setReloadable(boolean reloadable) {
-        this.reloadable = reloadable;
-    }
-
-    @Override
-    public boolean getReloadable() {
-        return reloadable;
-    }
-
-    @Override
-    public void addPropertyChangeListener() {
-
-    }
-
-    @Override
-    public String[] findRepositories() {
-        return repositories.toArray(new String[repositories.size()]);
-    }
 }

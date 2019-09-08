@@ -37,13 +37,13 @@ public class SimplePipeline implements Pipeline {
     @Override
     public void setBasic(Valve basic) {
         this.basic = basic;
-        valveContext.set(getBasic(),(Valve[]) valves.toArray(new Valve[valves.size()]));
+        valveContext.set(getBasic(), valves.toArray(new Valve[valves.size()]));
     }
 
     @Override
     public void addValve(Valve valve) {
         valves.add(valve);
-        valveContext.set(getBasic(),(Valve[]) valves.toArray(new Valve[valves.size()]));
+        valveContext.set(getBasic(), valves.toArray(new Valve[valves.size()]));
     }
 
     @Override

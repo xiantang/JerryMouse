@@ -19,7 +19,6 @@ import java.nio.channels.SocketChannel;
  */
 public class SocketInputBuffer {
     private SocketChannel socketChannel;
-    private final String httpHeadEnd = "\\r\\n\\r\\n";
     private static final int CR = (int) '\r';
     private static final int LF = (int) '\n';
     /**

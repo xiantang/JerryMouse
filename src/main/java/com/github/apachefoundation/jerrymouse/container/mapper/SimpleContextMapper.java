@@ -11,7 +11,7 @@ import com.github.apachefoundation.jerrymouse.http.HttpRequest;
  */
 public class SimpleContextMapper implements Mapper {
 
-    private SimpleContext context = null;
+    private SimpleContext context;
 
     public SimpleContextMapper(SimpleContext context) {
         this.context = context;
@@ -25,16 +25,6 @@ public class SimpleContextMapper implements Mapper {
     @Override
     public void setContainer(Container container) {
         this.context = (SimpleContext) container;
-    }
-
-    @Override
-    public void setProtocol(String protocol) {
-
-    }
-
-    @Override
-    public String getProtocol() {
-        return null;
     }
 
     @Override

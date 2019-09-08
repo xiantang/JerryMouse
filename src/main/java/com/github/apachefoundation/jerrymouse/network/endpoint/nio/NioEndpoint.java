@@ -13,26 +13,22 @@ import com.github.apachefoundation.jerrymouse.container.valve.wapper.SimpleWrapp
 import com.github.apachefoundation.jerrymouse.container.wrapper.Wrapper;
 import com.github.apachefoundation.jerrymouse.context.WebHandler;
 import com.github.apachefoundation.jerrymouse.entity.Mapping;
-import com.github.apachefoundation.jerrymouse.exception.RequestInvalidException;
 import com.github.apachefoundation.jerrymouse.network.wrapper.nio.NioSocketWrapper;
 import com.github.apachefoundation.jerrymouse.network.connector.nio.NioAcceptor;
 import com.github.apachefoundation.jerrymouse.network.connector.nio.NioPoller;
 import com.github.apachefoundation.jerrymouse.network.endpoint.Endpoint;
+
+
 import org.apache.log4j.Logger;
-import org.xml.sax.SAXException;
-
-
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -42,7 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class NioEndpoint extends Endpoint {
 
 
-    private static WebHandler phandler;
+    private static WebHandler pHandler;
 
     /**
      初始化webContext存入servlet以及他的映射
@@ -51,29 +47,23 @@ public class NioEndpoint extends Endpoint {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             SAXParser parse = factory.newSAXParser();
-            phandler = new WebHandler();
+            pHandler = new WebHandler();
             // 当前线程的类加载器
-            parse.parse(Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream("web.xml"), phandler);
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
+            parse.parse(Objects.requireNonNull(Thread.currentThread().getContextClassLoader()
+                    .getResourceAsStream("web.xml")), pHandler);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
     private ServerSocketChannel server;
-    private NioAcceptor acceptor;
     private Logger logger = Logger.getLogger(NioEndpoint.class);
     /**
      * Poller线程数量是cpu的核数 参考tomcat
-     * 对于计算密集性的任务 当线程池的大小为Ncpu+1 通常能实现最优的利用率
+     * 对于计算密集性的任务 当线程池的大小为 N cpu+1 通常能实现最优的利用率
      * (当计算密集型的线程偶尔由于页缺失或者其他情况而暂停的时候
      * ，这个额外的线程可以CPU时钟周期不会被浪费)
-     * <p>
      * *********************新加注释**********************
      * poller 线程池用于监听 socket 事件，开销应比 work 线程要小，故分配 1/4 的线程数量
      * 加一是因为我电脑没那么多核 搞成 0 个线程了都
@@ -109,7 +99,7 @@ public class NioEndpoint extends Endpoint {
      * 初始化initAcceptor
      */
     private void initAcceptor() {
-        acceptor = new NioAcceptor(this);
+        NioAcceptor acceptor = new NioAcceptor(this);
         Thread t = new Thread(acceptor);
         t.start();
         logger.info("初始化Acceptor完成");
@@ -137,16 +127,14 @@ public class NioEndpoint extends Endpoint {
     private void initContext() {
         context = new SimpleContext();
         Valve simpleContextValve = new SimpleContextValve();
-
         ((Contained) simpleContextValve).setContainer(context);
         ((SimpleContext) context).setBasic(simpleContextValve);
-        List<Mapping> mappings = phandler.getMappings();
-        List<Wrapper> wrappers = phandler.getWrappers();
+        List<Mapping> mappings = pHandler.getMappings();
+        List<Wrapper> wrappers = pHandler.getWrappers();
         Loader loader = new WebappLoader();
         context.setLoader(loader);
         loader.setContainer(context);
         // 确保是同样的Loader
-
         for (Wrapper wrapper : wrappers) {
             wrapper.setLoader(loader);
             SimpleWrapperValve simpleWrapperValve = new SimpleWrapperValve();
@@ -161,10 +149,6 @@ public class NioEndpoint extends Endpoint {
         }
         ((SimpleContext) context).load();
         ((SimpleContext) context).backgroundProcess();
-
-
-
-
     }
 
     public Container getContext() {

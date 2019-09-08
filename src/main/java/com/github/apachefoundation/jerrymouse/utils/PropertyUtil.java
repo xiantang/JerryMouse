@@ -47,10 +47,4 @@ public class PropertyUtil {
         return props.getProperty(key);
     }
 
-    public static String getProperty(String key, String defaultValue) {
-        if (null == props) {
-            loadProps();
-        }
-        return props.getProperty(key, defaultValue);
-    }
 }

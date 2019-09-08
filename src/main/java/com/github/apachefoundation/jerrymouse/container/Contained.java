@@ -5,8 +5,8 @@ package com.github.apachefoundation.jerrymouse.container;
  * @Date: 2019/5/24 19:51
  */
 public interface Contained {
-    public Container getContainer();
+    Container getContainer();
 
-    public void setContainer(Container container);
+    void setContainer(Container container);
 
 }

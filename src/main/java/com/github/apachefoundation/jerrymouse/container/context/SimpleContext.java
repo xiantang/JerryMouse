@@ -167,11 +167,6 @@ public class SimpleContext implements Context, Pipeline {
     }
 
     @Override
-    public Container[] findChildren() {
-        return (Container[]) containers.toArray(new Container[containers.size()]);
-    }
-
-    @Override
     public void addValve(Valve valve) {
         throw new NotImplementedException();
     }

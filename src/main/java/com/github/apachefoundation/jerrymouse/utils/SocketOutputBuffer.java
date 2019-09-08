@@ -27,10 +27,9 @@ public class SocketOutputBuffer extends Writer{
      * @param cbuf
      * @param off
      * @param len
-     * @throws IOException
      */
     @Override
-    public void write(char[] cbuf, int off, int len) throws IOException {
+    public void write(char[] cbuf, int off, int len) {
         byte[] btuf = new byte[len - off];
         for (int i = 0, j = off; j < len; i++, j++) {
             btuf[i] = (byte) cbuf[j];
@@ -43,12 +42,10 @@ public class SocketOutputBuffer extends Writer{
         }
         //TODO:對於過於大的byte流會溢出
         httpResponse.getBodyBuffer().put(btuf);
-
-
     }
 
     @Override
-    public void flush() throws IOException {
+    public void flush() {
         httpResponse.setHeader("Date", String.valueOf(new Date()));
         httpResponse.setHeader("JerryMouse", "X Server/0.0.1;charset=UTF-8");
         httpResponse.setContentLength(bufferUsedCap);
@@ -56,7 +53,6 @@ public class SocketOutputBuffer extends Writer{
 
 
     @Override
-    public void close() throws IOException {
-//        logger.debug("close 完成");
+    public void close() {
     }
 }
