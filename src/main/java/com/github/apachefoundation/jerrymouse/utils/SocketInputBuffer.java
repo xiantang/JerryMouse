@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -47,7 +48,7 @@ public class SocketInputBuffer {
      * @throws RequestInvalidException
      * @throws IOException
      */
-    public void stuffRequestLineBuffer(StringBuilder requestBuffer) throws RequestInvalidException, IOException {
+    public void stuffRequestLineBuffer(StringBuilder requestBuffer) throws Exception {
         int ch = -1;
         int head = pos;
         do {
@@ -73,10 +74,9 @@ public class SocketInputBuffer {
     }
 
 
-    private int read() throws IOException {
+    private int read() throws Exception {
         if (pos >= count) {
             fill();
-
             if (pos >= count) {
 
                 return -1;
@@ -85,7 +85,7 @@ public class SocketInputBuffer {
         return buffer.get(pos++) & 0xff;
     }
 
-    private int peek() throws IOException {
+    private int peek() throws Exception {
         if (pos >= count) {
             fill();
 
@@ -97,14 +97,14 @@ public class SocketInputBuffer {
         return buffer.get(pos) & 0xff;
     }
 
-    public void stuffRequestBuffer(StringBuilder requestLineBuffer) throws IOException, RequestInvalidException {
+    public void stuffRequestBuffer(StringBuilder requestLineBuffer) throws Exception {
         while (peek() == CR || peek() == LF || peek() == ' ') {
             read();
         }
         stuffRequestLineBuffer(requestLineBuffer);
     }
 
-    public boolean stuffRequestHeaderBuffer(StringBuilder stringBuilder) throws IOException {
+    public boolean stuffRequestHeaderBuffer() throws Exception {
         int i = 0;
         while (peek() == CR || peek() == LF || peek() == ' '){
             read();
@@ -117,12 +117,10 @@ public class SocketInputBuffer {
         return true;
     }
 
-    private void fill() throws IOException {
+    private void fill() throws Exception {
         pos = 0;
         count = 0;
-        int nRead = socketChannel.read(buffer);
-        if (nRead > 0) {
-            count = nRead;
-        }
+        count = socketChannel.read(buffer);
+
     }
 }

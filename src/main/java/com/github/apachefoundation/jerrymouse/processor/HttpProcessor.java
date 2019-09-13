@@ -59,7 +59,7 @@ public class HttpProcessor {
 
         try {
             parseRequest(inputBuffer);
-        } catch (RequestInvalidException | IOException e) {
+        } catch (Exception e) {
             ok = false;
             exceptionHandler.handle(e, nioSocketWrapper);
         }
@@ -85,15 +85,14 @@ public class HttpProcessor {
 
                 logger.debug("写事件完成注册");
             }
-        }
-        catch (IOException e) {
-            exceptionHandler.handle(e, nioSocketWrapper);
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void parseRequest(SocketInputBuffer socketInputBuffer) throws IOException, RequestInvalidException {
+    private void parseRequest(SocketInputBuffer socketInputBuffer) throws Exception {
         StringBuilder requestLineBuffer = new StringBuilder(1024);
         socketInputBuffer.stuffRequestBuffer(requestLineBuffer);
         String requestLine = requestLineBuffer.toString();
@@ -131,11 +130,11 @@ public class HttpProcessor {
     }
 
 
-    private boolean parseRequestHeader(SocketInputBuffer socketInputBuffer) throws RequestInvalidException, IOException {
+    private boolean parseRequestHeader(SocketInputBuffer socketInputBuffer) throws Exception {
 
         StringBuilder httpHeadBuffer = new StringBuilder(1024);
 
-        if (!socketInputBuffer.stuffRequestHeaderBuffer(httpHeadBuffer)) {
+        if (!socketInputBuffer.stuffRequestHeaderBuffer()) {
             return false;
         }
         socketInputBuffer.stuffRequestLineBuffer(httpHeadBuffer);

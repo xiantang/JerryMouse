@@ -68,7 +68,7 @@ public class NioEndpoint extends Endpoint {
      * poller 线程池用于监听 socket 事件，开销应比 work 线程要小，故分配 1/4 的线程数量
      * 加一是因为我电脑没那么多核 搞成 0 个线程了都
      */
-    private int pollerCount = Math.min(2, Runtime.getRuntime().availableProcessors()) / 4 + 1;
+    public static final int CORE_NUM = Math.max(2, Runtime.getRuntime().availableProcessors());
     private List<NioPoller> nioPollers;
 
 
@@ -111,8 +111,8 @@ public class NioEndpoint extends Endpoint {
      * 线程数为CPU核心数目
      */
     private void initPoller() throws IOException {
-        nioPollers = new ArrayList<>(pollerCount);
-        for (int i = 0; i < pollerCount; i++) {
+        nioPollers = new ArrayList<>(1);
+        for (int i = 0; i < 1; i++) {
             String pollName = "NioPoller-" + i;
             NioPoller nioPoller = new NioPoller(this, pollName);
             Thread pollerThread = new Thread(nioPoller);
@@ -163,6 +163,7 @@ public class NioEndpoint extends Endpoint {
 
     public void registerToPoller(SocketChannel socket, boolean isNewSocket, int eventType, NioSocketWrapper nioSocketWrapper) throws IOException {
         getPoller().register(socket, isNewSocket, eventType, nioSocketWrapper);
+        getPoller().getSelector().wakeup();
     }
 
 

@@ -1,88 +1,55 @@
 package com.github.apachefoundation.jerrymouse.network.connector.nio;
 
-import com.github.apachefoundation.jerrymouse.http.HttpRequest;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
-import com.github.apachefoundation.jerrymouse.network.endpoint.nio.NioEndpoint;
 import com.github.apachefoundation.jerrymouse.network.wrapper.nio.NioSocketWrapper;
 import com.github.apachefoundation.jerrymouse.network.wrapper.SocketWrapper;
 import com.github.apachefoundation.jerrymouse.processor.HttpProcessor;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.concurrent.*;
+
+import static com.github.apachefoundation.jerrymouse.network.endpoint.nio.NioEndpoint.CORE_NUM;
 
 /**
  * @Author: xiantang
  * @Date: 2019/4/17 14:45
  */
-public class NioWorker {
+class NioWorker {
 
     /**
      * 读处理请求的线程池
      */
-    private ExecutorService readThreadPool;
+    private ExecutorService worker;
     /**
      * 写 线程池
      */
-    private ExecutorService writeThreadPool;
     private  Logger logger = Logger.getLogger(NioWorker.class);
 
     /**
      * 初始化Readers
      */
-    private void initReader() {
-        ThreadFactory readThreadFactory = new ThreadFactory() {
-            private int count;
-            @Override
-            public Thread newThread(Runnable r) {
-                return new Thread(r, "ReadWorker Pool-" + count++);
-            }
-        };
-        readThreadPool = new ThreadPoolExecutor(200,
-                200,
-                1,
+    private void init() {
+        worker = new ThreadPoolExecutor(CORE_NUM*2,
+                CORE_NUM*2,
+                1000,
                 TimeUnit.SECONDS,
-                new SynchronousQueue<>(),
-                readThreadFactory);
-    }
-    /**
-     * 初始化Writer
-     */
-    private void initWriter() {
-        ThreadFactory writeThreadFactory = new ThreadFactory() {
-            private int count;
-            @Override
-            public Thread newThread(Runnable r) {
-                return new Thread(r, "WriteWorker Pool-" + count++);
-            }
-        };
-
-        writeThreadPool = new ThreadPoolExecutor(200,
-                200,
-                1,
-                TimeUnit.SECONDS,
-                new SynchronousQueue<>(),
-                writeThreadFactory);
+                new LinkedBlockingQueue<>());
     }
 
-    public NioWorker() {
-        initReader();
-        initWriter();
+
+    NioWorker() {
+        init();
     }
 
-    public void executeRead(NioSocketWrapper nioSocketWrapper) {
-        try {
-            readThreadPool.execute(new Reader(nioSocketWrapper));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    void executeRead(NioSocketWrapper nioSocketWrapper) {
+        worker.execute(new Reader(nioSocketWrapper));
     }
 
-    public void executeWrite(NioSocketWrapper nioSocketWrapper) {
-        logger.debug("注册写");
-        writeThreadPool.execute(new Writer(nioSocketWrapper));
+    void executeWrite(NioSocketWrapper nioSocketWrapper) {
+        logger.debug("执行写");
+        worker.execute(new Writer(nioSocketWrapper));
     }
 
 
@@ -90,7 +57,7 @@ public class NioWorker {
 
         private NioSocketWrapper nioSocketWrapper;
 
-        public Reader(SocketWrapper socketWrapper) throws IOException {
+        Reader(SocketWrapper socketWrapper) {
             this.nioSocketWrapper = (NioSocketWrapper)socketWrapper;
         }
 
@@ -106,30 +73,21 @@ public class NioWorker {
 
     public class Writer implements Runnable {
 
-        private SocketChannel client;
-        private NioEndpoint endpoint;
         private NioSocketWrapper nioSocketWrapper;
         private  Logger logger = Logger.getLogger(Writer.class);
-        public Writer(SocketWrapper socketWrapper) {
+        Writer(SocketWrapper socketWrapper) {
             this.nioSocketWrapper = (NioSocketWrapper)socketWrapper;
-            this.endpoint = nioSocketWrapper.getServer();
-            this.client = nioSocketWrapper.getSocketChannel();
         }
 
         @Override
         public void run() {
             HttpResponse response = nioSocketWrapper.getResponse();
-            HttpRequest request = nioSocketWrapper.getRequest();
-            String connection = "connection";
             try {
                 response.flushBuffer();
                 logger.debug("写入完成");
-                // 判断是否keep-alive
-                if (request.getParameter(connection) == null || !request.getParameter("connection").equals("false")) {
-                    endpoint.registerToPoller(client, false, SelectionKey.OP_READ, nioSocketWrapper);
-                } else {
-                    nioSocketWrapper.close();
-                }
+                // TODO 这里有个长连接的BUG 暂时去除重新注册的功能
+                nioSocketWrapper.close();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
