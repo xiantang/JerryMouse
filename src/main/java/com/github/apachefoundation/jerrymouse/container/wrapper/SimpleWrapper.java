@@ -12,7 +12,7 @@ import com.github.apachefoundation.jerrymouse.container.valve.Valve;
 import com.github.apachefoundation.jerrymouse.http.HttpResponse;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.IOException;
+
 import java.lang.reflect.InvocationTargetException;
 
 

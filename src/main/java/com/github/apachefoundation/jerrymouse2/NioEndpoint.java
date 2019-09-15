@@ -1,5 +1,8 @@
 package com.github.apachefoundation.jerrymouse2;
 
+import com.github.apachefoundation.jerrymouse.network.wrapper.nio.NioSocketWrapper;
+
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
@@ -13,15 +16,15 @@ public class NioEndpoint extends AbstractEndpoint {
     private ServerSocketChannel serverSock;
 
     @Override
-    public void bind() throws Exception {
-        initServerSocket();
+    public void bind(int port) throws Exception {
+        initServerSocket(port);
     }
 
 
-    private void initServerSocket() throws Exception {
+    private void initServerSocket(int port) throws Exception {
         serverSock = ServerSocketChannel.open();
         // TODO 从配置文件读取
-        serverSock.bind(new InetSocketAddress(8080));
+        serverSock.bind(new InetSocketAddress(port));
         // 如果我们将configureBlocking(false)
         // 就表示acceptor 是非阻塞的接受连接
         // accept() 方法立刻返回 null 会产生
@@ -30,6 +33,10 @@ public class NioEndpoint extends AbstractEndpoint {
     }
 
 
+    @Override
+    public void unbind() throws Exception {
+        serverSock.close();
+    }
 
     @Override
     public void startInternal() {
@@ -45,6 +52,18 @@ public class NioEndpoint extends AbstractEndpoint {
     @Override
     protected SocketChannel serverSocketAccept() throws Exception {
         return serverSock.accept();
+    }
+
+    @Override
+    public boolean setSocketOptions(SocketChannel socket) {
+        try {
+            // 关闭阻塞 这样就能用轮寻的机制
+            socket.configureBlocking(false);
+        } catch (IOException e) {
+            // TODO handle the error
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override

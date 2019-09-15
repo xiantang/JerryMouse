@@ -39,13 +39,27 @@ public class Acceptor implements Runnable {
 
             state = AcceptorState.RUNNING;
             SocketChannel socket = null;
-
             try {
-                // 接受下一个从server 来临的链接
-                socket = endpoint.serverSocketAccept();
-            } catch (Exception e) {
-                // countDown
+                endpoint.countUpOrAwaitConnection();
+                try {
+                    // 接受下一个从server 来临的连接
+                    socket = endpoint.serverSocketAccept();
+                    System.out.println("accepted");
+                } catch (Exception e) {
+                    // countDown
+                    e.printStackTrace();
+                    endpoint.countDownConnection();
+                }
+                if (endpoint.isRunning() && !endpoint.isPaused()) {
+                    if (!endpoint.setSocketOptions(socket)) {
+                        // TODO destroy socket
+                    }
+                }
+            } catch (InterruptedException e) {
+                // TODO 检查错误
+                e.printStackTrace();
             }
+
         }
         state = AcceptorState.ENDED;
     }

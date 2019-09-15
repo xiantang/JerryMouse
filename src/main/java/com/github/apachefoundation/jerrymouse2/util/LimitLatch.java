@@ -10,8 +10,6 @@ import java.util.concurrent.locks.AbstractQueuedSynchronizer;
  */
 public class LimitLatch {
 
-//    private static final Log log = LogFactory.getLog(LimitLatch.class);
-
     private class Sync extends AbstractQueuedSynchronizer {
         private static final long serialVersionUID = 1L;
 
