@@ -1,11 +1,6 @@
-package info.xiantang.jerrymouse2.core.core;
+package info.xiantang.jerrymouse2.core.server;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import info.xiantang.jerrymouses2.client.NetWorkClient;
 import org.junit.Test;
 
 import java.io.EOFException;
@@ -94,12 +89,9 @@ public class ReactorTest {
         Thread reactorT = new Thread(reactor);
         reactorT.start();
 
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet("http://localhost:9864");
-        CloseableHttpResponse response = httpClient.execute(httpget);
-        HttpEntity httpEntity = response.getEntity();
-        String strResult = EntityUtils.toString(httpEntity);
-        assert "1".equals(strResult);
+        String response = NetWorkClient.doRequest("localhost",9864,"test\n");
+        System.out.println(response);
+        assert "1".equals(response);
 
     }
 }

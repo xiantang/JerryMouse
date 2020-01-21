@@ -1,7 +1,7 @@
 package info.xiantang.jerrymouse2.core;
 
-import info.xiantang.jerrymouse2.core.core.Reactor;
-import info.xiantang.jerrymouse2.core.core.SampleBaseHandler;
+import info.xiantang.jerrymouse2.core.server.Reactor;
+import info.xiantang.jerrymouse2.core.server.SampleBaseHandler;
 
 
 import java.io.IOException;
@@ -9,7 +9,6 @@ import java.io.IOException;
 public class BootStrap {
 
     public static void main(String[] args) throws IOException {
-
         Reactor reactor = new Reactor(9003, SampleBaseHandler.class);
         reactor.run();
     }

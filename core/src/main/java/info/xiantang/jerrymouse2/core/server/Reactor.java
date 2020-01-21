@@ -1,4 +1,4 @@
-package info.xiantang.jerrymouse2.core.core;
+package info.xiantang.jerrymouse2.core.server;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
