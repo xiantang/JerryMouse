@@ -1,4 +1,4 @@
-package info.xiantang.core;
+package info.xiantang.jerrymouse2.core.core;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -93,6 +93,7 @@ public class ReactorTest {
                 .build();
         Thread reactorT = new Thread(reactor);
         reactorT.start();
+
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet httpget = new HttpGet("http://localhost:9864");
         CloseableHttpResponse response = httpClient.execute(httpget);

@@ -1,4 +1,4 @@
-package info.xiantang.core;
+package info.xiantang.jerrymouse2.core.core;
 
 import java.io.EOFException;
 import java.io.IOException;
