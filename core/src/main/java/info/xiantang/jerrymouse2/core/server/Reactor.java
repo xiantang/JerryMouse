@@ -33,8 +33,9 @@ public class Reactor implements Runnable {
                 Set selected = selector.selectedKeys();
                 for (Object o : selected) dispatch((SelectionKey) o);
             }
-        } catch (IOException ignored) {
-
+        } catch (IOException e) {
+            //TODO log error
+            e.printStackTrace();
         }
     }
 
@@ -44,15 +45,21 @@ public class Reactor implements Runnable {
             r.run();
     }
 
+    /**
+     * this is the endpoint of the reactor
+     * if acceptor got a connection form the
+     * client will create a certain handler and
+     * will gain a instance by reflect.
+     */
     public class Acceptor implements Runnable {
         public void run() {
-            SocketChannel c;
+            SocketChannel channel;
             try {
-                c = serverSocket.accept();
-                if (c != null) {
-                    Constructor<? extends BaseHandler> constructor
+                channel = serverSocket.accept();
+                if (channel != null) {
+                    Constructor<? extends BaseHandler> handler
                             = handlerClass.getConstructor(Selector.class, SocketChannel.class);
-                    constructor.newInstance(selector, c);
+                    handler.newInstance(selector, channel);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
