@@ -10,19 +10,15 @@ import static info.xiantang.jerrymouse2.core.server.Constants.*;
 
 public class SampleBaseHandler extends BaseHandler  {
 
-
-    public SampleBaseHandler(Selector sel, SocketChannel c) throws IOException {
-        super(sel, c);
+    public SampleBaseHandler(Selector selector, SocketChannel channel) throws IOException {
+        super(selector, channel);
     }
-
-
 
     public void process() throws EOFException {
         if (state == CLOSED) {
             throw new EOFException();
         } else if (state == SENDING) {
-            // TODO handle
-            String requestContent = request.toString(); // 请求内容
+            String requestContent = request.toString();
             byte[] response = requestContent.getBytes(StandardCharsets.UTF_8);
             output.put(response);
         }

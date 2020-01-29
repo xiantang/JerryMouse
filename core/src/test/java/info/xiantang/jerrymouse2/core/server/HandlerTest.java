@@ -12,14 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 
-import static info.xiantang.jerrymouse2.core.server.Constants.CLOSED;
-import static info.xiantang.jerrymouse2.core.server.Constants.SENDING;
+import static info.xiantang.jerrymouse2.core.server.Constants.*;
 
 
 public class HandlerTest {
 
-    private ExecutorService executor
-            = Executors.newFixedThreadPool(2);
+    private ExecutorService executor = Executors.newFixedThreadPool(2);
 
 
     static class SleepyHandler extends CountBaseHandler {
@@ -67,9 +65,11 @@ public class HandlerTest {
             }
         });
 
+
         watch.stop();
         long spend = watch.getTime();
-        assert spend < 2000 && spend > 1000;
+        System.out.println(spend);
+        assert spend < 2000 && spend >=1000;
     }
 
     @Test
