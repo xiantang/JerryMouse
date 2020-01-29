@@ -14,6 +14,7 @@ public class SampleBaseHandler extends BaseHandler  {
         super(selector, channel);
     }
 
+    @Override
     public void process() throws EOFException {
         if (state == CLOSED) {
             throw new EOFException();

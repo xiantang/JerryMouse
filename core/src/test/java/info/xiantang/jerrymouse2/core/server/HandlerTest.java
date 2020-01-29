@@ -68,7 +68,6 @@ public class HandlerTest {
 
         watch.stop();
         long spend = watch.getTime();
-        System.out.println(spend);
         assert spend < 2000 && spend >=1000;
     }
 

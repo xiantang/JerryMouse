@@ -10,8 +10,8 @@ import static info.xiantang.jerrymouse2.core.server.Constants.*;
 class CountBaseHandler extends BaseHandler {
 
 
-    public CountBaseHandler(Selector sel, SocketChannel c) throws IOException {
-        super(sel, c);
+    public CountBaseHandler(Selector selector, SocketChannel channel) throws IOException {
+        super(selector, channel);
     }
 
 

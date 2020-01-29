@@ -67,14 +67,14 @@ public abstract class BaseHandler implements Runnable {
     }
 
 
-    private void processAndHandOff() throws EOFException {
+    private synchronized void processAndHandOff() throws EOFException {
         state = SENDING;
         process();
         sk.interestOps(SelectionKey.OP_WRITE);
         selector.wakeup();
     }
 
-    private void read() throws IOException {
+    private synchronized void read() throws IOException {
         input.clear();
         int n = socket.read(input);
         if (inputIsComplete(n)) {
