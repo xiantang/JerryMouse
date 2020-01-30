@@ -1,6 +1,6 @@
 package info.xiantang.jerrymouse2.core.handler;
 
-import info.xiantang.jerrymouse2.core.server.Reactor;
+import info.xiantang.jerrymouse2.core.server.MultiReactor;
 import info.xiantang.jerrymouses2.client.EchoClient;
 import org.junit.Test;
 
@@ -9,7 +9,7 @@ import java.io.IOException;
 public class TestSampleEchoServer {
     @Test
     public void canCorrectAcceptCommend() throws IOException {
-        Reactor reactor = Reactor.newBuilder()
+        MultiReactor reactor = MultiReactor.newBuilder()
                 .setPort(9004)
                 .setHandlerClass(EchoHandler.class)
                 .build();

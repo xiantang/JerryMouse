@@ -1,14 +1,12 @@
 package info.xiantang.jerrymouse2.core.handler;
 
-import info.xiantang.jerrymouse2.core.server.Reactor;
+import info.xiantang.jerrymouse2.core.server.MultiReactor;
 import info.xiantang.jerrymouses2.client.NetWorkClient;
-import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Test;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.*;
 import java.util.concurrent.*;
@@ -23,8 +21,8 @@ public class HandlerTest {
 
     public static class SleepyHandler extends CountBaseHandler {
 
-        public SleepyHandler(Selector sel, SocketChannel c) throws IOException {
-            super(sel, c);
+        public SleepyHandler(MultiReactor reactor, SocketChannel channel) throws IOException {
+            super(reactor, channel);
         }
 
         @Override
@@ -41,7 +39,7 @@ public class HandlerTest {
 
     @Test
     public void isHandlerConcurrency() throws IOException {
-        Reactor reactor = Reactor.newBuilder()
+        MultiReactor reactor = MultiReactor.newBuilder()
                 .setPort(9800)
                 .setHandlerClass(SleepyHandler.class)
                 .build();
@@ -71,7 +69,7 @@ public class HandlerTest {
 
     @Test
     public void sampleBaseHandlerCanReturnSameResult() throws IOException {
-        Reactor reactor = Reactor.newBuilder()
+        MultiReactor reactor = MultiReactor.newBuilder()
                 .setPort(9801)
                 .setHandlerClass(SampleBaseHandler.class)
                 .build();

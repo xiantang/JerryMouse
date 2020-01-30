@@ -1,10 +1,11 @@
 package info.xiantang.jerrymouse2.core.handler;
 
+import info.xiantang.jerrymouse2.core.server.MultiReactor;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 
@@ -17,12 +18,11 @@ public class EchoHandler extends BaseHandler {
      * we will register channel to selector and  wakeup it
      * and attach the this object prepare to use.
      *
-     * @param selector
      * @param channel
      * @throws IOException
      */
-    public EchoHandler(Selector selector, SocketChannel channel) throws IOException {
-        super(selector, channel);
+    public EchoHandler(MultiReactor reactor, SocketChannel channel) throws IOException {
+        super(reactor, channel);
     }
 
     @Override

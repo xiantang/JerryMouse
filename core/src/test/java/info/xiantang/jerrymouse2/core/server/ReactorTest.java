@@ -12,7 +12,7 @@ public class ReactorTest {
 
     @Test
     public void canAcceptRequests() throws IOException {
-        Reactor reactor = Reactor.newBuilder()
+        MultiReactor reactor = MultiReactor.newBuilder()
                 .setPort(9865)
                 .setHandlerClass(CountBaseHandler.class)
                 .build();

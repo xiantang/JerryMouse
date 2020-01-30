@@ -1,5 +1,7 @@
 package info.xiantang.jerrymouse2.core.handler;
 
+import info.xiantang.jerrymouse2.core.server.MultiReactor;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -14,6 +16,7 @@ import static info.xiantang.jerrymouse2.core.server.Constants.*;
 
 public abstract class BaseHandler implements Runnable {
 
+    private MultiReactor reactor;
     private static ExecutorService threadPool = Executors.newFixedThreadPool(CORE_NUM);
     protected final SocketChannel socket;
     protected final SelectionKey sk;
@@ -29,15 +32,15 @@ public abstract class BaseHandler implements Runnable {
      * we will register channel to selector and  wakeup it
      * and attach the this object prepare to use.
      *
-     * @param selector
      * @param channel
      * @throws IOException
      */
-    public BaseHandler(Selector selector, SocketChannel channel) throws IOException {
-        socket = channel;
-        this.selector = selector;
+    public BaseHandler(MultiReactor reactor, SocketChannel channel) throws IOException {
+        this.reactor = reactor;
+        this.socket = channel;
+        this.selector = reactor.getMainSelector();
         channel.configureBlocking(false);
-        sk = socket.register(selector, 0);
+        this.sk = socket.register(selector, 0);
         sk.interestOps(SelectionKey.OP_READ);
         sk.attach(this);
         selector.wakeup();
@@ -60,6 +63,11 @@ public abstract class BaseHandler implements Runnable {
     public void setState(int state) {
         this.state = state;
     }
+
+    public String getReactorName() {
+        return reactor.getMainReactorName();
+    }
+
 
     public void run() {
         try {
