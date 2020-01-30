@@ -1,5 +1,6 @@
 package info.xiantang.jerrymouse2.core.server;
 
+import info.xiantang.jerrymouse2.core.handler.CountBaseHandler;
 import info.xiantang.jerrymouses2.client.NetWorkClient;
 import org.junit.Test;
 

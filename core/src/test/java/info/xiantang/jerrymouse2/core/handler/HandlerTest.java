@@ -1,5 +1,6 @@
-package info.xiantang.jerrymouse2.core.server;
+package info.xiantang.jerrymouse2.core.handler;
 
+import info.xiantang.jerrymouse2.core.server.Reactor;
 import info.xiantang.jerrymouses2.client.NetWorkClient;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.Test;
@@ -20,7 +21,7 @@ public class HandlerTest {
     private ExecutorService executor = Executors.newFixedThreadPool(2);
 
 
-    static class SleepyHandler extends CountBaseHandler {
+    public static class SleepyHandler extends CountBaseHandler {
 
         public SleepyHandler(Selector sel, SocketChannel c) throws IOException {
             super(sel, c);
@@ -68,7 +69,7 @@ public class HandlerTest {
 
         watch.stop();
         long spend = watch.getTime();
-        assert spend < 2000 && spend >=1000;
+        assert spend < 2000 && spend >= 1000;
     }
 
     @Test

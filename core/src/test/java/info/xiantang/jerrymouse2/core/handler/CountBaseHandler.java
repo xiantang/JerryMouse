@@ -1,13 +1,14 @@
-package info.xiantang.jerrymouse2.core.server;
+package info.xiantang.jerrymouse2.core.handler;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 
-import static info.xiantang.jerrymouse2.core.server.Constants.*;
+import static info.xiantang.jerrymouse2.core.server.Constants.CLOSED;
+import static info.xiantang.jerrymouse2.core.server.Constants.SENDING;
 
-class CountBaseHandler extends BaseHandler {
+public class CountBaseHandler extends BaseHandler {
 
 
     public CountBaseHandler(Selector selector, SocketChannel channel) throws IOException {

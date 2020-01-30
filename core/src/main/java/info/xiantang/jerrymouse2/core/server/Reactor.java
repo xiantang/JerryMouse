@@ -1,5 +1,7 @@
 package info.xiantang.jerrymouse2.core.server;
 
+import info.xiantang.jerrymouse2.core.handler.BaseHandler;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
@@ -25,6 +27,9 @@ public class Reactor implements Runnable {
         sk.attach(new Acceptor());
     }
 
+    public static Builder newBuilder() {
+        return new Builder();
+    }
 
     public void run() {
         try {
@@ -43,6 +48,25 @@ public class Reactor implements Runnable {
         Runnable r = (Runnable) (k.attachment());
         if (r != null)
             r.run();
+    }
+
+    public static class Builder {
+        private int port;
+        private Class<? extends BaseHandler> handlerClass;
+
+        public Builder setPort(int port) {
+            this.port = port;
+            return this;
+        }
+
+        public Builder setHandlerClass(Class<? extends BaseHandler> handlerClass) {
+            this.handlerClass = handlerClass;
+            return this;
+        }
+
+        public Reactor build() throws IOException {
+            return new Reactor(port, handlerClass);
+        }
     }
 
     /**
@@ -66,31 +90,6 @@ public class Reactor implements Runnable {
             }
 
         }
-    }
-
-
-    public static class Builder {
-        private int port;
-        private Class<? extends BaseHandler> handlerClass;
-
-        public Builder setPort(int port) {
-            this.port = port;
-            return this;
-        }
-
-        public Builder setHandlerClass(Class<? extends BaseHandler> handlerClass) {
-            this.handlerClass = handlerClass;
-            return this;
-        }
-
-        public Reactor build() throws IOException {
-            return new Reactor(port, handlerClass);
-        }
-    }
-
-
-    public static Builder newBuilder() {
-        return new Builder();
     }
 
 }

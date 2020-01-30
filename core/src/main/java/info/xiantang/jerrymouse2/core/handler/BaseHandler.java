@@ -1,4 +1,4 @@
-package info.xiantang.jerrymouse2.core.server;
+package info.xiantang.jerrymouse2.core.handler;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -14,14 +14,14 @@ import static info.xiantang.jerrymouse2.core.server.Constants.*;
 
 public abstract class BaseHandler implements Runnable {
 
-    private final SocketChannel socket;
-    private final SelectionKey sk;
-    private final Selector selector;
     private static ExecutorService threadPool = Executors.newFixedThreadPool(CORE_NUM);
-    int state = READING;
-    ByteBuffer input = ByteBuffer.allocate(BUFFER_MAX_IN);
-    ByteBuffer output = ByteBuffer.allocate(BUFFER_MAX_OUT);
-    StringBuilder request = new StringBuilder();
+    protected final SocketChannel socket;
+    protected final SelectionKey sk;
+    private final Selector selector;
+    protected int state = READING;
+    protected ByteBuffer input = ByteBuffer.allocate(BUFFER_MAX_IN);
+    protected ByteBuffer output = ByteBuffer.allocate(BUFFER_MAX_OUT);
+    protected StringBuilder request = new StringBuilder();
 
 
     /**
@@ -43,7 +43,7 @@ public abstract class BaseHandler implements Runnable {
         selector.wakeup();
     }
 
-    private void send() throws IOException {
+    protected void send() throws IOException {
         output.flip();
         socket.write(output);
         sk.channel().close();
@@ -74,7 +74,7 @@ public abstract class BaseHandler implements Runnable {
         selector.wakeup();
     }
 
-    private synchronized void read() throws IOException {
+    protected synchronized void read() throws IOException {
         input.clear();
         int n = socket.read(input);
         if (inputIsComplete(n)) {
