@@ -33,6 +33,7 @@ public abstract class BaseHandler implements Runnable {
      * we will register channel to selector and  wakeup it
      * and attach the this object prepare to use.
      *
+     * @param reactor
      * @param channel
      */
     public BaseHandler(Reactor reactor, SocketChannel channel) {

@@ -18,6 +18,7 @@ public class EchoHandler extends BaseHandler {
      * we will register channel to selector and  wakeup it
      * and attach the this object prepare to use.
      *
+     * @param reactor
      * @param channel
      */
     public EchoHandler(Reactor reactor, SocketChannel channel) {
