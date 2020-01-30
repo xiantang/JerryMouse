@@ -23,7 +23,7 @@ public class MultiReactorTest {
 
     public static class InsureReactorHandler extends CountBaseHandler {
 
-        public InsureReactorHandler(MultiReactor reactor, SocketChannel channel) throws IOException {
+        public InsureReactorHandler(Reactor reactor, SocketChannel channel) throws IOException {
             super(reactor, channel);
         }
 
@@ -64,9 +64,9 @@ public class MultiReactorTest {
         responses.add(nextRoundFirst);
         Map<String, Long> result = responses.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         Map<String, Long> expect = new HashMap<>();
-        expect.put("SubReactor-1", 2L);
-        expect.put("SubReactor-2", 1L);
-        expect.put("SubReactor-3", 1L);
+        expect.put("subReactor-0", 1L);
+        expect.put("subReactor-1", 1L);
+        expect.put("subReactor-2", 2L);
         assert expect.equals(result);
 
 

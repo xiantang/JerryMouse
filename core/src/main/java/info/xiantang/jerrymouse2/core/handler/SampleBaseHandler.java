@@ -1,6 +1,6 @@
 package info.xiantang.jerrymouse2.core.handler;
 
-import info.xiantang.jerrymouse2.core.server.MultiReactor;
+import info.xiantang.jerrymouse2.core.server.Reactor;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import static info.xiantang.jerrymouse2.core.server.Constants.SENDING;
 
 public class SampleBaseHandler extends BaseHandler {
 
-    public SampleBaseHandler(MultiReactor reactor, SocketChannel channel) throws IOException {
+    public SampleBaseHandler(Reactor reactor, SocketChannel channel) {
         super(reactor, channel);
     }
 

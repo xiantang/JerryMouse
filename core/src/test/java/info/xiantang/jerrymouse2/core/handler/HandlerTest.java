@@ -1,6 +1,8 @@
 package info.xiantang.jerrymouse2.core.handler;
 
 import info.xiantang.jerrymouse2.core.server.MultiReactor;
+import info.xiantang.jerrymouse2.core.server.MultiReactorTest;
+import info.xiantang.jerrymouse2.core.server.Reactor;
 import info.xiantang.jerrymouses2.client.NetWorkClient;
 import org.junit.Test;
 
@@ -21,7 +23,7 @@ public class HandlerTest {
 
     public static class SleepyHandler extends CountBaseHandler {
 
-        public SleepyHandler(MultiReactor reactor, SocketChannel channel) throws IOException {
+        public SleepyHandler(Reactor reactor, SocketChannel channel) throws IOException {
             super(reactor, channel);
         }
 
@@ -42,6 +44,7 @@ public class HandlerTest {
         MultiReactor reactor = MultiReactor.newBuilder()
                 .setPort(9800)
                 .setHandlerClass(SleepyHandler.class)
+                .setSubReactorCount(3)
                 .build();
 
         Set<String> result = new HashSet<>();
@@ -56,7 +59,8 @@ public class HandlerTest {
         futureList.forEach(x -> {
             try {
                 String s = x.get();
-                assert s.startsWith("pool-2-thread-");
+                System.out.println(s);
+                assert s.startsWith("pool-");
                 result.add(s);
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
@@ -71,12 +75,15 @@ public class HandlerTest {
     public void sampleBaseHandlerCanReturnSameResult() throws IOException {
         MultiReactor reactor = MultiReactor.newBuilder()
                 .setPort(9801)
-                .setHandlerClass(SampleBaseHandler.class)
+                .setHandlerClass(MultiReactorTest.InsureReactorHandler.class)
+                .setMainReactorName("MainReactor")
+                .setSubReactorCount(3)
                 .build();
         Thread reactorT = new Thread(reactor);
         reactorT.start();
         String response = NetWorkClient.doRequest("localhost", 9801, "test\n");
-        assert "test".equals(response);
+        System.out.println(response);
+        assert "subReactor-2".equals(response);
 
     }
 

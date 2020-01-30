@@ -1,6 +1,7 @@
 package info.xiantang.jerrymouse2.core.handler;
 
-import info.xiantang.jerrymouse2.core.server.MultiReactor;
+import info.xiantang.jerrymouse2.core.event.Event;
+import info.xiantang.jerrymouse2.core.server.Reactor;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -16,10 +17,10 @@ import static info.xiantang.jerrymouse2.core.server.Constants.*;
 
 public abstract class BaseHandler implements Runnable {
 
-    private MultiReactor reactor;
+    private Reactor reactor;
     private static ExecutorService threadPool = Executors.newFixedThreadPool(CORE_NUM);
     protected final SocketChannel socket;
-    protected final SelectionKey sk;
+    protected SelectionKey sk;
     private final Selector selector;
     private int state = READING;
     protected ByteBuffer input = ByteBuffer.allocate(BUFFER_MAX_IN);
@@ -33,18 +34,15 @@ public abstract class BaseHandler implements Runnable {
      * and attach the this object prepare to use.
      *
      * @param channel
-     * @throws IOException
      */
-    public BaseHandler(MultiReactor reactor, SocketChannel channel) throws IOException {
+    public BaseHandler(Reactor reactor, SocketChannel channel) {
         this.reactor = reactor;
         this.socket = channel;
-        this.selector = reactor.getMainSelector();
-        channel.configureBlocking(false);
-        this.sk = socket.register(selector, 0);
-        sk.interestOps(SelectionKey.OP_READ);
-        sk.attach(this);
-        selector.wakeup();
+        this.selector = reactor.getSelector();
+        HandlerEvent event = new HandlerEvent(this);
+        reactor.register(event);
     }
+
 
     protected void send() throws IOException {
         output.flip();
@@ -65,7 +63,7 @@ public abstract class BaseHandler implements Runnable {
     }
 
     public String getReactorName() {
-        return reactor.getMainReactorName();
+        return reactor.getName();
     }
 
 
@@ -105,9 +103,29 @@ public abstract class BaseHandler implements Runnable {
             try {
                 processAndHandOff();
             } catch (EOFException e) {
-                // print error
+                //TODO print error
                 e.printStackTrace();
             }
+        }
+    }
+
+    public class HandlerEvent implements Event {
+        private BaseHandler handler;
+
+        public HandlerEvent(BaseHandler handler) {
+            this.handler = handler;
+        }
+
+        @Override
+        public void event() throws IOException {
+            socket.configureBlocking(false);
+            handler.sk = socket.register(selector, 0);
+            sk.interestOps(SelectionKey.OP_READ);
+            sk.attach(this);
+        }
+
+        public BaseHandler getHandler() {
+            return handler;
         }
     }
 }

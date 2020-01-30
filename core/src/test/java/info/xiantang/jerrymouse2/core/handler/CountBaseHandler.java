@@ -1,6 +1,6 @@
 package info.xiantang.jerrymouse2.core.handler;
 
-import info.xiantang.jerrymouse2.core.server.MultiReactor;
+import info.xiantang.jerrymouse2.core.server.Reactor;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import static info.xiantang.jerrymouse2.core.server.Constants.SENDING;
 public class CountBaseHandler extends BaseHandler {
 
 
-    public CountBaseHandler(MultiReactor reactor, SocketChannel channel) throws IOException {
+    public CountBaseHandler(Reactor reactor, SocketChannel channel) throws IOException {
         super(reactor, channel);
     }
 

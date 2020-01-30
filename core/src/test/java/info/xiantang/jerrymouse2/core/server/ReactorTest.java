@@ -15,6 +15,7 @@ public class ReactorTest {
         MultiReactor reactor = MultiReactor.newBuilder()
                 .setPort(9865)
                 .setHandlerClass(CountBaseHandler.class)
+                .setSubReactorCount(3)
                 .build();
         Thread reactorT = new Thread(reactor);
         reactorT.start();

@@ -1,6 +1,6 @@
 package info.xiantang.jerrymouse2.core.handler;
 
-import info.xiantang.jerrymouse2.core.server.MultiReactor;
+import info.xiantang.jerrymouse2.core.server.Reactor;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -19,9 +19,8 @@ public class EchoHandler extends BaseHandler {
      * and attach the this object prepare to use.
      *
      * @param channel
-     * @throws IOException
      */
-    public EchoHandler(MultiReactor reactor, SocketChannel channel) throws IOException {
+    public EchoHandler(Reactor reactor, SocketChannel channel) {
         super(reactor, channel);
     }
 

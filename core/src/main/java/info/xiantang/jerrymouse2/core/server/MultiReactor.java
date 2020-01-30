@@ -1,68 +1,51 @@
 package info.xiantang.jerrymouse2.core.server;
 
+import info.xiantang.jerrymouse2.core.event.Event;
 import info.xiantang.jerrymouse2.core.handler.BaseHandler;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class MultiReactor implements Runnable {
 
     private int subReactorCount;
-    private String mainReactorName;
-    private Selector mainSelector;
-    private ServerSocketChannel serverSocket;
-    private Class<? extends BaseHandler> handlerClass;
-    private MultiReactor reactor = this;
+    private Reactor[] subReactors;
+    private Reactor mainReactor;
+    private AtomicInteger loadBalancingInteger = new AtomicInteger();
+
 
     public MultiReactor(String mainReactorName, int port, Class<? extends BaseHandler> handlerClass, int subReactorCount) throws IOException {
-        this.mainReactorName = mainReactorName;
         this.subReactorCount = subReactorCount;
-        this.handlerClass = handlerClass;
-        this.mainSelector = Selector.open();
-        this.serverSocket = ServerSocketChannel.open();
-        this.serverSocket.socket().bind(new InetSocketAddress(port));
-        this.serverSocket.configureBlocking(false);
-        SelectionKey sk = serverSocket.register(mainSelector, SelectionKey.OP_ACCEPT);
-        sk.attach(new Acceptor());
+        this.mainReactor = new MainReactorImpl(mainReactorName, port, handlerClass);
+        this.subReactors = new Reactor[subReactorCount];
+        this.loadBalancingInteger.set(1);
+        for (int i = 0; i < subReactorCount; i++) {
+            this.subReactors[i] = new SubReactorImpl("subReactor-" + i, Selector.open());
+        }
+
     }
 
     public static Builder newBuilder() {
         return new Builder();
     }
 
+    @Override
     public void run() {
-        try {
-            while (!Thread.interrupted()) {
-                mainSelector.select();
-                Set selected = mainSelector.selectedKeys();
-                for (Object o : selected) dispatch((SelectionKey) o);
-            }
-        } catch (IOException e) {
-            //TODO log error
-            e.printStackTrace();
+        for (int i = 0; i < subReactorCount; i++) {
+            new Thread(subReactors[i]).start();
         }
+        new Thread(mainReactor).start();
     }
 
-    private void dispatch(SelectionKey k) {
-        Runnable r = (Runnable) (k.attachment());
-        if (r != null)
-            r.run();
-    }
-
-    public String getMainReactorName() {
-        return mainReactorName;
-    }
-
-    public Selector getMainSelector() {
-        return mainSelector;
-    }
 
     public static class Builder {
         private int port;
@@ -103,14 +86,24 @@ public class MultiReactor implements Runnable {
      * will gain a instance by reflect.
      */
     public class Acceptor implements Runnable {
+        private ServerSocketChannel serverSocket;
+        private Class<? extends BaseHandler> handlerClass;
+
+        public Acceptor(ServerSocketChannel serverSocket, Class<? extends BaseHandler> handlerClass) {
+            this.serverSocket = serverSocket;
+            this.handlerClass = handlerClass;
+        }
+
+        @Override
         public void run() {
             SocketChannel channel;
             try {
                 channel = serverSocket.accept();
                 if (channel != null) {
                     Constructor<? extends BaseHandler> handler
-                            = handlerClass.getConstructor(MultiReactor.class, SocketChannel.class);
-                    handler.newInstance(reactor, channel);
+                            = handlerClass.getConstructor(Reactor.class, SocketChannel.class);
+                    Reactor subReactor = subReactors[loadBalancingInteger.incrementAndGet() % subReactorCount];
+                    handler.newInstance(subReactor, channel);
                 }
             } catch (Exception e) {
                 //TODO log error
@@ -121,28 +114,39 @@ public class MultiReactor implements Runnable {
     }
 
 
-    public class MainReactor implements Runnable {
+    public class MainReactorImpl implements Reactor {
         private final String mainReactorName;
-        private final int port;
-        private Selector mainSelector;
-        private ServerSocketChannel serverSocket;
+        private Selector selector;
 
-        public MainReactor(String mainReactorName, int port) throws IOException {
+        public MainReactorImpl(String mainReactorName, int port, Class<? extends BaseHandler> handlerClass) throws IOException {
             this.mainReactorName = mainReactorName;
-            this.port = port;
-            this.mainSelector = Selector.open();
-            ServerSocket socket = serverSocket.socket();
-            socket.bind(new InetSocketAddress(port));
-            this.serverSocket.configureBlocking(false);
-            SelectionKey sk = serverSocket.register(mainSelector, SelectionKey.OP_ACCEPT);
-            sk.attach(new Acceptor());
+            this.selector = Selector.open();
+            ServerSocketChannel serverSocket = ServerSocketChannel.open();
+            serverSocket.socket().bind(new InetSocketAddress(port));
+            serverSocket.configureBlocking(false);
+            SelectionKey sk = serverSocket.register(selector, SelectionKey.OP_ACCEPT);
+            sk.attach(new Acceptor(serverSocket, handlerClass));
+        }
+
+        public String getName() {
+            return mainReactorName;
+        }
+
+        @Override
+        public Selector getSelector() {
+            return selector;
+        }
+
+        @Override
+        public void register(Event event) {
+            throw new NoSuchMethodError("MainReactor not implement register method.");
         }
 
         public void run() {
             try {
                 while (!Thread.interrupted()) {
-                    mainSelector.select();
-                    Set selected = mainSelector.selectedKeys();
+                    selector.select();
+                    Set selected = selector.selectedKeys();
                     for (Object o : selected) dispatch((SelectionKey) o);
                 }
             } catch (IOException e) {
@@ -152,23 +156,63 @@ public class MultiReactor implements Runnable {
         }
 
         private void dispatch(SelectionKey k) {
-            Runnable r = (Runnable) (k.attachment());
-            if (r != null)
-                r.run();
+            Runnable acceptor = (Runnable) (k.attachment());
+            if (acceptor != null)
+                acceptor.run();
         }
     }
 
 
-    public class SubReactor implements Runnable {
+    public class SubReactorImpl implements Reactor {
+        private Queue<Event> events = new ConcurrentLinkedQueue<>();
+        private Selector subSelector;
+        private String name;
 
-        private Selector selector;
-        public SubReactor(Selector selector) {
-            this.selector = selector;
 
+        public SubReactorImpl(String name, Selector subSelector) {
+            this.name = name;
+            this.subSelector = subSelector;
         }
+
         @Override
         public void run() {
+            try {
+                while (!Thread.interrupted()) {
+                    Event event;
+                    while ((event = events.poll()) != null) {
+                        event.event();
+                    }
+                    subSelector.select();
+                    Set selected = subSelector.selectedKeys();
+                    for (Object o : selected) dispatch((SelectionKey) o);
+                }
+            } catch (IOException e) {
+                //TODO log error
+                e.printStackTrace();
+            }
+        }
 
+        private void dispatch(SelectionKey k) {
+            Event event = (Event) (k.attachment());
+            BaseHandler handler = event.getHandler();
+            if (handler != null)
+                handler.run();
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public Selector getSelector() {
+            return subSelector;
+        }
+
+        @Override
+        public void register(Event event) {
+            events.offer(event);
+            subSelector.wakeup();
         }
     }
 

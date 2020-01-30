@@ -12,7 +12,9 @@ public class TestSampleEchoServer {
         MultiReactor reactor = MultiReactor.newBuilder()
                 .setPort(9004)
                 .setHandlerClass(EchoHandler.class)
+                .setSubReactorCount(3)
                 .build();
+
         Thread reactorT = new Thread(reactor);
         reactorT.start();
 
