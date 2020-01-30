@@ -32,11 +32,11 @@ public class EchoHandler extends BaseHandler {
             while (input.hasRemaining()) {
                 byte ch = input.get();
                 if (ch == 3) {
-                    state = CLOSED;
+                    setState(CLOSED);
                     return true;
                 } else if (ch == '\r') {
                 } else if (ch == '\n') {
-                    state = SENDING;
+                    setState(SENDING);
                     return true;
                 } else {
                     request.append((char) ch);
@@ -59,7 +59,7 @@ public class EchoHandler extends BaseHandler {
         if (outputIsComplete(written)) {
             sk.channel().close();
         } else {
-            state = READING;
+            setState(READING);
             socket.write(ByteBuffer.wrap("\r\nreactor> ".getBytes()));
             sk.interestOps(SelectionKey.OP_READ);
         }
@@ -67,7 +67,8 @@ public class EchoHandler extends BaseHandler {
     }
 
     @Override
-    public void process() throws EOFException {
+    public void process(ByteBuffer output) throws EOFException {
+        int state = getState();
         if (state == CLOSED) {
             throw new EOFException();
         } else if (state == SENDING) {

@@ -7,10 +7,10 @@ import org.junit.Test;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
 
 import static info.xiantang.jerrymouse2.core.server.Constants.*;
@@ -18,7 +18,7 @@ import static info.xiantang.jerrymouse2.core.server.Constants.*;
 
 public class HandlerTest {
 
-    private ExecutorService executor = Executors.newFixedThreadPool(2);
+    private ExecutorService executor = Executors.newFixedThreadPool(4);
 
 
     public static class SleepyHandler extends CountBaseHandler {
@@ -27,17 +27,14 @@ public class HandlerTest {
             super(sel, c);
         }
 
-        public void process() throws EOFException {
+        @Override
+        public void process(ByteBuffer output) throws EOFException {
+            int state = getState();
             if (state == CLOSED) {
                 throw new EOFException();
             } else if (state == SENDING) {
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 output.clear();
-                output.put("12".getBytes());
+                output.put(Thread.currentThread().getName().getBytes());
             }
         }
     }
@@ -48,28 +45,28 @@ public class HandlerTest {
                 .setPort(9800)
                 .setHandlerClass(SleepyHandler.class)
                 .build();
+
+        Set<String> result = new HashSet<>();
         Thread reactorT = new Thread(reactor);
         reactorT.start();
-        StopWatch watch = new StopWatch();
-        watch.start();
+
         List<Future<String>> futureList = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 4; i++) {
             Future<String> future = executor.submit(() -> NetWorkClient.doRequest("localhost", 9800, "test\n"));
             futureList.add(future);
         }
         futureList.forEach(x -> {
             try {
                 String s = x.get();
-                assert "12".equals(s);
+                assert s.startsWith("pool-2-thread-");
+                result.add(s);
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
         });
 
 
-        watch.stop();
-        long spend = watch.getTime();
-        assert spend < 2000 && spend >= 1000;
+        assert result.size() > 1;
     }
 
     @Test

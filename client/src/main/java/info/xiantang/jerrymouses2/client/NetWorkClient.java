@@ -11,7 +11,7 @@ public class NetWorkClient {
         SocketChannel socket = SocketChannel.open(servAddr);
         byte[] msg = content.getBytes();
         ByteBuffer buffer = ByteBuffer.wrap(msg);
-        ByteBuffer out = ByteBuffer.allocate(10);
+        ByteBuffer out = ByteBuffer.allocate(1024);
 
         socket.write(buffer);
         buffer.clear();

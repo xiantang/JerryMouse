@@ -18,7 +18,7 @@ public abstract class BaseHandler implements Runnable {
     protected final SocketChannel socket;
     protected final SelectionKey sk;
     private final Selector selector;
-    protected int state = READING;
+    private int state = READING;
     protected ByteBuffer input = ByteBuffer.allocate(BUFFER_MAX_IN);
     protected ByteBuffer output = ByteBuffer.allocate(BUFFER_MAX_OUT);
     protected StringBuilder request = new StringBuilder();
@@ -51,8 +51,15 @@ public abstract class BaseHandler implements Runnable {
 
     public abstract boolean inputIsComplete(int bytes) throws IOException;
 
-    public abstract void process() throws EOFException;
+    public abstract void process(ByteBuffer output) throws EOFException;
 
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
 
     public void run() {
         try {
@@ -69,7 +76,7 @@ public abstract class BaseHandler implements Runnable {
 
     private synchronized void processAndHandOff() throws EOFException {
         state = SENDING;
-        process();
+        process(output);
         sk.interestOps(SelectionKey.OP_WRITE);
         selector.wakeup();
     }

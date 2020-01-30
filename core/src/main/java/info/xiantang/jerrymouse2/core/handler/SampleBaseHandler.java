@@ -2,6 +2,7 @@ package info.xiantang.jerrymouse2.core.handler;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
@@ -22,11 +23,11 @@ public class SampleBaseHandler extends BaseHandler {
                 byte ch = input.get();
 
                 if (ch == 3) {
-                    state = CLOSED;
+                    setState(CLOSED);
                     return true;
                 } else if (ch == '\r') {
                 } else if (ch == '\n') {
-                    state = SENDING;
+                    setState(SENDING);
                     return true;
                 } else {
                     request.append((char) ch);
@@ -40,7 +41,8 @@ public class SampleBaseHandler extends BaseHandler {
     }
 
     @Override
-    public void process() throws EOFException {
+    public void process(ByteBuffer output) throws EOFException{
+        int state = getState();
         if (state == CLOSED) {
             throw new EOFException();
         } else if (state == SENDING) {

@@ -1,6 +1,5 @@
 package info.xiantang.jerrymouse2.core.handler;
 
-import info.xiantang.jerrymouse2.core.handler.EchoHandler;
 import info.xiantang.jerrymouse2.core.server.Reactor;
 import info.xiantang.jerrymouses2.client.EchoClient;
 import org.junit.Test;
