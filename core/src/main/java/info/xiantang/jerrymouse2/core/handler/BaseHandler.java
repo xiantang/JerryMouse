@@ -17,15 +17,15 @@ import static info.xiantang.jerrymouse2.core.server.Constants.*;
 
 public abstract class BaseHandler implements Runnable {
 
-    private Reactor reactor;
     private static ExecutorService threadPool = Executors.newFixedThreadPool(CORE_NUM);
     protected final SocketChannel socket;
-    protected SelectionKey sk;
     private final Selector selector;
-    private int state = READING;
+    protected SelectionKey sk;
     protected ByteBuffer input = ByteBuffer.allocate(BUFFER_MAX_IN);
     protected ByteBuffer output = ByteBuffer.allocate(BUFFER_MAX_OUT);
     protected StringBuilder request = new StringBuilder();
+    private Reactor reactor;
+    private int state = READING;
 
 
     /**
@@ -43,17 +43,6 @@ public abstract class BaseHandler implements Runnable {
         reactor.register(event);
     }
 
-
-    protected void send() throws IOException {
-        output.flip();
-        socket.write(output);
-        sk.channel().close();
-    }
-
-    public abstract boolean inputIsComplete(int bytes) throws IOException;
-
-    public abstract void process(ByteBuffer output) throws EOFException;
-
     public int getState() {
         return state;
     }
@@ -65,7 +54,6 @@ public abstract class BaseHandler implements Runnable {
     public String getReactorName() {
         return reactor.getName();
     }
-
 
     public void run() {
         try {
@@ -79,14 +67,6 @@ public abstract class BaseHandler implements Runnable {
         }
     }
 
-
-    private synchronized void processAndHandOff() throws EOFException {
-        state = SENDING;
-        process(output);
-        sk.interestOps(SelectionKey.OP_WRITE);
-        selector.wakeup();
-    }
-
     protected synchronized void read() throws IOException {
         input.clear();
         int n = socket.read(input);
@@ -95,6 +75,23 @@ public abstract class BaseHandler implements Runnable {
             threadPool.execute(new Processor());
         }
     }
+
+    protected void send() throws IOException {
+        output.flip();
+        socket.write(output);
+        sk.channel().close();
+    }
+
+    public abstract boolean inputIsComplete(int bytes) throws IOException;
+
+    private synchronized void processAndHandOff() throws EOFException {
+        state = SENDING;
+        process(output);
+        sk.interestOps(SelectionKey.OP_WRITE);
+        selector.wakeup();
+    }
+
+    public abstract void process(ByteBuffer output) throws EOFException;
 
     class Processor implements Runnable {
 

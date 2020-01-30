@@ -21,26 +21,6 @@ import static info.xiantang.jerrymouse2.core.server.Constants.SENDING;
 public class MultiReactorTest {
 
 
-    public static class InsureReactorHandler extends CountBaseHandler {
-
-        public InsureReactorHandler(Reactor reactor, SocketChannel channel) throws IOException {
-            super(reactor, channel);
-        }
-
-        @Override
-        public void process(ByteBuffer output) throws EOFException {
-            int state = getState();
-            if (state == CLOSED) {
-                throw new EOFException();
-            } else if (state == SENDING) {
-                output.clear();
-                String name = getReactorName();
-                output.put(name.getBytes());
-            }
-        }
-    }
-
-
     @Test
     public void canDealRequestWithSeveralReactor() throws IOException {
         MultiReactor reactor = MultiReactor.newBuilder()
@@ -70,6 +50,25 @@ public class MultiReactorTest {
         assert expect.equals(result);
 
 
+    }
+
+    public static class InsureReactorHandler extends CountBaseHandler {
+
+        public InsureReactorHandler(Reactor reactor, SocketChannel channel) throws IOException {
+            super(reactor, channel);
+        }
+
+        @Override
+        public void process(ByteBuffer output) throws EOFException {
+            int state = getState();
+            if (state == CLOSED) {
+                throw new EOFException();
+            } else if (state == SENDING) {
+                output.clear();
+                String name = getReactorName();
+                output.put(name.getBytes());
+            }
+        }
     }
 
 

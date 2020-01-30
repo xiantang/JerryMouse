@@ -20,7 +20,7 @@ public class ReactorTest {
         Thread reactorT = new Thread(reactor);
         reactorT.start();
 
-        String response = NetWorkClient.doRequest("localhost",9865,"test\n");
+        String response = NetWorkClient.doRequest("localhost", 9865, "test\n");
         assert "1".equals(response);
 
     }

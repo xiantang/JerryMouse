@@ -21,7 +21,7 @@ public class TestSampleEchoServer {
         EchoClient echoClient = new EchoClient("localhost", 9004);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 3; i++) {
-            try  {
+            try {
                 sb.append(echoClient.sendReceive("HELO" + i));
                 Thread.sleep(500);
             } catch (InterruptedException e) {
@@ -30,6 +30,6 @@ public class TestSampleEchoServer {
         }
         System.out.println(sb.toString());
         assert "HELO0reactor> HELO1reactor> HELO2".equals(sb.toString());
-        
+
     }
 }

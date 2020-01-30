@@ -10,34 +10,22 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-import static info.xiantang.jerrymouse2.core.server.Constants.*;
+import static info.xiantang.jerrymouse2.core.server.Constants.CLOSED;
+import static info.xiantang.jerrymouse2.core.server.Constants.SENDING;
 
 
 public class HandlerTest {
 
     private ExecutorService executor = Executors.newFixedThreadPool(4);
-
-
-    public static class SleepyHandler extends CountBaseHandler {
-
-        public SleepyHandler(Reactor reactor, SocketChannel channel) throws IOException {
-            super(reactor, channel);
-        }
-
-        @Override
-        public void process(ByteBuffer output) throws EOFException {
-            int state = getState();
-            if (state == CLOSED) {
-                throw new EOFException();
-            } else if (state == SENDING) {
-                output.clear();
-                output.put(Thread.currentThread().getName().getBytes());
-            }
-        }
-    }
 
     @Test
     public void isHandlerConcurrency() throws IOException {
@@ -85,6 +73,24 @@ public class HandlerTest {
         System.out.println(response);
         assert "subReactor-2".equals(response);
 
+    }
+
+    public static class SleepyHandler extends CountBaseHandler {
+
+        public SleepyHandler(Reactor reactor, SocketChannel channel) throws IOException {
+            super(reactor, channel);
+        }
+
+        @Override
+        public void process(ByteBuffer output) throws EOFException {
+            int state = getState();
+            if (state == CLOSED) {
+                throw new EOFException();
+            } else if (state == SENDING) {
+                output.clear();
+                output.put(Thread.currentThread().getName().getBytes());
+            }
+        }
     }
 
 

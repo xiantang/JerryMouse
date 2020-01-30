@@ -17,18 +17,6 @@ public class CountBaseHandler extends BaseHandler {
         super(reactor, channel);
     }
 
-
-    @Override
-    public void process(ByteBuffer output) throws EOFException {
-        int state = getState();
-        if (state == CLOSED) {
-            throw new EOFException();
-        } else if (state == SENDING) {
-            output.put("1".getBytes());
-        }
-    }
-
-
     @Override
     public boolean inputIsComplete(int bytes) throws IOException {
         if (bytes > 0) {
@@ -51,6 +39,16 @@ public class CountBaseHandler extends BaseHandler {
         }
 
         return false;
+    }
+
+    @Override
+    public void process(ByteBuffer output) throws EOFException {
+        int state = getState();
+        if (state == CLOSED) {
+            throw new EOFException();
+        } else if (state == SENDING) {
+            output.put("1".getBytes());
+        }
     }
 
 }
