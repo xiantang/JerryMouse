@@ -1,7 +1,7 @@
 package info.xiantang.jerrymouse2.core.handler;
 
 import info.xiantang.jerrymouse2.core.event.Event;
-import info.xiantang.jerrymouse2.core.server.Reactor;
+import info.xiantang.jerrymouse2.core.reactor.Reactor;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -12,7 +12,7 @@ import java.nio.channels.SocketChannel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static info.xiantang.jerrymouse2.core.server.Constants.*;
+import static info.xiantang.jerrymouse2.core.reactor.Constants.*;
 
 
 public abstract class BaseHandler implements Runnable {
@@ -71,7 +71,7 @@ public abstract class BaseHandler implements Runnable {
     protected synchronized void read() throws IOException {
         input.clear();
         int n = socket.read(input);
-        if (inputIsComplete(n)) {
+        if (inputIsComplete(input, request, n)) {
             state = PROCESSING;
             threadPool.execute(new Processor());
         }
@@ -83,16 +83,16 @@ public abstract class BaseHandler implements Runnable {
         sk.channel().close();
     }
 
-    public abstract boolean inputIsComplete(int bytes) throws IOException;
+    public abstract boolean inputIsComplete(ByteBuffer input, StringBuilder request, int bytes) throws IOException;
 
     private synchronized void processAndHandOff() throws EOFException {
         state = SENDING;
-        process(output);
+        process(output, request);
         sk.interestOps(SelectionKey.OP_WRITE);
         selector.wakeup();
     }
 
-    public abstract void process(ByteBuffer output) throws EOFException;
+    public abstract void process(ByteBuffer output, StringBuilder request) throws EOFException;
 
     class Processor implements Runnable {
 

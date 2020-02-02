@@ -1,4 +1,4 @@
-package info.xiantang.jerrymouse2.core.server;
+package info.xiantang.jerrymouse2.core.reactor;
 
 import info.xiantang.jerrymouse2.core.event.Event;
 

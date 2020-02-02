@@ -1,24 +1,24 @@
 package info.xiantang.jerrymouse2.core.handler;
 
-import info.xiantang.jerrymouse2.core.server.Reactor;
+import info.xiantang.jerrymouse2.core.reactor.Reactor;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import static info.xiantang.jerrymouse2.core.server.Constants.CLOSED;
-import static info.xiantang.jerrymouse2.core.server.Constants.SENDING;
+import static info.xiantang.jerrymouse2.core.reactor.Constants.CLOSED;
+import static info.xiantang.jerrymouse2.core.reactor.Constants.SENDING;
 
 public class CountBaseHandler extends BaseHandler {
 
 
-    public CountBaseHandler(Reactor reactor, SocketChannel channel) throws IOException {
+    public CountBaseHandler(Reactor reactor, SocketChannel channel) {
         super(reactor, channel);
     }
 
     @Override
-    public boolean inputIsComplete(int bytes) throws IOException {
+    public boolean inputIsComplete(ByteBuffer input, StringBuilder request, int bytes) throws IOException {
         if (bytes > 0) {
             input.flip(); // 切换成读取模式
             while (input.hasRemaining()) {
@@ -42,7 +42,7 @@ public class CountBaseHandler extends BaseHandler {
     }
 
     @Override
-    public void process(ByteBuffer output) throws EOFException {
+    public void process(ByteBuffer output,StringBuilder request) throws EOFException {
         int state = getState();
         if (state == CLOSED) {
             throw new EOFException();

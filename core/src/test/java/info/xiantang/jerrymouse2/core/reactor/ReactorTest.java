@@ -1,10 +1,12 @@
-package info.xiantang.jerrymouse2.core.server;
+package info.xiantang.jerrymouse2.core.reactor;
 
 import info.xiantang.jerrymouse2.core.handler.CountBaseHandler;
 import info.xiantang.jerrymouses2.client.NetWorkClient;
 import org.junit.Test;
 
 import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
 
 
 public class ReactorTest {
@@ -19,9 +21,8 @@ public class ReactorTest {
                 .build();
         Thread reactorT = new Thread(reactor);
         reactorT.start();
-
         String response = NetWorkClient.doRequest("localhost", 9865, "test\n");
-        assert "1".equals(response);
+        assertEquals("1", response);
 
     }
 }

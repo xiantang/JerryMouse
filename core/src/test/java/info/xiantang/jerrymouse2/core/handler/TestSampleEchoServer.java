@@ -1,10 +1,12 @@
 package info.xiantang.jerrymouse2.core.handler;
 
-import info.xiantang.jerrymouse2.core.server.MultiReactor;
+import info.xiantang.jerrymouse2.core.reactor.MultiReactor;
 import info.xiantang.jerrymouses2.client.EchoClient;
 import org.junit.Test;
 
 import java.io.IOException;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestSampleEchoServer {
     @Test
@@ -28,8 +30,7 @@ public class TestSampleEchoServer {
                 e.printStackTrace();
             }
         }
-        System.out.println(sb.toString());
-        assert "HELO0reactor> HELO1reactor> HELO2".equals(sb.toString());
+        assertEquals("HELO0reactor> HELO1reactor> HELO2", sb.toString());
 
     }
 }

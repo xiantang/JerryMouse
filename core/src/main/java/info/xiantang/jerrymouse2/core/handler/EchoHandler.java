@@ -1,6 +1,6 @@
 package info.xiantang.jerrymouse2.core.handler;
 
-import info.xiantang.jerrymouse2.core.server.Reactor;
+import info.xiantang.jerrymouse2.core.reactor.Reactor;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 
-import static info.xiantang.jerrymouse2.core.server.Constants.*;
+import static info.xiantang.jerrymouse2.core.reactor.Constants.*;
 
 public class EchoHandler extends BaseHandler {
 
@@ -43,7 +43,7 @@ public class EchoHandler extends BaseHandler {
     }
 
     @Override
-    public boolean inputIsComplete(int bytes) throws IOException {
+    public boolean inputIsComplete(ByteBuffer input, StringBuilder request, int bytes) throws IOException {
         if (bytes > 0) {
             input.flip();
             while (input.hasRemaining()) {
@@ -67,7 +67,7 @@ public class EchoHandler extends BaseHandler {
     }
 
     @Override
-    public void process(ByteBuffer output) throws EOFException {
+    public void process(ByteBuffer output,StringBuilder request) throws EOFException {
         int state = getState();
         if (state == CLOSED) {
             throw new EOFException();

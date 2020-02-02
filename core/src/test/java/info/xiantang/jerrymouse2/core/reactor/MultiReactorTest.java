@@ -1,4 +1,4 @@
-package info.xiantang.jerrymouse2.core.server;
+package info.xiantang.jerrymouse2.core.reactor;
 
 import info.xiantang.jerrymouse2.core.handler.CountBaseHandler;
 import info.xiantang.jerrymouses2.client.NetWorkClient;
@@ -15,8 +15,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static info.xiantang.jerrymouse2.core.server.Constants.CLOSED;
-import static info.xiantang.jerrymouse2.core.server.Constants.SENDING;
+import static info.xiantang.jerrymouse2.core.reactor.Constants.CLOSED;
+import static info.xiantang.jerrymouse2.core.reactor.Constants.SENDING;
+import static org.junit.Assert.assertEquals;
 
 public class MultiReactorTest {
 
@@ -47,19 +48,17 @@ public class MultiReactorTest {
         expect.put("subReactor-0", 1L);
         expect.put("subReactor-1", 1L);
         expect.put("subReactor-2", 2L);
-        assert expect.equals(result);
-
-
+        assertEquals(expect, result);
     }
 
     public static class InsureReactorHandler extends CountBaseHandler {
 
-        public InsureReactorHandler(Reactor reactor, SocketChannel channel) throws IOException {
+        public InsureReactorHandler(Reactor reactor, SocketChannel channel) {
             super(reactor, channel);
         }
 
         @Override
-        public void process(ByteBuffer output) throws EOFException {
+        public void process(ByteBuffer output,StringBuilder request) throws EOFException {
             int state = getState();
             if (state == CLOSED) {
                 throw new EOFException();

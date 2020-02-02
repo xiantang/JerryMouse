@@ -1,4 +1,4 @@
-package info.xiantang.jerrymouse2.core.server;
+package info.xiantang.jerrymouse2.core.reactor;
 
 public class Constants {
     public static final int READING = 0, SENDING = 1, CLOSED = 2, PROCESSING = 3;

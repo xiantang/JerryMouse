@@ -23,6 +23,7 @@
     <modules>
         <module>client</module>
         <module>core</module>
+        <module>http</module>
     </modules>
     <dependencies>
 
