@@ -1,4 +1,4 @@
-package info.xiantang.jerrymouse2.http;
+package info.xiantang.jerrymouse2.http.handler;
 
 import info.xiantang.jerrymouse2.core.handler.BaseHandler;
 import info.xiantang.jerrymouse2.core.reactor.Reactor;
