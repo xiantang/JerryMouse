@@ -43,7 +43,7 @@ public class SampleBaseHandler extends BaseHandler {
     }
 
     @Override
-    public void process(ByteBuffer output,StringBuilder request) throws EOFException {
+    public void process(ByteBuffer output, StringBuilder request) throws EOFException {
         int state = getState();
         if (state == CLOSED) throw new EOFException();
         else if (state == SENDING) {

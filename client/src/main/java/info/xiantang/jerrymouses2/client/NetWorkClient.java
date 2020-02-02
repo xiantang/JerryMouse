@@ -6,7 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 public class NetWorkClient {
-    public static String doRequest(String host,int port,String content) throws IOException {
+    public static String doRequest(String host, int port, String content) throws IOException {
         InetSocketAddress servAddr = new InetSocketAddress(host, port);
         SocketChannel socket = SocketChannel.open(servAddr);
         byte[] msg = content.getBytes();

@@ -4,31 +4,34 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Request {
+public class HttpRequest {
 
     private String uri;
     private String method;
     private String version;
     private Map<String, String> headers;
 
-    public Request(String method, String version, Map<String, String> headers, String uri) {
+    public HttpRequest(String method, String version, Map<String, String> headers, String uri) {
         this.method = method;
         this.version = version;
         this.headers = headers;
         this.uri = uri;
     }
 
+    public static Builder newBuilder() {
+        return new Builder();
+    }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
             return true;
         }
-        if (!(obj instanceof Request)) {
+        if (!(obj instanceof HttpRequest)) {
             return false;
         }
 
-        Request that = (Request) obj;
+        HttpRequest that = (HttpRequest) obj;
         try {
             return getFieldMap(this).equals(getFieldMap(that));
         } catch (IllegalAccessException e) {
@@ -49,11 +52,6 @@ public class Request {
         return fieldMap;
     }
 
-
-    public static Builder newBuilder() {
-        return new Builder();
-    }
-
     public static class Builder {
 
         private String method;
@@ -62,8 +60,8 @@ public class Request {
         private String uri;
 
 
-        public Request build() {
-            return new Request(method, httpVersion, headers, uri);
+        public HttpRequest build() {
+            return new HttpRequest(method, httpVersion, headers, uri);
         }
 
         public Builder setMethod(String method) {

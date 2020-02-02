@@ -25,18 +25,7 @@ public class HttpHandler extends BaseHandler {
     }
 
     @Override
-    public void process(ByteBuffer output,StringBuilder request) throws EOFException {
-        int state = getState();
-        if (state == CLOSED) {
-            throw new EOFException();
-        } else if (state == SENDING) {
-            System.out.println(request.toString());
-            output.put(buildResponse(request.toString()).getBytes());
-        }
-    }
-
-    @Override
-    public boolean inputIsComplete(ByteBuffer input,StringBuilder request,int bytes) throws IOException {
+    public boolean inputIsComplete(ByteBuffer input, StringBuilder request, int bytes) throws IOException {
         if (bytes > 0) {
             input.flip();
             while (input.hasRemaining()) {
@@ -53,6 +42,17 @@ public class HttpHandler extends BaseHandler {
         }
 
         return true;
+    }
+
+    @Override
+    public void process(ByteBuffer output, StringBuilder request) throws EOFException {
+        int state = getState();
+        if (state == CLOSED) {
+            throw new EOFException();
+        } else if (state == SENDING) {
+            System.out.println(request.toString());
+            output.put(buildResponse(request.toString()).getBytes());
+        }
     }
 
     private String buildResponse(String request) {

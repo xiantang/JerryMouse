@@ -84,7 +84,7 @@ public class HandlerTest {
         }
 
         @Override
-        public void process(ByteBuffer output,StringBuilder request) throws EOFException {
+        public void process(ByteBuffer output, StringBuilder request) throws EOFException {
             int state = getState();
             if (state == CLOSED) {
                 throw new EOFException();

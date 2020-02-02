@@ -18,6 +18,26 @@ public class EchoClient implements AutoCloseable {
         is = new BufferedReader(new InputStreamReader(client.getInputStream()));
     }
 
+    public static void main(String[] args) {
+        int port = 10393;
+        String host = "localhost";
+        int totalClients = 4;
+        Stream.iterate(1, x -> x + 1).limit(totalClients).forEach(id -> new Thread(() -> {
+            try (EchoClient client = new EchoClient(host, port)) {
+                client.sendReceive("HELO" + id);
+                Thread.sleep(2000);
+            } catch (InterruptedException | IOException e) {
+                e.printStackTrace();
+            }
+        }).start());
+    }
+
+    public void close() throws IOException {
+        sendReceive("QUIT");
+        is.close();
+        os.close();
+    }
+
     public String sendReceive(String message) throws IOException {
 
         os.writeBytes(message + "\n");
@@ -32,25 +52,5 @@ public class EchoClient implements AutoCloseable {
         }
         return responseLine;
 
-    }
-
-    public void close() throws IOException {
-        sendReceive("QUIT");
-        is.close();
-        os.close();
-    }
-
-    public static void main(String[] args) {
-        int port = 10393;
-        String host = "localhost";
-        int totalClients = 4;
-        Stream.iterate(1, x -> x + 1).limit(totalClients).forEach(id -> new Thread(() -> {
-            try (EchoClient client = new EchoClient(host, port)) {
-                client.sendReceive("HELO" + id);
-                Thread.sleep(2000);
-            } catch (InterruptedException | IOException e) {
-                e.printStackTrace();
-            }
-        }).start());
     }
 }
