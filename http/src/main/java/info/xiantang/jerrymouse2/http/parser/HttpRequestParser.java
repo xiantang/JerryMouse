@@ -1,7 +1,7 @@
 package info.xiantang.jerrymouse2.http.parser;
 
-import info.xiantang.jerrymouse2.http.HttpRequest;
 import info.xiantang.jerrymouse2.http.exception.RequestParseException;
+import info.xiantang.jerrymouse2.http.http.HttpRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,28 +26,79 @@ public class HttpRequestParser {
         this.requestBuilder = requestBuilder;
     }
 
-
+    /**
+     * can parse GET/POST http request
+     * @return
+     * @throws RequestParseException
+     */
     public HttpRequest parse() throws RequestParseException {
         parseRequestLine();
         parseHeaders();
+        parseBody();
         return requestBuilder.build();
     }
 
+    private void parseBody() throws RequestParseException {
+        // request not have body
+        if (currentIndex >= rawRequest.length) {
+            return;
+        }
+        String body = parseByTwoLinkedBytes(CRLF);
+        requestBuilder.setBody(body);
+
+        Map<String, String> headers = requestBuilder.getHeaders();
+        // TODO parse charset from content-type
+        if (headers.get("Content-Type") != null) {
+            Map<String, String> parameters = parseParameters(body);
+            requestBuilder.setParameters(parameters);
+        }
+
+    }
+
+    private Map<String, String> parseParameters(String rawParameters) {
+        String[] parameterArray = rawParameters.split("&");
+        Map<String, String> parameters = requestBuilder.getParameters();
+        for (String s : parameterArray) {
+            String[] kv = s.split("=");
+            parameters.put(kv[0], kv[1]);
+        }
+        return parameters;
+    }
+
+
     private void parseRequestLine() throws RequestParseException {
         String method = parseBySpace();
-        requestBuilder.setMethod(method);
-        String uri = parseBySpace();
-        requestBuilder.setUri(uri);
+        String pathWithParameters = parseBySpace();
         String httpVersion = parseByTwoLinkedBytes(CRLF);
-        requestBuilder.setHttpVersion(httpVersion);
+        String path = splitPath(pathWithParameters);
+        Map<String, String> parameters = splitParameters(pathWithParameters);
+        Map<String, String> oldParameters = requestBuilder.getParameters();
+        oldParameters.putAll(parameters);
 
+        requestBuilder.setParameters(oldParameters);
+        requestBuilder.setPath(path);
+        requestBuilder.setMethod(method);
+        requestBuilder.setHttpVersion(httpVersion);
+    }
+
+    private String splitPath(String pathWithParameters) {
+        return pathWithParameters.split("\\?")[0];
+    }
+
+    private Map<String, String> splitParameters(String pathWithParameters) {
+        String[] split = pathWithParameters.split("\\?");
+        if (split.length > 1) {
+            return parseParameters(split[1]);
+        } else {
+            return new HashMap<>();
+        }
     }
 
     private void parseHeaders() throws RequestParseException {
         Map<String, String> headers = new HashMap<>();
 
-        while (parseHeader(headers) && currentIndex <= rawRequest.length) {
-
+        while (true) {
+            if (!parseHeader(headers) || currentIndex > rawRequest.length) break;
         }
         requestBuilder.setHeaders(headers);
     }

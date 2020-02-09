@@ -1,6 +1,7 @@
 package info.xiantang.jerrymouse2.core.handler;
 
 import info.xiantang.jerrymouse2.core.reactor.Reactor;
+import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class SampleBaseHandler extends BaseHandler {
     }
 
     @Override
-    public boolean inputIsComplete(ByteBuffer input, StringBuilder request, int bytes) throws IOException {
+    public boolean inputIsComplete(ByteBuffer input, ByteArrayBuffer request, int bytes) throws IOException {
         if (bytes > 0) {
             input.flip();
             while (input.hasRemaining()) {
@@ -43,7 +44,7 @@ public class SampleBaseHandler extends BaseHandler {
     }
 
     @Override
-    public void process(ByteBuffer output, StringBuilder request) throws EOFException {
+    public void process(ByteBuffer output, ByteArrayBuffer request) throws EOFException {
         int state = getState();
         if (state == CLOSED) throw new EOFException();
         else if (state == SENDING) {

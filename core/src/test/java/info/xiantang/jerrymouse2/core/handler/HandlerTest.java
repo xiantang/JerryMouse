@@ -5,6 +5,7 @@ import info.xiantang.jerrymouse2.core.reactor.MultiReactor;
 import info.xiantang.jerrymouse2.core.reactor.MultiReactorTest;
 import info.xiantang.jerrymouse2.core.reactor.Reactor;
 import info.xiantang.jerrymouses2.client.NetWorkClient;
+import org.apache.http.util.ByteArrayBuffer;
 import org.junit.Test;
 
 import java.io.EOFException;
@@ -84,7 +85,7 @@ public class HandlerTest {
         }
 
         @Override
-        public void process(ByteBuffer output, StringBuilder request) throws EOFException {
+        public void process(ByteBuffer output, ByteArrayBuffer request) throws EOFException {
             int state = getState();
             if (state == CLOSED) {
                 throw new EOFException();

@@ -2,6 +2,7 @@ package info.xiantang.jerrymouse2.core.handler;
 
 import info.xiantang.jerrymouse2.core.event.Event;
 import info.xiantang.jerrymouse2.core.reactor.Reactor;
+import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -23,7 +24,7 @@ public abstract class BaseHandler implements Runnable {
     protected SelectionKey sk;
     protected ByteBuffer input = ByteBuffer.allocate(BUFFER_MAX_IN);
     protected ByteBuffer output = ByteBuffer.allocate(BUFFER_MAX_OUT);
-    protected StringBuilder request = new StringBuilder();
+    protected ByteArrayBuffer rawRequest = new ByteArrayBuffer(0);
     private Reactor reactor;
     private int state = READING;
 
@@ -71,7 +72,7 @@ public abstract class BaseHandler implements Runnable {
     protected synchronized void read() throws IOException {
         input.clear();
         int n = socket.read(input);
-        if (inputIsComplete(input, request, n)) {
+        if (inputIsComplete(input, rawRequest, n)) {
             state = PROCESSING;
             threadPool.execute(new Processor());
         }
@@ -83,16 +84,16 @@ public abstract class BaseHandler implements Runnable {
         sk.channel().close();
     }
 
-    public abstract boolean inputIsComplete(ByteBuffer input, StringBuilder request, int bytes) throws IOException;
+    public abstract boolean inputIsComplete(ByteBuffer input, ByteArrayBuffer rawRequest, int bytes) throws IOException;
 
     private synchronized void processAndHandOff() throws EOFException {
         state = SENDING;
-        process(output, request);
+        process(output, rawRequest);
         sk.interestOps(SelectionKey.OP_WRITE);
         selector.wakeup();
     }
 
-    public abstract void process(ByteBuffer output, StringBuilder request) throws EOFException;
+    public abstract void process(ByteBuffer output, ByteArrayBuffer request) throws EOFException;
 
     class Processor implements Runnable {
 
