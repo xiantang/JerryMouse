@@ -63,6 +63,11 @@ public class HttpRequest implements Request {
         return fieldMap;
     }
 
+    @Override
+    public String getBody() {
+        return body;
+    }
+
     public static class Builder {
 
         private String method;

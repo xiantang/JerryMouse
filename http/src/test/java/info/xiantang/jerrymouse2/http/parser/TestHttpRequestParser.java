@@ -69,9 +69,10 @@ public class TestHttpRequestParser {
     public void canParsePostFormUrlEncodeRequest() throws RequestParseException {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder();
         String reqStr = "POST / HTTP/1.1\r\n" +
+                "Content-Length: 31\r\n"+
                 "Content-Type: application/x-www-form-urlencoded;charset=utf-8\r\n" +
                 "\r\n" +
-                "title=test&key1=1&key2=2&key3=3\r\n";
+                "title=test&key1=1&key2=2&key3=3";
         HttpRequestParser parser = new HttpRequestParser(reqStr.getBytes(), requestBuilder);
         HttpRequest httpRequest = parser.parse();
         Map<String, String> headers = new HashMap<>();
@@ -81,6 +82,7 @@ public class TestHttpRequestParser {
         parameters.put("key2", "2");
         parameters.put("key3", "3");
         headers.put("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+        headers.put("Content-Length", "31");
 
         HttpRequest expect = HttpRequest.newBuilder()
                 .setMethod("POST")

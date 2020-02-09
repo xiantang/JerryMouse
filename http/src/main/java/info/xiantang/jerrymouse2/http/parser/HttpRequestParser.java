@@ -38,26 +38,39 @@ public class HttpRequestParser {
         return requestBuilder.build();
     }
 
-    private void parseBody() throws RequestParseException {
+    private void parseBody() {
         // request not have body
         if (currentIndex >= rawRequest.length) {
             return;
         }
-        String body = parseByTwoLinkedBytes(CRLF);
-        requestBuilder.setBody(body);
-
         Map<String, String> headers = requestBuilder.getHeaders();
-        // TODO parse charset from content-type
-        if (headers.get("Content-Type") != null) {
-            Map<String, String> parameters = parseParameters(body);
-            requestBuilder.setParameters(parameters);
+        String lengthStr = headers.get("Content-Length");
+        if (lengthStr != null) {
+            int length = Integer.parseInt(lengthStr);
+            String body = parseBody(length);
+            requestBuilder.setBody(body);
+            // TODO parse charset from content-type
+            if (headers.get("Content-Type").contains("x-www-form-urlencoded")) {
+                Map<String, String> parameters = parseParameters(body);
+                requestBuilder.setParameters(parameters);
+            }
         }
+    }
 
+    private String parseBody(int length) {
+        while (preIndex + length > currentIndex) {
+            currentIndex += 1;
+        }
+        return new String(rawRequest, preIndex, currentIndex - preIndex);
     }
 
     private Map<String, String> parseParameters(String rawParameters) {
-        String[] parameterArray = rawParameters.split("&");
         Map<String, String> parameters = requestBuilder.getParameters();
+        if ("".equals(rawParameters)) {
+            return parameters;
+        }
+        String[] parameterArray = rawParameters.split("&");
+
         for (String s : parameterArray) {
             String[] kv = s.split("=");
             parameters.put(kv[0], kv[1]);
@@ -119,7 +132,7 @@ public class HttpRequestParser {
     }
 
     private String parseByTwoLinkedBytes(byte[] bytes) throws RequestParseException {
-        while (bytes[0] != rawRequest[currentIndex] && bytes[1] != rawRequest[currentIndex + 1]) {
+        while (bytes[0] != rawRequest[currentIndex] || bytes[1] != rawRequest[currentIndex + 1]) {
             currentIndex += 1;
             if (currentIndex >= rawRequest.length) {
                 throw new RequestParseException("parse method out of bound");
