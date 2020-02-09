@@ -1,10 +1,12 @@
-package info.xiantang.jerrymouse2.http.http;
+package info.xiantang.jerrymouse2.http.core;
+
+import info.xiantang.jerrymouse2.core.servlet.Request;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-public class HttpRequest {
+public class HttpRequest implements Request {
 
     private final Map<String, String> parameters;
     private final String body;
@@ -21,6 +23,10 @@ public class HttpRequest {
         this.path = path;
         this.parameters = parameters;
         this.body = body;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     public static Builder newBuilder() {
@@ -78,6 +84,7 @@ public class HttpRequest {
         public Map<String, String> getParameters() {
             return parameters;
         }
+
 
         public Builder setMethod(String method) {
             this.method = method;

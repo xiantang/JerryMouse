@@ -1,12 +1,10 @@
 package info.xiantang.jerrymouse2.core.handler;
 
-import info.xiantang.jerrymouse2.core.reactor.Reactor;
 import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 
 import static info.xiantang.jerrymouse2.core.reactor.Constants.CLOSED;
 import static info.xiantang.jerrymouse2.core.reactor.Constants.SENDING;
@@ -14,10 +12,9 @@ import static info.xiantang.jerrymouse2.core.reactor.Constants.SENDING;
 public class CountBaseHandler extends BaseHandler {
 
 
-    public CountBaseHandler(Reactor reactor, SocketChannel channel) {
-        super(reactor, channel);
+    public CountBaseHandler(HandlerContext context) {
+        super(context);
     }
-
     @Override
     public boolean inputIsComplete(ByteBuffer input, ByteArrayBuffer request, int bytes) throws IOException {
         if (bytes > 0) {

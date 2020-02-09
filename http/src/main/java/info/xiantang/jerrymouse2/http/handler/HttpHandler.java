@@ -1,13 +1,17 @@
 package info.xiantang.jerrymouse2.http.handler;
 
 import info.xiantang.jerrymouse2.core.handler.BaseHandler;
-import info.xiantang.jerrymouse2.core.reactor.Reactor;
+import info.xiantang.jerrymouse2.core.handler.HandlerContext;
+import info.xiantang.jerrymouse2.core.servlet.Servlet;
+import info.xiantang.jerrymouse2.http.core.HttpRequest;
+import info.xiantang.jerrymouse2.http.core.HttpResponse;
+import info.xiantang.jerrymouse2.http.parser.HttpRequestParser;
 import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
+import java.util.Map;
 
 import static info.xiantang.jerrymouse2.core.reactor.Constants.CLOSED;
 import static info.xiantang.jerrymouse2.core.reactor.Constants.SENDING;
@@ -18,11 +22,10 @@ public class HttpHandler extends BaseHandler {
      * we will register channel to selector and  wakeup it
      * and attach the this object prepare to use.
      *
-     * @param reactor
-     * @param channel
+     * @param context
      */
-    public HttpHandler(Reactor reactor, SocketChannel channel) {
-        super(reactor, channel);
+    public HttpHandler(HandlerContext context) {
+        super(context);
     }
 
     @Override
@@ -46,26 +49,20 @@ public class HttpHandler extends BaseHandler {
     }
 
     @Override
-    public void process(ByteBuffer output, ByteArrayBuffer rawRequest) throws EOFException {
+    public void process(ByteBuffer output, ByteArrayBuffer rawRequest) throws Exception {
         int state = getState();
         if (state == CLOSED) {
             throw new EOFException();
         } else if (state == SENDING) {
-            String rawResponse = new String(rawRequest.toByteArray());
-            System.out.println(rawResponse);
-            output.put(buildResponse(rawResponse).getBytes());
+            HttpRequestParser parser = new HttpRequestParser(rawRequest.toByteArray(), HttpRequest.newBuilder());
+            HttpRequest request = parser.parse();
+            HttpResponse response = new HttpResponse();
+            HandlerContext context = getContext();
+            Map<String, Servlet> mapper = context.getMapper();
+            Servlet servlet = mapper.get(request.getPath());
+            servlet.service(request, response);
+            output.put(response.toRawResponse());
         }
-    }
-
-    private String buildResponse(String request) {
-        return "HTTP/1.1 200 OK\r\n" +
-                "Date: Mon, 27 Jul 2009 12:28:53 GMT\n" +
-                "Server: Apache/2.2.14 (Win32)\n" +
-                "Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT\n" +
-                "Content-Length: " + request.length() + "\n" +
-                "Content-Type: text/html\n" +
-                "Connection: Closed\r\n\n" +
-                request;
     }
 
 

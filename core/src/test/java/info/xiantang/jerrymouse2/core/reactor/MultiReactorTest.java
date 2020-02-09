@@ -1,6 +1,7 @@
 package info.xiantang.jerrymouse2.core.reactor;
 
 import info.xiantang.jerrymouse2.core.handler.CountBaseHandler;
+import info.xiantang.jerrymouse2.core.handler.HandlerContext;
 import info.xiantang.jerrymouses2.client.NetWorkClient;
 import org.apache.http.util.ByteArrayBuffer;
 import org.junit.Test;
@@ -8,7 +9,6 @@ import org.junit.Test;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,8 +54,8 @@ public class MultiReactorTest {
 
     public static class InsureReactorHandler extends CountBaseHandler {
 
-        public InsureReactorHandler(Reactor reactor, SocketChannel channel) {
-            super(reactor, channel);
+        public InsureReactorHandler(HandlerContext context) {
+            super(context);
         }
 
         @Override

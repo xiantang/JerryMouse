@@ -3,7 +3,6 @@ package info.xiantang.jerrymouse2.core.handler;
 import info.xiantang.jerrymouse2.core.reactor.Constants;
 import info.xiantang.jerrymouse2.core.reactor.MultiReactor;
 import info.xiantang.jerrymouse2.core.reactor.MultiReactorTest;
-import info.xiantang.jerrymouse2.core.reactor.Reactor;
 import info.xiantang.jerrymouses2.client.NetWorkClient;
 import org.apache.http.util.ByteArrayBuffer;
 import org.junit.Test;
@@ -11,7 +10,6 @@ import org.junit.Test;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -80,8 +78,8 @@ public class HandlerTest {
 
     public static class SleepyHandler extends CountBaseHandler {
 
-        public SleepyHandler(Reactor reactor, SocketChannel channel) throws IOException {
-            super(reactor, channel);
+        public SleepyHandler(HandlerContext context) {
+            super(context);
         }
 
         @Override

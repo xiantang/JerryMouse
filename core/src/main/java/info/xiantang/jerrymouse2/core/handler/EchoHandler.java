@@ -1,13 +1,11 @@
 package info.xiantang.jerrymouse2.core.handler;
 
-import info.xiantang.jerrymouse2.core.reactor.Reactor;
 import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 
 import static info.xiantang.jerrymouse2.core.reactor.Constants.*;
@@ -19,11 +17,10 @@ public class EchoHandler extends BaseHandler {
      * we will register channel to selector and  wakeup it
      * and attach the this object prepare to use.
      *
-     * @param reactor
-     * @param channel
+     * @param context
      */
-    public EchoHandler(Reactor reactor, SocketChannel channel) {
-        super(reactor, channel);
+    public EchoHandler(HandlerContext context) {
+        super(context);
     }
 
     @Override
@@ -83,7 +80,6 @@ public class EchoHandler extends BaseHandler {
         if (written <= 0) {
             return true;
         }
-
         output.clear();
         rawRequest.clear();
         return false;

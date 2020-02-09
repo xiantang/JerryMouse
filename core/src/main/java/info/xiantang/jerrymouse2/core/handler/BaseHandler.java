@@ -4,7 +4,6 @@ import info.xiantang.jerrymouse2.core.event.Event;
 import info.xiantang.jerrymouse2.core.reactor.Reactor;
 import org.apache.http.util.ByteArrayBuffer;
 
-import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -21,6 +20,7 @@ public abstract class BaseHandler implements Runnable {
     private static ExecutorService threadPool = Executors.newFixedThreadPool(CORE_NUM);
     protected final SocketChannel socket;
     private final Selector selector;
+    private final HandlerContext context;
     protected SelectionKey sk;
     protected ByteBuffer input = ByteBuffer.allocate(BUFFER_MAX_IN);
     protected ByteBuffer output = ByteBuffer.allocate(BUFFER_MAX_OUT);
@@ -33,13 +33,11 @@ public abstract class BaseHandler implements Runnable {
      * the constructor of handler.
      * we will register channel to selector and  wakeup it
      * and attach the this object prepare to use.
-     *
-     * @param reactor
-     * @param channel
      */
-    public BaseHandler(Reactor reactor, SocketChannel channel) {
-        this.reactor = reactor;
-        this.socket = channel;
+    public BaseHandler(HandlerContext context) {
+        this.context = context;
+        this.reactor = context.getReactor();
+        this.socket = context.getChannel();
         this.selector = reactor.getSelector();
         HandlerEvent event = new HandlerEvent(this);
         reactor.register(event);
@@ -47,6 +45,10 @@ public abstract class BaseHandler implements Runnable {
 
     public int getState() {
         return state;
+    }
+
+    public HandlerContext getContext() {
+        return context;
     }
 
     public void setState(int state) {
@@ -86,14 +88,14 @@ public abstract class BaseHandler implements Runnable {
 
     public abstract boolean inputIsComplete(ByteBuffer input, ByteArrayBuffer rawRequest, int bytes) throws IOException;
 
-    private synchronized void processAndHandOff() throws EOFException {
+    private synchronized void processAndHandOff() throws Exception {
         state = SENDING;
         process(output, rawRequest);
         sk.interestOps(SelectionKey.OP_WRITE);
         selector.wakeup();
     }
 
-    public abstract void process(ByteBuffer output, ByteArrayBuffer request) throws EOFException;
+    public abstract void process(ByteBuffer output, ByteArrayBuffer request) throws Exception;
 
     class Processor implements Runnable {
 
@@ -101,7 +103,7 @@ public abstract class BaseHandler implements Runnable {
         public void run() {
             try {
                 processAndHandOff();
-            } catch (EOFException e) {
+            } catch (Exception e) {
                 //TODO print error
                 e.printStackTrace();
             }

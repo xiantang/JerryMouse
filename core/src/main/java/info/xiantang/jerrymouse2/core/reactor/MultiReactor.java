@@ -2,6 +2,7 @@ package info.xiantang.jerrymouse2.core.reactor;
 
 import info.xiantang.jerrymouse2.core.event.Event;
 import info.xiantang.jerrymouse2.core.handler.BaseHandler;
+import info.xiantang.jerrymouse2.core.handler.HandlerContext;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -21,13 +22,14 @@ public class MultiReactor implements Runnable {
     private Reactor[] subReactors;
     private Reactor mainReactor;
     private AtomicInteger loadBalancingInteger = new AtomicInteger();
+    private HandlerContext handlerContext;
 
-
-    public MultiReactor(String mainReactorName, int port, Class<? extends BaseHandler> handlerClass, int subReactorCount) throws IOException {
+    public MultiReactor(String mainReactorName, int port, Class<? extends BaseHandler> handlerClass, int subReactorCount, HandlerContext context) throws IOException {
         this.subReactorCount = subReactorCount;
         this.mainReactor = new MainReactorImpl(mainReactorName, port, handlerClass);
         this.subReactors = new Reactor[subReactorCount];
         this.loadBalancingInteger.set(1);
+        this.handlerContext = context == null ? HandlerContext.emptyContext() : context;
         for (int i = 0; i < subReactorCount; i++) {
             this.subReactors[i] = new SubReactorImpl("subReactor-" + i, Selector.open());
         }
@@ -52,6 +54,7 @@ public class MultiReactor implements Runnable {
         private Class<? extends BaseHandler> handlerClass;
         private String mainReactorName = "DefaultMainReactor";
         private int subReactorCount;
+        private HandlerContext handlerContext;
 
         public Builder setPort(int port) {
             this.port = port;
@@ -69,12 +72,17 @@ public class MultiReactor implements Runnable {
         }
 
         public MultiReactor build() throws IOException {
-            return new MultiReactor(mainReactorName, port, handlerClass, subReactorCount);
+            return new MultiReactor(mainReactorName, port, handlerClass, subReactorCount, handlerContext);
         }
 
 
         public Builder setSubReactorCount(int count) {
             this.subReactorCount = count;
+            return this;
+        }
+
+        public Builder setHandlerContext(HandlerContext handlerContext) {
+            this.handlerContext = handlerContext;
             return this;
         }
     }
@@ -100,16 +108,22 @@ public class MultiReactor implements Runnable {
             try {
                 channel = serverSocket.accept();
                 if (channel != null) {
-                    Constructor<? extends BaseHandler> handler
-                            = handlerClass.getConstructor(Reactor.class, SocketChannel.class);
-                    Reactor subReactor = subReactors[loadBalancingInteger.incrementAndGet() % subReactorCount];
-                    handler.newInstance(subReactor, channel);
+                    newInstanceOfHandler(channel);
                 }
             } catch (Exception e) {
                 //TODO log error
                 e.printStackTrace();
             }
 
+        }
+
+        private void newInstanceOfHandler(SocketChannel channel) throws Exception {
+            Constructor<? extends BaseHandler> handler
+                    = handlerClass.getConstructor(HandlerContext.class);
+            Reactor subReactor = subReactors[loadBalancingInteger.incrementAndGet() % subReactorCount];
+            handlerContext.setChannel(channel);
+            handlerContext.setReactor(subReactor);
+            handler.newInstance(handlerContext);
         }
     }
 

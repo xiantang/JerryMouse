@@ -1,7 +1,7 @@
 package info.xiantang.jerrymouse2.http.parser;
 
+import info.xiantang.jerrymouse2.http.core.HttpRequest;
 import info.xiantang.jerrymouse2.http.exception.RequestParseException;
-import info.xiantang.jerrymouse2.http.http.HttpRequest;
 
 import java.util.HashMap;
 import java.util.Map;
