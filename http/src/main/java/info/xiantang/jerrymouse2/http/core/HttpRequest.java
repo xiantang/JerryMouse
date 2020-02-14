@@ -1,8 +1,8 @@
 package info.xiantang.jerrymouse2.http.core;
 
 import info.xiantang.jerrymouse2.http.servlet.Request;
+import info.xiantang.jerrymouse2.http.utils.EqualsUtils;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,23 +44,12 @@ public class HttpRequest implements Request {
 
         HttpRequest that = (HttpRequest) obj;
         try {
-            return getFieldMap(this).equals(getFieldMap(that));
+            return EqualsUtils.OneDepthContentEquals(this, that);
         } catch (IllegalAccessException e) {
-            //TODO log error
+            // TODO use logging
             e.printStackTrace();
         }
         return false;
-    }
-
-    private Map<String, Object> getFieldMap(Object obj) throws IllegalAccessException {
-        Field[] fields = obj.getClass().getDeclaredFields();
-
-        Map<String, Object> fieldMap = new HashMap<>();
-        for (Field field : fields) {
-            field.setAccessible(true);
-            fieldMap.put(field.getName(), field.get(obj));
-        }
-        return fieldMap;
     }
 
     @Override

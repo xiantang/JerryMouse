@@ -1,0 +1,8 @@
+{
+  "port": 9000,
+  "subReactorCount": 3,
+  "router": {
+    "/": "xxx.xxxx.xxxxx.IndexServlet",
+    "/reg": "xxx.xxxx.xxxxx.RegServlet"
+  }
+}
