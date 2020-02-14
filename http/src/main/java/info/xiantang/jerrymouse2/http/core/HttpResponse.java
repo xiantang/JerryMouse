@@ -1,6 +1,6 @@
 package info.xiantang.jerrymouse2.http.core;
 
-import info.xiantang.jerrymouse2.core.servlet.Response;
+import info.xiantang.jerrymouse2.http.servlet.Response;
 
 public class HttpResponse implements Response {
     private String body;

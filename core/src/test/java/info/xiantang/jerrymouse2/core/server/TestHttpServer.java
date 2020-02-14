@@ -1,6 +1,6 @@
-package info.xiantang.jerrymouse2.http.core;
+package info.xiantang.jerrymouse2.core.server;
 
-import info.xiantang.jerrymouse2.core.servlet.Servlet;
+import info.xiantang.jerrymouse2.http.servlet.Servlet;
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;

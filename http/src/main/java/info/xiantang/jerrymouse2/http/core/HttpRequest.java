@@ -1,6 +1,6 @@
 package info.xiantang.jerrymouse2.http.core;
 
-import info.xiantang.jerrymouse2.core.servlet.Request;
+import info.xiantang.jerrymouse2.http.servlet.Request;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

@@ -1,7 +1,7 @@
 package info.xiantang.jerrymouse2.core.handler;
 
 import info.xiantang.jerrymouse2.core.reactor.Reactor;
-import info.xiantang.jerrymouse2.core.servlet.Servlet;
+import info.xiantang.jerrymouse2.http.servlet.Servlet;
 
 import java.nio.channels.SocketChannel;
 import java.util.Map;

@@ -1,8 +1,7 @@
-package info.xiantang.jerrymouse2.http.handler;
+package info.xiantang.jerrymouse2.core.handler;
 
-import info.xiantang.jerrymouse2.core.handler.HandlerContext;
 import info.xiantang.jerrymouse2.core.reactor.MultiReactor;
-import info.xiantang.jerrymouse2.core.servlet.Servlet;
+import info.xiantang.jerrymouse2.http.servlet.Servlet;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;

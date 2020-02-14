@@ -1,7 +1,7 @@
-package info.xiantang.jerrymouse2.http;
+package info.xiantang.jerrymouse2.core;
 
 import info.xiantang.jerrymouse2.core.reactor.MultiReactor;
-import info.xiantang.jerrymouse2.http.handler.HttpHandler;
+import info.xiantang.jerrymouse2.core.handler.HttpHandler;
 
 import java.io.IOException;
 

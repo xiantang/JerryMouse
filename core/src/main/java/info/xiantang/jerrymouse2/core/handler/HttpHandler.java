@@ -1,8 +1,6 @@
-package info.xiantang.jerrymouse2.http.handler;
+package info.xiantang.jerrymouse2.core.handler;
 
-import info.xiantang.jerrymouse2.core.handler.BaseHandler;
-import info.xiantang.jerrymouse2.core.handler.HandlerContext;
-import info.xiantang.jerrymouse2.core.servlet.Servlet;
+import info.xiantang.jerrymouse2.http.servlet.Servlet;
 import info.xiantang.jerrymouse2.http.core.HttpRequest;
 import info.xiantang.jerrymouse2.http.core.HttpResponse;
 import info.xiantang.jerrymouse2.http.parser.HttpRequestParser;
