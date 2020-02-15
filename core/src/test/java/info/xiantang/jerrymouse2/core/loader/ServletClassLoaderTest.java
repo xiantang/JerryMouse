@@ -8,12 +8,10 @@ public class ServletClassLoaderTest {
 
 
     @Test
-    public void servletClassLoaderCanLoadServlet() throws ClassNotFoundException {
+    public void servletClassLoaderCanFindServlet() throws ClassNotFoundException {
         ServletClassLoader loader = new ServletClassLoader();
         String name = "info.xiantang.jerrymouse2.core.loader.HelloServlet";
-        Class servletClass = loader.loadClass(name);
+        Class servletClass = loader.findClass(name);
         assertNotEquals(null, servletClass);
     }
-
-
 }
