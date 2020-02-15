@@ -1,5 +1,6 @@
 package info.xiantang.jerrymouse2.core.conf;
 
+import info.xiantang.jerrymouse2.core.server.ServletWrapper;
 import info.xiantang.jerrymouse2.http.utils.EqualsUtils;
 
 import java.util.Map;
@@ -7,9 +8,9 @@ import java.util.Map;
 public class Configuration {
     private final int port;
     private final int subReactorNum;
-    private final Map<String, String> router;
+    private final Map<String, ServletWrapper> router;
 
-    public Configuration(int port, int subReactorNum, Map<String, String> router) {
+    public Configuration(int port, int subReactorNum, Map<String, ServletWrapper> router) {
         this.port = port;
         this.subReactorNum = subReactorNum;
         this.router = router;
