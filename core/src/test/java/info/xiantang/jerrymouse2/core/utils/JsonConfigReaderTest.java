@@ -38,7 +38,6 @@ public class JsonConfigReaderTest {
 
     @Test
     public void parseStringAsConfig() throws Exception {
-
         JsonConfigReader reader = new JsonConfigReader();
         String raw = reader.readAsString("config.json", Charsets.UTF_8);
         Configuration actual = reader.parseStringAsConfiguration(raw);
