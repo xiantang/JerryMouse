@@ -30,6 +30,7 @@ public class TestSampleEchoServer {
                 e.printStackTrace();
             }
         }
+        echoClient.sendReceive(""+(char) (3));
         assertEquals("HELO0reactor> HELO1reactor> HELO2", sb.toString());
     }
 }
