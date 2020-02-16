@@ -51,7 +51,7 @@ public class JsonConfigReader {
             ServletWrapper wrapper = new ServletWrapper(servletName,
                     path,
                     servletClass,
-                    loadOnStartUp);
+                    loadOnStartUp, null, null);
             router.put(path, wrapper);
         }
         return router;

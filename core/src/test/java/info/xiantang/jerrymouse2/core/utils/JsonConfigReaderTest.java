@@ -42,8 +42,8 @@ public class JsonConfigReaderTest {
         String raw = reader.readAsString("config.json", Charsets.UTF_8);
         Configuration actual = reader.parseStringAsConfiguration(raw);
         Map<String, ServletWrapper> router = new HashMap<>();
-        ServletWrapper wrapper1 = new ServletWrapper("index", "/", "xxx.xxxx.xxxxx.IndexServlet", 0);
-        ServletWrapper wrapper2 = new ServletWrapper("reg", "/reg", "xxx.xxxx.xxxxx.RegServlet", null);
+        ServletWrapper wrapper1 = new ServletWrapper("index", "/", "xxx.xxxx.xxxxx.IndexServlet", 0, null,null);
+        ServletWrapper wrapper2 = new ServletWrapper("reg", "/reg", "xxx.xxxx.xxxxx.RegServlet", null, null,null);
         router.put("/", wrapper1);
         router.put("/reg", wrapper2);
         Configuration expect = new Configuration(9000, 3, router);

@@ -1,6 +1,7 @@
 package info.xiantang.jerrymouse2.core.server;
 
 
+import info.xiantang.jerrymouse2.http.servlet.Servlet;
 import info.xiantang.jerrymouse2.http.utils.EqualsUtils;
 
 public class ServletWrapper {
@@ -8,12 +9,33 @@ public class ServletWrapper {
     private final String path;
     private final String className;
     private Integer loadOnStartup;
+    private Class<? extends Servlet> servletClass;
+    private Servlet servlet;
 
-    public ServletWrapper(String name, String path, String className,Integer loadOnStartup) {
+
+    public ServletWrapper(String name, String path, String className, Integer loadOnStartup, Class<? extends Servlet> servletClass, Servlet servlet) {
         this.name = name;
         this.path = path;
         this.className = className;
         this.loadOnStartup = loadOnStartup;
+        this.servletClass = servletClass;
+        this.servlet = servlet;
+    }
+
+    public void setServletClass(Class<? extends Servlet> servletClass) {
+        this.servletClass = servletClass;
+    }
+
+    public void setServlet(Servlet servlet) {
+        this.servlet = servlet;
+    }
+
+    public Integer getLoadOnStartup() {
+        return loadOnStartup;
+    }
+
+    public String getClassName() {
+        return className;
     }
 
     @Override

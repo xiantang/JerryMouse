@@ -25,12 +25,11 @@ public class TestSampleEchoServer {
         for (int i = 0; i < 3; i++) {
             try {
                 sb.append(echoClient.sendReceive("HELO" + i));
-                Thread.sleep(500);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
         assertEquals("HELO0reactor> HELO1reactor> HELO2", sb.toString());
-
     }
 }

@@ -24,6 +24,7 @@
         <module>client</module>
         <module>core</module>
         <module>http</module>
+        <module>sample</module>
     </modules>
     <dependencies>
 
