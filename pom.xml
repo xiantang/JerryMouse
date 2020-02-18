@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>info.xiantang</groupId>
-    <artifactId>jerrymouse2</artifactId>
+    <artifactId>jerrymouse</artifactId>
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <build>
