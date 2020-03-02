@@ -1,0 +1,17 @@
+{
+  "port": 9000,
+  "subReactorCount": 3,
+  "router": [
+    {
+      "servlet-name": "index",
+      "path": "/",
+      "servlet-class": "xxx.xxxx.xxxxx.IndexServlet",
+      "load-on-startup": 0
+    },
+    {
+      "servlet-name": "reg",
+      "path": "/reg",
+      "servlet-class": "xxx.xxxx.xxxxx.RegServlet"
+    }
+  ]
+}

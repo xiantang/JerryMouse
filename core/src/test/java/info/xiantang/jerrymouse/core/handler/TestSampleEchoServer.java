@@ -13,7 +13,7 @@ public class TestSampleEchoServer {
     @Test
     public void canCorrectAcceptCommend() throws IOException, InterruptedException {
         MultiReactor reactor = MultiReactor.newBuilder()
-                .setPort(9004)
+                .setPort(9008)
                 .setHandlerClass(EchoHandler.class)
                 .setSubReactorCount(3)
                 .build();
@@ -21,7 +21,7 @@ public class TestSampleEchoServer {
         Thread reactorT = new Thread(reactor);
         reactorT.start();
 
-        EchoClient echoClient = new EchoClient("localhost", 9004);
+        EchoClient echoClient = new EchoClient("localhost", 9008);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 3; i++) {
             sb.append(echoClient.sendReceive("HELO" + i));

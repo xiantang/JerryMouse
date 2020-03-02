@@ -11,7 +11,7 @@ public class JarClassLoaderTest {
 
     @Test
     public void jarClassLoaderCanLoadSampleJarPackage() throws Exception {
-        JarClassLoader loader = new JarClassLoader("sample.jar");
+        JarClassLoader loader = new JarClassLoader("test.jar");
         Class clz = loader.loadClass("info.xiantang.jerrymouse.sample.HelloServlet");
         Constructor declaredConstructor = clz.getDeclaredConstructor();
         declaredConstructor.setAccessible(true);

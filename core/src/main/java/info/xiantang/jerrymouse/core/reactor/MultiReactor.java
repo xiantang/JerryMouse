@@ -162,6 +162,7 @@ public class MultiReactor implements Runnable {
                     selector.select();
                     Set selected = selector.selectedKeys();
                     for (Object o : selected) dispatch((SelectionKey) o);
+                    selected.clear();
                 }
             } catch (IOException e) {
                 //TODO log error
@@ -199,6 +200,7 @@ public class MultiReactor implements Runnable {
                     subSelector.select();
                     Set selected = subSelector.selectedKeys();
                     for (Object o : selected) dispatch((SelectionKey) o);
+                    selected.clear();
                 }
             } catch (IOException e) {
                 //TODO log error
