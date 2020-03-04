@@ -3,11 +3,11 @@ package info.xiantang.jerrymouse.core.compile;
 import java.io.File;
 import java.util.ArrayList;
 
-public class ProjectParser {
+public class TargetParser {
 
     private String rootPath;
 
-    public ProjectParser(String rootPath) {
+    public TargetParser(String rootPath) {
         this.rootPath = rootPath;
     }
 
@@ -31,9 +31,10 @@ public class ProjectParser {
                 }
             }
         } else {
-            if(root.getPath().contains("main/java")){
+            String path = root.getPath();
+            if (path.contains("target/classes") && path.endsWith(".class")) {
                 project.addSource(root);
-            } else if (root.getPath().contains("/resources")) {
+            } else if (path.contains("target/classes")) {
                 project.addResource(root);
             }
         }
