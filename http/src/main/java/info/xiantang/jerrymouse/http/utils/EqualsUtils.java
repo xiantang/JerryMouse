@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class EqualsUtils {
 
+
     /**
      * compare two object with depth 1
      * @param firstObj
@@ -27,5 +28,8 @@ public class EqualsUtils {
         }
         return fieldMap;
     }
+
+
+
 
 }

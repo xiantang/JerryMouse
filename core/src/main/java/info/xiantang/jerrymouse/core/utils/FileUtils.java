@@ -1,6 +1,6 @@
 package info.xiantang.jerrymouse.core.utils;
 
-import java.io.File;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 
@@ -21,4 +21,20 @@ public class FileUtils {
         }
         file.delete();
     }
+
+    public static String readFromStream(InputStream input) throws IOException {
+        InputStreamReader isr = new InputStreamReader(input);
+        BufferedReader reader = new BufferedReader(isr);
+        String line;
+        StringBuilder builder = new StringBuilder();
+
+        while ((line = reader.readLine()) != null) {
+            builder.append(line).append("\n");
+        }
+        reader.close();
+        return builder.toString();
+    }
+
+
 }
+
