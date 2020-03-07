@@ -12,6 +12,9 @@ public class ServletWrapper {
     private Class<? extends Servlet> servletClass;
     private Servlet servlet;
 
+    public Servlet getServlet() {
+        return servlet;
+    }
 
     public ServletWrapper(String name, String path, String className, Integer loadOnStartup, Class<? extends Servlet> servletClass, Servlet servlet) {
         this.name = name;

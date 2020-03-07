@@ -15,12 +15,14 @@ public class HttpServer {
     private List<ServerSource> sources = new ArrayList<>();
     private String rootPath = System.getProperty("user.dir");
     private String jarPath = rootPath + "/build";
+    private List<Context> contexts = new ArrayList<>();
 
-    public void init() throws IOException {
+
+    protected void init() throws IOException {
         loadSources();
     }
 
-    private void loadSources() throws IOException {
+    protected void loadSources() throws IOException {
         File buildDir = new File(jarPath);
         File[] files;
         if (buildDir.isDirectory() && (files = buildDir.listFiles()) != null) {
@@ -33,8 +35,22 @@ public class HttpServer {
         }
     }
 
+    protected void loadContexts() throws IOException {
+        for (ServerSource serverSource : sources) {
+            Configuration config = serverSource.getConfig();
+            String jarName = serverSource.getJarName();
+            Context context = new Context(jarName, config);
+            contexts.add(context);
+        }
+    }
+
 
     public List<ServerSource> getServerSources() {
         return Collections.unmodifiableList(sources);
+    }
+
+
+    public List<Context> getContexts() {
+        return contexts;
     }
 }

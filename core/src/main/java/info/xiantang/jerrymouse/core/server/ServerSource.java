@@ -12,6 +12,14 @@ public class ServerSource {
         this.config = config;
     }
 
+    public String getJarName() {
+        return jarName;
+    }
+
+    public Configuration getConfig() {
+        return config;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {

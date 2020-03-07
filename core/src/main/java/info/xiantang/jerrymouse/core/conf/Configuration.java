@@ -16,6 +16,19 @@ public class Configuration {
         this.router = router;
     }
 
+    public int getSubReactorNum() {
+        return subReactorNum;
+    }
+
+    public Map<String, ServletWrapper> getRouter() {
+        return router;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+
 
     @Override
     public boolean equals(Object obj) {

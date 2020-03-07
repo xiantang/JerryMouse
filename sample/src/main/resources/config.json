@@ -5,13 +5,13 @@
     {
       "servlet-name": "index",
       "path": "/",
-      "servlet-class": "xxx.xxxx.xxxxx.IndexServlet",
+      "servlet-class": "info.xiantang.jerrymouse.sample.IndexServlet",
       "load-on-startup": 0
     },
     {
-      "servlet-name": "reg",
-      "path": "/reg",
-      "servlet-class": "xxx.xxxx.xxxxx.RegServlet"
+      "servlet-name": "hello",
+      "path": "/hello",
+      "servlet-class": "info.xiantang.jerrymouse.sample.HelloServlet"
     }
   ]
 }

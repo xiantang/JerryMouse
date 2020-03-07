@@ -1,5 +1,6 @@
 package info.xiantang.jerrymouse.core.server;
 
+import info.xiantang.jerrymouse.core.conf.Configuration;
 import info.xiantang.jerrymouse.http.servlet.Servlet;
 import org.apache.commons.codec.Charsets;
 import org.apache.http.HttpEntity;
@@ -24,10 +25,11 @@ public class ContextTest {
 
     @Test
     public void testHttpServerGetCanHandleCertainServlet() throws IOException {
-        Map<String, Servlet> mapper = new HashMap<>();
+        Map<String, ServletWrapper> mapper = new HashMap<>();
         Servlet servlet = (request, response) -> response.setBody("test\ntest");
-        mapper.put("/test",servlet);
-        Context server = new Context(8080,mapper);
+        mapper.put("/test",new ServletWrapper("","/test","aaa",0,servlet.getClass(),servlet));
+        Configuration configuration = new Configuration(8080, 3, mapper);
+        Context server = new Context( "jarName", configuration);
         server.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpGet httpget = new HttpGet("http://localhost:8080/test");
@@ -40,7 +42,7 @@ public class ContextTest {
 
     @Test
     public void testHttpServerPostCanHandleCertainServlet() throws IOException {
-        Map<String, Servlet> mapper = new HashMap<>();
+        Map<String, ServletWrapper> mapper = new HashMap<>();
         String body = "{\n" +
                 "    \"Name\":\"李念\",\n" +
                 "    \"Stature\":\"163cm\",\n" +
@@ -54,8 +56,9 @@ public class ContextTest {
             response.setBody(body1);
         };
 
-        mapper.put("/test",servlet);
-        Context server = new Context(8081,mapper);
+        mapper.put("/test",new ServletWrapper("","/test","aaa",0,servlet.getClass(),servlet));
+        Configuration configuration = new Configuration(8081, 3, mapper);
+        Context server = new Context("jarName", configuration);
         server.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();
         StringEntity requestEntity = new StringEntity(

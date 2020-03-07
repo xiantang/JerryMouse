@@ -1,5 +1,6 @@
 package info.xiantang.jerrymouse.core.handler;
 
+import info.xiantang.jerrymouse.core.server.ServletWrapper;
 import info.xiantang.jerrymouse.http.servlet.Servlet;
 import info.xiantang.jerrymouse.http.core.HttpRequest;
 import info.xiantang.jerrymouse.http.core.HttpResponse;
@@ -56,8 +57,8 @@ public class HttpHandler extends BaseHandler {
             HttpRequest request = parser.parse();
             HttpResponse response = new HttpResponse();
             HandlerContext context = getContext();
-            Map<String, Servlet> mapper = context.getMapper();
-            Servlet servlet = mapper.get(request.getPath());
+            Map<String, ServletWrapper> mapper = context.getMapper();
+            Servlet servlet = mapper.get(request.getPath()).getServlet();
             servlet.service(request, response);
             output.put(response.toRawResponse());
         }
