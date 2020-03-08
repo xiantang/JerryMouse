@@ -1,6 +1,7 @@
 package info.xiantang.jerrymouse.core.handler;
 
 import info.xiantang.jerrymouse.core.server.ServletWrapper;
+import info.xiantang.jerrymouse.core.server.impl.NotFoundServlet;
 import info.xiantang.jerrymouse.http.core.HttpRequest;
 import info.xiantang.jerrymouse.http.core.HttpResponse;
 import info.xiantang.jerrymouse.http.servlet.Servlet;
@@ -21,17 +22,22 @@ class HttpProcessor {
     void process(HttpRequest request, HttpResponse response) throws Exception {
         Map<String, ServletWrapper> mapper = context.getMapper();
         ServletWrapper wrapper = mapper.get(request.getPath());
-        Servlet servlet = wrapper.getServlet();
-        if (servlet == null) {
-            String className = wrapper.getClassName();
-            ClassLoader loader = context.getLoader();
-            Class<? extends Servlet> servletClass = cast(loader.loadClass(className));
-            Constructor declaredConstructor = servletClass.getDeclaredConstructor();
-            declaredConstructor.setAccessible(true);
-            Object obj = declaredConstructor.newInstance();
-            servlet = (Servlet)obj;
-            wrapper.setServlet(servlet);
-            wrapper.setServletClass(servletClass);
+        Servlet servlet;
+        if (wrapper == null) {
+            servlet = new NotFoundServlet();
+        }else{
+            servlet = wrapper.getServlet();
+            if (servlet == null) {
+                String className = wrapper.getClassName();
+                ClassLoader loader = context.getLoader();
+                Class<? extends Servlet> servletClass = cast(loader.loadClass(className));
+                Constructor constructor = servletClass.getDeclaredConstructor();
+                constructor.setAccessible(true);
+                Object obj = constructor.newInstance();
+                servlet = (Servlet)obj;
+                wrapper.setServlet(servlet);
+                wrapper.setServletClass(servletClass);
+            }
         }
         servlet.service(request, response);
     }

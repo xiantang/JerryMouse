@@ -86,5 +86,18 @@ public class HttpServerTest {
     }
 
 
+    @Test
+    public void httpServerCanHandleServletWithIsNotFind() throws Exception {
+        FakeServer httpSever = new FakeServer(9035);
+        httpSever.start();
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpGet httpget = new HttpGet("http://localhost:9035/test");
+        CloseableHttpResponse response = httpclient.execute(httpget);
+        HttpEntity entity = response.getEntity();
+        String responseStr = EntityUtils.toString(entity);
+        assertEquals("404-NOT-FOUND",responseStr);
+
+    }
+
 
 }

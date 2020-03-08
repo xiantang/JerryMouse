@@ -35,7 +35,7 @@ public class HandlerContext {
         this.reactor = subReactor;
     }
 
-    public SocketChannel getChannel() {
+    SocketChannel getChannel() {
         return channel;
     }
 
@@ -43,7 +43,7 @@ public class HandlerContext {
         this.channel = channel;
     }
 
-    public Map<String, ServletWrapper> getMapper() {
+    Map<String, ServletWrapper> getMapper() {
         return mapper;
     }
 

@@ -18,7 +18,7 @@ public class HttpServer {
     private String jarPath = rootPath + "/build";
 
 
-    void init() throws Exception {
+    private void init() throws Exception {
         loadSources();
         loadContexts();
     }
