@@ -10,9 +10,7 @@ class HelloServlet implements Servlet {
     @Override
     public void service(Request request, Response response) {
         NeedToLoad needToLoad = new NeedToLoad();
-        System.out.println(Servlet.class.getClassLoader());
-        System.out.println(needToLoad.getClass().getClassLoader());
-        System.out.println("aaaaaa");
+        response.setBody("hello");
     }
 
 

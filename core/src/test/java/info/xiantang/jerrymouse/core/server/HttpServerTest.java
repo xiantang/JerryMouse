@@ -70,7 +70,19 @@ public class HttpServerTest {
         HttpEntity entity = response.getEntity();
         String responseStr = EntityUtils.toString(entity);
         assertEquals("/",responseStr);
+    }
 
+
+    @Test
+    public void httpServerCanHandleServletWhichNotLoadOnBootStrap() throws Exception {
+        FakeServer httpSever = new FakeServer(9034);
+        httpSever.start();
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpGet httpget = new HttpGet("http://localhost:9034/hello");
+        CloseableHttpResponse response = httpclient.execute(httpget);
+        HttpEntity entity = response.getEntity();
+        String responseStr = EntityUtils.toString(entity);
+        assertEquals("hello",responseStr);
     }
 
 

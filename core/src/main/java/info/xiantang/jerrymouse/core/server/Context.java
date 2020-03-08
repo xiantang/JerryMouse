@@ -30,7 +30,7 @@ public class Context {
                 .setPort(port)
                 .setHandlerClass(HttpHandler.class)
                 .setMainReactorName("MainReactor")
-                .setHandlerContext(HandlerContext.contextOnlyHaveMapper(mapper))
+                .setHandlerContext(HandlerContext.contextWithMapperAndClassLoader(mapper, jarClassLoader))
                 .setSubReactorCount(subReactorNum)
                 .build();
         loadOnStartUpServlet();

@@ -1,7 +1,5 @@
 package info.xiantang.jerrymouse.core.handler;
 
-import info.xiantang.jerrymouse.core.server.ServletWrapper;
-import info.xiantang.jerrymouse.http.servlet.Servlet;
 import info.xiantang.jerrymouse.http.core.HttpRequest;
 import info.xiantang.jerrymouse.http.core.HttpResponse;
 import info.xiantang.jerrymouse.http.parser.HttpRequestParser;
@@ -10,7 +8,6 @@ import org.apache.http.util.ByteArrayBuffer;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Map;
 
 import static info.xiantang.jerrymouse.core.reactor.Constants.CLOSED;
 import static info.xiantang.jerrymouse.core.reactor.Constants.SENDING;
@@ -56,10 +53,8 @@ public class HttpHandler extends BaseHandler {
             HttpRequestParser parser = new HttpRequestParser(rawRequest.toByteArray(), HttpRequest.newBuilder());
             HttpRequest request = parser.parse();
             HttpResponse response = new HttpResponse();
-            HandlerContext context = getContext();
-            Map<String, ServletWrapper> mapper = context.getMapper();
-            Servlet servlet = mapper.get(request.getPath()).getServlet();
-            servlet.service(request, response);
+            HttpProcessor processor = new HttpProcessor(getContext());
+            processor.process(request, response);
             output.put(response.toRawResponse());
         }
     }

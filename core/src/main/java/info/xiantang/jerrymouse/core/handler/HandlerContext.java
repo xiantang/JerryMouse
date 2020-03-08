@@ -23,8 +23,8 @@ public class HandlerContext {
         return new HandlerContext(null, null, null, null);
     }
 
-    public static HandlerContext contextOnlyHaveMapper(Map<String, ServletWrapper> mapper) {
-        return new HandlerContext(null, null, mapper, null);
+    public static HandlerContext contextWithMapperAndClassLoader(Map<String, ServletWrapper> mapper,ClassLoader loader) {
+        return new HandlerContext(null, null, mapper, loader);
     }
 
     public Reactor getReactor() {
@@ -47,5 +47,8 @@ public class HandlerContext {
         return mapper;
     }
 
+    public ClassLoader getLoader() {
+        return loader;
+    }
 
 }
