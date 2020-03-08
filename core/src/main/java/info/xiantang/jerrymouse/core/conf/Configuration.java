@@ -6,9 +6,9 @@ import info.xiantang.jerrymouse.http.utils.EqualsUtils;
 import java.util.Map;
 
 public class Configuration {
-    private final int port;
-    private final int subReactorNum;
-    private final Map<String, ServletWrapper> router;
+    private int port;
+    private int subReactorNum;
+    private Map<String, ServletWrapper> router;
 
     public Configuration(int port, int subReactorNum, Map<String, ServletWrapper> router) {
         this.port = port;
@@ -29,6 +29,9 @@ public class Configuration {
     }
 
 
+    public void setPort(int port) {
+        this.port = port;
+    }
 
     @Override
     public boolean equals(Object obj) {

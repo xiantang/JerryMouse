@@ -24,7 +24,7 @@ public class MultiReactor implements Runnable {
     private AtomicInteger loadBalancingInteger = new AtomicInteger();
     private HandlerContext handlerContext;
 
-    public MultiReactor(String mainReactorName, int port, Class<? extends BaseHandler> handlerClass, int subReactorCount, HandlerContext context) throws IOException {
+    private MultiReactor(String mainReactorName, int port, Class<? extends BaseHandler> handlerClass, int subReactorCount, HandlerContext context) throws IOException {
         this.subReactorCount = subReactorCount;
         this.mainReactor = new MainReactorImpl(mainReactorName, port, handlerClass);
         this.subReactors = new Reactor[subReactorCount];

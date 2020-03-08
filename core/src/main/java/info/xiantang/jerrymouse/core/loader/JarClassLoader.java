@@ -6,7 +6,7 @@ import static info.xiantang.jerrymouse.core.utils.FileUtils.parseSinglePathToUrl
 
 public class JarClassLoader extends URLClassLoader {
 
-    public JarClassLoader(String jarPath) {
+    public JarClassLoader(String jarPath) throws Exception {
         super(parseSinglePathToUrls(jarPath));
     }
 

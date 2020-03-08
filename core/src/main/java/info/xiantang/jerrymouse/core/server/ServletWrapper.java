@@ -12,6 +12,7 @@ public class ServletWrapper {
     private Class<? extends Servlet> servletClass;
     private Servlet servlet;
 
+
     public Servlet getServlet() {
         return servlet;
     }
@@ -59,4 +60,9 @@ public class ServletWrapper {
         }
         return false;
     }
+
+    public Class<? extends Servlet> getServletClass() {
+        return servletClass;
+    }
+
 }

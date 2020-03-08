@@ -3,9 +3,10 @@ package info.xiantang.jerrymouse.core.server;
 import info.xiantang.jerrymouse.core.conf.Configuration;
 import info.xiantang.jerrymouse.core.handler.HandlerContext;
 import info.xiantang.jerrymouse.core.handler.HttpHandler;
+import info.xiantang.jerrymouse.core.loader.JarClassLoader;
+import info.xiantang.jerrymouse.core.loader.WebAppLoader;
 import info.xiantang.jerrymouse.core.reactor.MultiReactor;
 
-import java.io.IOException;
 import java.util.Map;
 
 public class Context {
@@ -14,14 +15,17 @@ public class Context {
     private String jarName;
     private Configuration configuration;
     private MultiReactor reactor;
+    private WebAppLoader webAppLoader;
 
 
-    public Context(String jarName, Configuration configuration) throws IOException {
+    Context(String jarName, Configuration configuration) throws Exception {
         this.jarName = jarName;
         this.configuration = configuration;
         this.mapper = configuration.getRouter();
         this.port = configuration.getPort();
         int subReactorNum = configuration.getSubReactorNum();
+        JarClassLoader jarClassLoader = new JarClassLoader(jarName);
+        this.webAppLoader = new WebAppLoader(mapper, jarClassLoader);
         this.reactor = MultiReactor.newBuilder()
                 .setPort(port)
                 .setHandlerClass(HttpHandler.class)
@@ -29,15 +33,20 @@ public class Context {
                 .setHandlerContext(HandlerContext.contextOnlyHaveMapper(mapper))
                 .setSubReactorCount(subReactorNum)
                 .build();
+        loadOnStartUpServlet();
+    }
 
+
+    private void loadOnStartUpServlet() throws Exception {
+        webAppLoader.loadOnStartUp();
     }
 
 
     public void start() {
-        reactor.run();
+        new Thread(reactor).start();
     }
 
-    public Map<String, ServletWrapper> getMapper() {
+    Map<String, ServletWrapper> getMapper() {
         return mapper;
     }
 }

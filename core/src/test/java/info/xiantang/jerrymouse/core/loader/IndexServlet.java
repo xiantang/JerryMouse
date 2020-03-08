@@ -7,7 +7,7 @@ import info.xiantang.jerrymouse.http.servlet.Servlet;
 class IndexServlet implements Servlet {
     @Override
     public void service(Request request, Response response) {
-        response.setBody("/");
+        response.setBody("index");
     }
 
     @Override

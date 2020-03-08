@@ -5,8 +5,9 @@ import java.net.URL;
 import java.nio.file.Files;
 
 public class FileUtils {
-    public static URL[] parseSinglePathToUrls(String path) {
-        URL url = FileUtils.class.getClassLoader().getResource(path);
+    public static URL[] parseSinglePathToUrls(String path) throws Exception {
+        String property = System.getProperty("user.dir");
+        URL url = new URL("file:"+property + "/build/"+path);
         return new URL[]{url};
     }
 

@@ -15,7 +15,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,10 +23,10 @@ import static org.junit.Assert.assertEquals;
 public class ContextTest {
 
     @Test
-    public void testHttpServerGetCanHandleCertainServlet() throws IOException {
+    public void testHttpServerGetCanHandleCertainServlet() throws Exception {
         Map<String, ServletWrapper> mapper = new HashMap<>();
         Servlet servlet = (request, response) -> response.setBody("test\ntest");
-        mapper.put("/test",new ServletWrapper("","/test","aaa",0,servlet.getClass(),servlet));
+        mapper.put("/test",new ServletWrapper("","/test","aaa",null,servlet.getClass(),servlet));
         Configuration configuration = new Configuration(8080, 3, mapper);
         Context server = new Context( "jarName", configuration);
         server.start();
@@ -41,7 +40,7 @@ public class ContextTest {
 
 
     @Test
-    public void testHttpServerPostCanHandleCertainServlet() throws IOException {
+    public void testHttpServerPostCanHandleCertainServlet() throws Exception {
         Map<String, ServletWrapper> mapper = new HashMap<>();
         String body = "{\n" +
                 "    \"Name\":\"李念\",\n" +
@@ -56,7 +55,7 @@ public class ContextTest {
             response.setBody(body1);
         };
 
-        mapper.put("/test",new ServletWrapper("","/test","aaa",0,servlet.getClass(),servlet));
+        mapper.put("/test",new ServletWrapper("","/test","aaa",null,servlet.getClass(),servlet));
         Configuration configuration = new Configuration(8081, 3, mapper);
         Context server = new Context("jarName", configuration);
         server.start();

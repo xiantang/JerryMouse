@@ -10,19 +10,21 @@ public class HandlerContext {
     private Reactor reactor;
     private SocketChannel channel;
     private Map<String, ServletWrapper> mapper;
+    private ClassLoader loader;
 
-    public HandlerContext(Reactor reactor, SocketChannel channel, Map<String, ServletWrapper> mapper) {
+    public HandlerContext(Reactor reactor, SocketChannel channel, Map<String, ServletWrapper> mapper, ClassLoader loader) {
         this.reactor = reactor;
         this.channel = channel;
         this.mapper = mapper;
+        this.loader = loader;
     }
 
     public static HandlerContext emptyContext() {
-        return new HandlerContext(null, null, null);
+        return new HandlerContext(null, null, null, null);
     }
 
     public static HandlerContext contextOnlyHaveMapper(Map<String, ServletWrapper> mapper) {
-        return new HandlerContext(null, null, mapper);
+        return new HandlerContext(null, null, mapper, null);
     }
 
     public Reactor getReactor() {

@@ -12,17 +12,18 @@ import static info.xiantang.jerrymouse.core.compile.JarResourceParser.parseConfi
 
 public class HttpServer {
 
-    private List<ServerSource> sources = new ArrayList<>();
+    List<ServerSource> sources = new ArrayList<>();
+    List<Context> contexts = new ArrayList<>();
     private String rootPath = System.getProperty("user.dir");
     private String jarPath = rootPath + "/build";
-    private List<Context> contexts = new ArrayList<>();
 
 
-    protected void init() throws IOException {
+    void init() throws Exception {
         loadSources();
+        loadContexts();
     }
 
-    protected void loadSources() throws IOException {
+    void loadSources() throws IOException {
         File buildDir = new File(jarPath);
         File[] files;
         if (buildDir.isDirectory() && (files = buildDir.listFiles()) != null) {
@@ -35,7 +36,7 @@ public class HttpServer {
         }
     }
 
-    protected void loadContexts() throws IOException {
+    void loadContexts() throws Exception {
         for (ServerSource serverSource : sources) {
             Configuration config = serverSource.getConfig();
             String jarName = serverSource.getJarName();
@@ -45,12 +46,20 @@ public class HttpServer {
     }
 
 
-    public List<ServerSource> getServerSources() {
+    List<ServerSource> getServerSources() {
         return Collections.unmodifiableList(sources);
     }
 
 
-    public List<Context> getContexts() {
+    List<Context> getContexts() {
         return contexts;
     }
+
+    public void start() throws Exception {
+        init();
+        for (Context context : contexts) {
+            context.start();
+        }
+    }
+
 }
