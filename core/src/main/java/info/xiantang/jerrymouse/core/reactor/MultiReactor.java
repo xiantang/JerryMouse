@@ -199,7 +199,7 @@ public class MultiReactor implements Runnable {
     }
 
 
-    public class SubReactorImpl implements Reactor {
+    public static class SubReactorImpl implements Reactor {
         private Queue<Event> events = new ConcurrentLinkedQueue<>();
         private Selector subSelector;
         private String name;

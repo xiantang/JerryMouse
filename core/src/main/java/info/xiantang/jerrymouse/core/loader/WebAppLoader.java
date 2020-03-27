@@ -59,7 +59,6 @@ public class WebAppLoader implements LifeCycle {
 
     public Class<?> loadClass(String name) throws ClassNotFoundException {
        return classLoader.loadClass(name);
-
     }
 
 

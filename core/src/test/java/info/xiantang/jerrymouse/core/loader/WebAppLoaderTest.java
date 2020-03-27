@@ -1,6 +1,5 @@
 package info.xiantang.jerrymouse.core.loader;
 
-import info.xiantang.jerrymouse.core.lifecycle.LifeCycle;
 import info.xiantang.jerrymouse.core.server.ServletWrapper;
 import org.junit.Test;
 
@@ -8,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 public class WebAppLoaderTest {
 
@@ -71,13 +69,13 @@ public class WebAppLoaderTest {
         Map<String, ServletWrapper> router = new HashMap<>();
         initRouter(router);
         ClassLoader classLoader = new JarClassLoader("sample.jar");
-        LifeCycle loader = new WebAppLoader(router, classLoader);
+        WebAppLoader loader = new WebAppLoader(router, classLoader);
         loader.init();
         Map<String, ServletWrapper> expect = new HashMap<>();
         initExpect(expect);
-        assertEquals(expect, ((WebAppLoader)loader).getRouter());
+        assertEquals(expect, loader.getRouter());
         loader.destroy();
-        ((WebAppLoader) loader).getRouter();
+        loader.getRouter();
     }
 
 }
