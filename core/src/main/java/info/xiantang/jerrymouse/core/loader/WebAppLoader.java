@@ -1,5 +1,6 @@
 package info.xiantang.jerrymouse.core.loader;
 
+import info.xiantang.jerrymouse.core.lifecycle.LifeCycle;
 import info.xiantang.jerrymouse.core.server.ServletWrapper;
 import info.xiantang.jerrymouse.http.servlet.Servlet;
 
@@ -9,13 +10,29 @@ import java.util.Set;
 
 import static info.xiantang.jerrymouse.core.utils.CastUtils.cast;
 
-public class WebAppLoader {
+public class WebAppLoader implements LifeCycle {
     private Map<String, ServletWrapper> router;
     private ClassLoader classLoader;
 
     public WebAppLoader(Map<String, ServletWrapper> router, ClassLoader classLoader) {
         this.router = router;
         this.classLoader = classLoader;
+    }
+
+    @Override
+    public void init() throws Exception {
+        loadOnStartUp();
+    }
+
+    @Override
+    public void start() {
+
+    }
+
+    @Override
+    public void destroy() {
+        router = null;
+        classLoader = null;
     }
 
     /**
@@ -43,6 +60,11 @@ public class WebAppLoader {
     public Class<?> loadClass(String name) throws ClassNotFoundException {
        return classLoader.loadClass(name);
 
+    }
+
+
+    Map<String, ServletWrapper> getRouter() {
+        return Collections.unmodifiableMap(router);
     }
 
 
