@@ -19,7 +19,7 @@ public class WebAppLoader {
     }
 
     /**
-     * load servlet class and create instance of it.
+     * load servlet class which is loaded on start up and create instance of it.
      * @return return a unmodifiableMap with servlet instances which is load on start up
      * @throws Exception
      */
@@ -39,4 +39,11 @@ public class WebAppLoader {
         }
         return Collections.unmodifiableMap(router);
     }
+
+    public Class<?> loadClass(String name) throws ClassNotFoundException {
+       return classLoader.loadClass(name);
+
+    }
+
+
 }

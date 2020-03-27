@@ -2,6 +2,7 @@ package info.xiantang.jerrymouse.core.reactor;
 
 import info.xiantang.jerrymouse.core.event.Event;
 
+import java.io.IOException;
 import java.nio.channels.Selector;
 
 public interface Reactor extends Runnable {
@@ -10,4 +11,6 @@ public interface Reactor extends Runnable {
     Selector getSelector();
 
     void register(Event event);
+
+    void stop() throws IOException;
 }

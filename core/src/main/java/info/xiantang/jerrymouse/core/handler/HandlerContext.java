@@ -1,5 +1,6 @@
 package info.xiantang.jerrymouse.core.handler;
 
+import info.xiantang.jerrymouse.core.loader.WebAppLoader;
 import info.xiantang.jerrymouse.core.reactor.Reactor;
 import info.xiantang.jerrymouse.core.server.ServletWrapper;
 
@@ -10,9 +11,9 @@ public class HandlerContext {
     private Reactor reactor;
     private SocketChannel channel;
     private Map<String, ServletWrapper> mapper;
-    private ClassLoader loader;
+    private WebAppLoader loader;
 
-    public HandlerContext(Reactor reactor, SocketChannel channel, Map<String, ServletWrapper> mapper, ClassLoader loader) {
+    public HandlerContext(Reactor reactor, SocketChannel channel, Map<String, ServletWrapper> mapper, WebAppLoader loader) {
         this.reactor = reactor;
         this.channel = channel;
         this.mapper = mapper;
@@ -23,7 +24,7 @@ public class HandlerContext {
         return new HandlerContext(null, null, null, null);
     }
 
-    public static HandlerContext contextWithMapperAndClassLoader(Map<String, ServletWrapper> mapper,ClassLoader loader) {
+    public static HandlerContext contextWithMapperAndClassLoader(Map<String, ServletWrapper> mapper, WebAppLoader loader) {
         return new HandlerContext(null, null, mapper, loader);
     }
 
@@ -47,7 +48,7 @@ public class HandlerContext {
         return mapper;
     }
 
-    public ClassLoader getLoader() {
+    public WebAppLoader getLoader() {
         return loader;
     }
 

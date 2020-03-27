@@ -1,6 +1,7 @@
 package info.xiantang.jerrymouse.core.server;
 
 import info.xiantang.jerrymouse.core.conf.Configuration;
+import info.xiantang.jerrymouse.core.utils.NetUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -50,7 +51,8 @@ public class HttpServerTest {
 
     @Test
     public void httpServerCanInitContext() throws Exception {
-        FakeServer httpSever = new FakeServer(9033);
+        int availablePort = NetUtils.getAvailablePort();
+        FakeServer httpSever = new FakeServer(availablePort);
         httpSever.loadSources();
         httpSever.loadContexts();
         List<Context> contexts = httpSever.getContexts();
@@ -62,10 +64,12 @@ public class HttpServerTest {
 
     @Test
     public void httpServerCanHandleServletWhichLoadOnBootStrap() throws Exception {
-        FakeServer httpSever = new FakeServer(9032);
+        int availablePort = NetUtils.getAvailablePort();
+        FakeServer httpSever = new FakeServer(availablePort);
+        httpSever.init();
         httpSever.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet("http://localhost:9032/");
+        HttpGet httpget = new HttpGet("http://localhost:" + availablePort + "/");
         CloseableHttpResponse response = httpclient.execute(httpget);
         HttpEntity entity = response.getEntity();
         String responseStr = EntityUtils.toString(entity);
@@ -75,10 +79,12 @@ public class HttpServerTest {
 
     @Test
     public void httpServerCanHandleServletWhichNotLoadOnBootStrap() throws Exception {
-        FakeServer httpSever = new FakeServer(9034);
+        int availablePort = NetUtils.getAvailablePort();
+        FakeServer httpSever = new FakeServer(availablePort);
+        httpSever.init();
         httpSever.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet("http://localhost:9034/hello");
+        HttpGet httpget = new HttpGet("http://localhost:" + availablePort + "/hello");
         CloseableHttpResponse response = httpclient.execute(httpget);
         HttpEntity entity = response.getEntity();
         String responseStr = EntityUtils.toString(entity);
@@ -88,10 +94,12 @@ public class HttpServerTest {
 
     @Test
     public void httpServerCanHandleServletWithIsNotFind() throws Exception {
-        FakeServer httpSever = new FakeServer(9035);
+        int availablePort = NetUtils.getAvailablePort();
+        FakeServer httpSever = new FakeServer(availablePort);
+        httpSever.init();
         httpSever.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet("http://localhost:9035/test");
+        HttpGet httpget = new HttpGet("http://localhost:" + availablePort + "/test");
         CloseableHttpResponse response = httpclient.execute(httpget);
         HttpEntity entity = response.getEntity();
         String responseStr = EntityUtils.toString(entity);

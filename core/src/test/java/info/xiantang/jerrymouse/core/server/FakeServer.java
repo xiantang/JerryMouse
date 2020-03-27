@@ -14,6 +14,7 @@ public class FakeServer extends HttpServer {
             config.setPort(port);
             String jarName = serverSource.getJarName();
             Context context = new Context(jarName, config);
+            context.init();
             contexts.add(context);
         }
     }

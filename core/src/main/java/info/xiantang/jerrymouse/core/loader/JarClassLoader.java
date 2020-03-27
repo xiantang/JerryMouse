@@ -10,5 +10,4 @@ public class JarClassLoader extends URLClassLoader {
         super(parseSinglePathToUrls(jarPath));
     }
 
-
 }

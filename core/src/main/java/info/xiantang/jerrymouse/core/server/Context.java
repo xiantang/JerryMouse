@@ -3,19 +3,38 @@ package info.xiantang.jerrymouse.core.server;
 import info.xiantang.jerrymouse.core.conf.Configuration;
 import info.xiantang.jerrymouse.core.handler.HandlerContext;
 import info.xiantang.jerrymouse.core.handler.HttpHandler;
+import info.xiantang.jerrymouse.core.lifecycle.LifeCycle;
 import info.xiantang.jerrymouse.core.loader.JarClassLoader;
 import info.xiantang.jerrymouse.core.loader.WebAppLoader;
 import info.xiantang.jerrymouse.core.reactor.MultiReactor;
 
+import java.io.IOException;
 import java.util.Map;
 
-public class Context {
+public class Context implements LifeCycle {
     private int port;
     private Map<String, ServletWrapper> mapper;
     private String jarName;
     private Configuration configuration;
     private MultiReactor reactor;
     private WebAppLoader webAppLoader;
+
+    @Override
+    public void init() throws Exception {
+        loadOnStartUpServlet();
+    }
+
+
+    @Override
+    public void start() {
+        new Thread(reactor).start();
+    }
+
+
+    @Override
+    public void destroy() throws IOException {
+        this.reactor.stop();
+    }
 
 
     Context(String jarName, Configuration configuration) throws Exception {
@@ -30,23 +49,19 @@ public class Context {
                 .setPort(port)
                 .setHandlerClass(HttpHandler.class)
                 .setMainReactorName("MainReactor")
-                .setHandlerContext(HandlerContext.contextWithMapperAndClassLoader(mapper, jarClassLoader))
+                .setHandlerContext(HandlerContext.contextWithMapperAndClassLoader(mapper, webAppLoader))
                 .setSubReactorCount(subReactorNum)
                 .build();
-        loadOnStartUpServlet();
+
     }
 
+    Map<String, ServletWrapper> getMapper() {
+        return mapper;
+    }
 
     private void loadOnStartUpServlet() throws Exception {
         webAppLoader.loadOnStartUp();
     }
 
 
-    public void start() {
-        new Thread(reactor).start();
-    }
-
-    Map<String, ServletWrapper> getMapper() {
-        return mapper;
-    }
 }

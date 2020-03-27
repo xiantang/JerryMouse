@@ -48,6 +48,13 @@ public class MultiReactor implements Runnable {
         new Thread(mainReactor).start();
     }
 
+    public void stop() throws IOException {
+        mainReactor.stop();
+        for (int i = 0; i < subReactorCount; i++) {
+            subReactors[i].stop();
+        }
+    }
+
 
     public static class Builder {
         private int port;
@@ -97,7 +104,7 @@ public class MultiReactor implements Runnable {
         private ServerSocketChannel serverSocket;
         private Class<? extends BaseHandler> handlerClass;
 
-        public Acceptor(ServerSocketChannel serverSocket, Class<? extends BaseHandler> handlerClass) {
+        Acceptor(ServerSocketChannel serverSocket, Class<? extends BaseHandler> handlerClass) {
             this.serverSocket = serverSocket;
             this.handlerClass = handlerClass;
         }
@@ -117,6 +124,10 @@ public class MultiReactor implements Runnable {
 
         }
 
+        void stop() throws IOException {
+            serverSocket.close();
+        }
+
         private void newInstanceOfHandler(SocketChannel channel) throws Exception {
             Constructor<? extends BaseHandler> handler
                     = handlerClass.getConstructor(HandlerContext.class);
@@ -131,15 +142,20 @@ public class MultiReactor implements Runnable {
     public class MainReactorImpl implements Reactor {
         private final String mainReactorName;
         private Selector selector;
+        private volatile boolean isRunning = true;
+        private Acceptor acceptor;
 
-        public MainReactorImpl(String mainReactorName, int port, Class<? extends BaseHandler> handlerClass) throws IOException {
+
+        MainReactorImpl(String mainReactorName, int port, Class<? extends BaseHandler> handlerClass) throws IOException {
             this.mainReactorName = mainReactorName;
             this.selector = Selector.open();
             ServerSocketChannel serverSocket = ServerSocketChannel.open();
             serverSocket.socket().bind(new InetSocketAddress(port));
             serverSocket.configureBlocking(false);
             SelectionKey sk = serverSocket.register(selector, SelectionKey.OP_ACCEPT);
-            sk.attach(new Acceptor(serverSocket, handlerClass));
+            acceptor = new Acceptor(serverSocket, handlerClass);
+            sk.attach(acceptor);
+
         }
 
         public String getName() {
@@ -158,7 +174,7 @@ public class MultiReactor implements Runnable {
 
         public void run() {
             try {
-                while (!Thread.interrupted()) {
+                while (!Thread.interrupted() && isRunning) {
                     selector.select();
                     Set selected = selector.selectedKeys();
                     for (Object o : selected) dispatch((SelectionKey) o);
@@ -175,6 +191,11 @@ public class MultiReactor implements Runnable {
             if (acceptor != null)
                 acceptor.run();
         }
+
+        public void stop() throws IOException {
+            isRunning = false;
+            acceptor.stop();
+        }
     }
 
 
@@ -182,9 +203,10 @@ public class MultiReactor implements Runnable {
         private Queue<Event> events = new ConcurrentLinkedQueue<>();
         private Selector subSelector;
         private String name;
+        private boolean isRunning = true;
 
 
-        public SubReactorImpl(String name, Selector subSelector) {
+        SubReactorImpl(String name, Selector subSelector) {
             this.name = name;
             this.subSelector = subSelector;
         }
@@ -192,7 +214,7 @@ public class MultiReactor implements Runnable {
         @Override
         public void run() {
             try {
-                while (!Thread.interrupted()) {
+                while (!Thread.interrupted() && isRunning) {
                     Event event;
                     while ((event = events.poll()) != null) {
                         event.event();
@@ -208,8 +230,8 @@ public class MultiReactor implements Runnable {
             }
         }
 
-        private void dispatch(SelectionKey k) {
-            Event event = (Event) (k.attachment());
+        private void dispatch(SelectionKey key) {
+            Event event = (Event) (key.attachment());
             BaseHandler handler = event.getHandler();
             if (handler != null)
                 handler.run();
@@ -229,6 +251,11 @@ public class MultiReactor implements Runnable {
         public void register(Event event) {
             events.offer(event);
             subSelector.wakeup();
+        }
+
+        @Override
+        public void stop() {
+            isRunning = false;
         }
     }
 

@@ -1,5 +1,6 @@
 package info.xiantang.jerrymouse.core.handler;
 
+import info.xiantang.jerrymouse.core.loader.WebAppLoader;
 import info.xiantang.jerrymouse.core.server.ServletWrapper;
 import info.xiantang.jerrymouse.core.server.impl.NotFoundServlet;
 import info.xiantang.jerrymouse.http.core.HttpRequest;
@@ -29,7 +30,7 @@ class HttpProcessor {
             servlet = wrapper.getServlet();
             if (servlet == null) {
                 String className = wrapper.getClassName();
-                ClassLoader loader = context.getLoader();
+                WebAppLoader loader = context.getLoader();
                 Class<? extends Servlet> servletClass = cast(loader.loadClass(className));
                 Constructor constructor = servletClass.getDeclaredConstructor();
                 constructor.setAccessible(true);

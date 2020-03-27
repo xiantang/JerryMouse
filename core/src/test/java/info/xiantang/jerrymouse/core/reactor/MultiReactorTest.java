@@ -2,6 +2,7 @@ package info.xiantang.jerrymouse.core.reactor;
 
 import info.xiantang.jerrymouse.core.handler.CountBaseHandler;
 import info.xiantang.jerrymouse.core.handler.HandlerContext;
+import info.xiantang.jerrymouse.core.utils.NetUtils;
 import info.xiantang.jerrymouses2.client.NetWorkClient;
 import org.apache.http.util.ByteArrayBuffer;
 import org.junit.Test;
@@ -25,8 +26,9 @@ public class MultiReactorTest {
 
     @Test
     public void canDealRequestWithSeveralReactor() throws IOException {
+        int availablePort = NetUtils.getAvailablePort();
         MultiReactor reactor = MultiReactor.newBuilder()
-                .setPort(9866)
+                .setPort(availablePort)
                 .setHandlerClass(InsureReactorHandler.class)
                 .setMainReactorName("MainReactor")
                 .setSubReactorCount(3)
@@ -34,11 +36,10 @@ public class MultiReactorTest {
         // start a new thread
         Thread reactorT = new Thread(reactor);
         reactorT.start();
-
-        String first = NetWorkClient.doRequest("localhost", 9866, "test\n");
-        String second = NetWorkClient.doRequest("localhost", 9866, "test\n");
-        String third = NetWorkClient.doRequest("localhost", 9866, "test\n");
-        String nextRoundFirst = NetWorkClient.doRequest("localhost", 9866, "test\n");
+        String first = NetWorkClient.doRequest("localhost", availablePort, "test\n");
+        String second = NetWorkClient.doRequest("localhost", availablePort, "test\n");
+        String third = NetWorkClient.doRequest("localhost", availablePort, "test\n");
+        String nextRoundFirst = NetWorkClient.doRequest("localhost", availablePort, "test\n");
         List<String> responses = new ArrayList<>();
         responses.add(first);
         responses.add(second);

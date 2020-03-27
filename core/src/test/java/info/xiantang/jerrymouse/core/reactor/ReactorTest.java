@@ -5,6 +5,7 @@ import info.xiantang.jerrymouses2.client.NetWorkClient;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -23,6 +24,5 @@ public class ReactorTest {
         reactorT.start();
         String response = NetWorkClient.doRequest("localhost", 9865, "test\n");
         assertEquals("1", response);
-
     }
 }

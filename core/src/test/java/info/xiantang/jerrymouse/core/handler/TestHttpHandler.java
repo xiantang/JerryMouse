@@ -2,6 +2,7 @@ package info.xiantang.jerrymouse.core.handler;
 
 import info.xiantang.jerrymouse.core.reactor.MultiReactor;
 import info.xiantang.jerrymouse.core.server.ServletWrapper;
+import info.xiantang.jerrymouse.core.utils.NetUtils;
 import info.xiantang.jerrymouse.http.servlet.Request;
 import info.xiantang.jerrymouse.http.servlet.Response;
 import info.xiantang.jerrymouse.http.servlet.Servlet;
@@ -36,6 +37,7 @@ public class TestHttpHandler {
 
     @Test
     public void httpHandlerCanReturnRequestHeaderAndBody() throws IOException {
+        int availablePort = NetUtils.getAvailablePort();
 
         HashMap<String, ServletWrapper> mapper = new HashMap<>();
         ServletWrapper empty = new ServletWrapper(
@@ -48,7 +50,7 @@ public class TestHttpHandler {
         );
         mapper.put("/", empty);
         MultiReactor reactor = MultiReactor.newBuilder()
-                .setPort(9820)
+                .setPort(availablePort)
                 .setHandlerClass(HttpHandler.class)
                 .setHandlerContext(new HandlerContext(null, null, mapper, null))
                 .setSubReactorCount(3)
@@ -56,7 +58,7 @@ public class TestHttpHandler {
         Thread reactorT = new Thread(reactor);
         reactorT.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet("http://localhost:9820");
+        HttpGet httpget = new HttpGet("http://localhost:" + availablePort);
         CloseableHttpResponse response = httpclient.execute(httpget);
         HttpEntity entity = response.getEntity();
         String responseStr = EntityUtils.toString(entity);

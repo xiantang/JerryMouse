@@ -1,6 +1,7 @@
 package info.xiantang.jerrymouse.core.server;
 
 import info.xiantang.jerrymouse.core.conf.Configuration;
+import info.xiantang.jerrymouse.core.lifecycle.LifeCycle;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +11,7 @@ import java.util.List;
 
 import static info.xiantang.jerrymouse.core.compile.JarResourceParser.parseConfigFromJar;
 
-public class HttpServer {
+public class HttpServer implements LifeCycle {
 
     List<ServerSource> sources = new ArrayList<>();
     List<Context> contexts = new ArrayList<>();
@@ -18,9 +19,24 @@ public class HttpServer {
     private String jarPath = rootPath + "/build";
 
 
-    private void init() throws Exception {
+    @Override
+    public void init() throws Exception {
         loadSources();
         loadContexts();
+    }
+
+    @Override
+    public void start() {
+        for (Context context : contexts) {
+            context.start();
+        }
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        for (Context context : contexts) {
+            context.destroy();
+        }
     }
 
     void loadSources() throws IOException {
@@ -41,6 +57,7 @@ public class HttpServer {
             Configuration config = serverSource.getConfig();
             String jarName = serverSource.getJarName();
             Context context = new Context(jarName, config);
+            context.init();
             contexts.add(context);
         }
     }
@@ -55,11 +72,6 @@ public class HttpServer {
         return contexts;
     }
 
-    public void start() throws Exception {
-        init();
-        for (Context context : contexts) {
-            context.start();
-        }
-    }
+
 
 }

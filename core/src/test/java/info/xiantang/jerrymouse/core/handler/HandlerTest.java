@@ -3,6 +3,7 @@ package info.xiantang.jerrymouse.core.handler;
 import info.xiantang.jerrymouse.core.reactor.Constants;
 import info.xiantang.jerrymouse.core.reactor.MultiReactor;
 import info.xiantang.jerrymouse.core.reactor.MultiReactorTest;
+import info.xiantang.jerrymouse.core.utils.NetUtils;
 import info.xiantang.jerrymouses2.client.NetWorkClient;
 import org.apache.http.util.ByteArrayBuffer;
 import org.junit.Test;
@@ -30,8 +31,9 @@ public class HandlerTest {
 
     @Test
     public void isHandlerConcurrency() throws IOException {
+        int availablePort = NetUtils.getAvailablePort();
         MultiReactor reactor = MultiReactor.newBuilder()
-                .setPort(9800)
+                .setPort(availablePort)
                 .setHandlerClass(SleepyHandler.class)
                 .setSubReactorCount(3)
                 .build();
@@ -43,7 +45,7 @@ public class HandlerTest {
         List<Future<String>> futureList = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             Future<String> future = executor.submit(()
-                    -> NetWorkClient.doRequest("localhost", 9800, "test\n"));
+                    -> NetWorkClient.doRequest("localhost", availablePort, "test\n"));
             futureList.add(future);
         }
         futureList.forEach(x -> {
@@ -63,15 +65,16 @@ public class HandlerTest {
 
     @Test
     public void sampleBaseHandlerCanReturnSameResult() throws IOException {
+        int availablePort = NetUtils.getAvailablePort();
         MultiReactor reactor = MultiReactor.newBuilder()
-                .setPort(9801)
+                .setPort(availablePort)
                 .setHandlerClass(MultiReactorTest.InsureReactorHandler.class)
                 .setMainReactorName("MainReactor")
                 .setSubReactorCount(3)
                 .build();
         Thread reactorT = new Thread(reactor);
         reactorT.start();
-        String response = NetWorkClient.doRequest("localhost", 9801, "test\n");
+        String response = NetWorkClient.doRequest("localhost", availablePort, "test\n");
         assertEquals("subReactor-2", response);
 
     }
