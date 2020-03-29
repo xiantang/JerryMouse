@@ -26,7 +26,7 @@ public class HttpHandler extends BaseHandler {
     }
 
     @Override
-    public boolean inputIsComplete(ByteBuffer input, ByteArrayBuffer rawRequest, int bytes) throws IOException {
+    public boolean inputIsComplete(ByteBuffer input, ByteArrayBuffer rawRequest, int bytes) {
         if (bytes > 0) {
             input.flip();
             while (input.hasRemaining()) {
@@ -39,7 +39,8 @@ public class HttpHandler extends BaseHandler {
                 }
             }
         } else if (bytes == -1) {
-            throw new EOFException();
+            setState(CLOSED);
+            return true;
         }
 
         return true;

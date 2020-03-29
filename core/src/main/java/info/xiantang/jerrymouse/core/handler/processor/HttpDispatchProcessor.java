@@ -20,7 +20,7 @@ public class HttpDispatchProcessor implements Processor {
         Map<String, String> headers = request.getHeaders();
         String dest = headers.get("Sec-Fetch-Dest");
         if ("image".equals(dest)) {
-            processor = new HttpStaticResourcesProcessor(context);
+            processor = new HttpStaticResourcesProcessor();
         } else {
             processor = new HttpServletProcessor(context);
         }

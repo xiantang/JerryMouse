@@ -32,7 +32,7 @@ public class HttpStaticResourcesProcessorTest {
     public void testStaticResourcesProcessorCanHandle() throws Exception {
         HandlerContext handlerContext = HandlerContext.emptyContext();
         handlerContext.setResourcePath("src/test/resources");
-        Processor processor = new HttpStaticResourcesProcessor(handlerContext);
+        Processor processor = new HttpStaticResourcesProcessor();
         HttpResponse response = new HttpResponse(ByteBuffer.allocate(1024));
         Map<String, String> headers = new HashMap<>();
         headers.put("Sec-Fetch-Dest", "image");

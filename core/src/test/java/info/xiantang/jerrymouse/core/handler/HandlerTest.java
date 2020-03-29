@@ -51,7 +51,6 @@ public class HandlerTest {
         futureList.forEach(x -> {
             try {
                 String s = x.get();
-                System.out.println(s);
                 assertTrue(s.startsWith("pool-"));
                 result.add(s);
             } catch (InterruptedException | ExecutionException e) {

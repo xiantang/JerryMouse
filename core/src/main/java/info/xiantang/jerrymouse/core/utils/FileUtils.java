@@ -27,6 +27,18 @@ public class FileUtils {
         return Bytes.toArray(bytes);
     }
 
+    public static byte[] readBytes(InputStream stream) throws IOException {
+        List<Byte> bytes = new ArrayList<>();
+        try (InputStream inputStream = stream) {
+            int read;
+            while ((read = inputStream.read()) != -1) {
+                byte newByte = (byte) read;
+                bytes.add(newByte);
+            }
+        }
+        return Bytes.toArray(bytes);
+    }
+
     public static void deleteDir(File file) {
         File[] contents = file.listFiles();
         if (contents != null) {
