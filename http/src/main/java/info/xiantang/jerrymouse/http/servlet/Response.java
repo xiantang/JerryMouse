@@ -1,5 +1,8 @@
 package info.xiantang.jerrymouse.http.servlet;
 
+import java.io.OutputStream;
+
 public interface Response {
-    void setBody(String body);
+
+    OutputStream getResponseOutputStream();
 }

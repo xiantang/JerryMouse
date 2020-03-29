@@ -15,22 +15,25 @@ import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
 public class TestHttpHandler {
 
-    class RequestServlet implements Servlet {
+    static class RequestServlet implements Servlet {
 
         @Override
-        public void service(Request request, Response response) {
-            response.setBody("GET / HTTP/1.1\r\n" +
+        public void service(Request request, Response response) throws IOException {
+            OutputStream responseOutputStream = response.getResponseOutputStream();
+            String s = "GET / HTTP/1.1\r\n" +
                     "Host: localhost:9820\r\n" +
                     "Connection: Keep-Alive\r\n" +
                     "User-Agent: Apache-HttpClient/4.5.3 (Java/1.8.0_232)\r\n" +
                     "Accept-Encoding: gzip,deflate\r\n" +
-                    "\r\n");
+                    "\r\n";
+            responseOutputStream.write(s.getBytes());
         }
     }
 

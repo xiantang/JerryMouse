@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static info.xiantang.jerrymouse.core.compile.JarResourceParser.parseConfigFromJar;
+import static info.xiantang.jerrymouse.core.utils.JarResourceParser.parseConfigFromJar;
 
 public class HttpServer implements LifeCycle {
 

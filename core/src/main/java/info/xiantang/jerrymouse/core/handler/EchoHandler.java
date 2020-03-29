@@ -26,15 +26,15 @@ public class EchoHandler extends BaseHandler {
     @Override
     protected void send() throws IOException {
         int written = -1;
-        output.flip();
-        if (output.hasRemaining()) {
-            written = socket.write(output);
+        outputBuffer.flip();
+        if (outputBuffer.hasRemaining()) {
+            written = socketChannel.write(outputBuffer);
         }
         if (outputIsComplete(written)) {
             sk.channel().close();
         } else {
             setState(READING);
-            socket.write(ByteBuffer.wrap("\r\nreactor> ".getBytes()));
+            socketChannel.write(ByteBuffer.wrap("\r\nreactor> ".getBytes()));
             sk.interestOps(SelectionKey.OP_READ);
         }
 
@@ -80,7 +80,7 @@ public class EchoHandler extends BaseHandler {
         if (written <= 0) {
             return true;
         }
-        output.clear();
+        outputBuffer.clear();
         rawRequest.clear();
         return false;
     }

@@ -30,6 +30,7 @@ public class MultiReactor implements Runnable {
         this.subReactors = new Reactor[subReactorCount];
         this.loadBalancingInteger.set(1);
         this.handlerContext = context == null ? HandlerContext.emptyContext() : context;
+        this.handlerContext.setResourcePath("src/test/resources");
         for (int i = 0; i < subReactorCount; i++) {
             this.subReactors[i] = new SubReactorImpl("subReactor-" + i, Selector.open());
         }
@@ -220,8 +221,8 @@ public class MultiReactor implements Runnable {
                         event.event();
                     }
                     subSelector.select();
-                    Set selected = subSelector.selectedKeys();
-                    for (Object o : selected) dispatch((SelectionKey) o);
+                    Set<SelectionKey> selected = subSelector.selectedKeys();
+                    for (SelectionKey key : selected) dispatch(key);
                     selected.clear();
                 }
             } catch (IOException e) {

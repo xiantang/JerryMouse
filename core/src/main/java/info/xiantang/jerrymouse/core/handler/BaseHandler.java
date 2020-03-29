@@ -18,13 +18,13 @@ import static info.xiantang.jerrymouse.core.reactor.Constants.*;
 public abstract class BaseHandler implements Runnable {
 
     private static ExecutorService threadPool = Executors.newFixedThreadPool(CORE_NUM);
-    protected final SocketChannel socket;
+    final SocketChannel socketChannel;
     private final Selector selector;
     private final HandlerContext context;
-    protected SelectionKey sk;
-    protected ByteBuffer input = ByteBuffer.allocate(BUFFER_MAX_IN);
-    protected ByteBuffer output = ByteBuffer.allocate(BUFFER_MAX_OUT);
-    protected ByteArrayBuffer rawRequest = new ByteArrayBuffer(0);
+    SelectionKey sk;
+    private ByteBuffer inputBuffer = ByteBuffer.allocate(BUFFER_MAX_IN);
+    ByteBuffer outputBuffer = ByteBuffer.allocate(BUFFER_MAX_OUT);
+    ByteArrayBuffer rawRequest = new ByteArrayBuffer(0);
     private Reactor reactor;
     private int state = READING;
 
@@ -34,16 +34,16 @@ public abstract class BaseHandler implements Runnable {
      * we will register channel to selector and  wakeup it
      * and attach the this object prepare to use.
      */
-    public BaseHandler(HandlerContext context) {
+    BaseHandler(HandlerContext context) {
         this.context = context;
         this.reactor = context.getReactor();
-        this.socket = context.getChannel();
+        this.socketChannel = context.getChannel();
         this.selector = reactor.getSelector();
         HandlerEvent event = new HandlerEvent(this);
         reactor.register(event);
     }
 
-    public int getState() {
+    protected int getState() {
         return state;
     }
 
@@ -51,11 +51,11 @@ public abstract class BaseHandler implements Runnable {
         return context;
     }
 
-    public void setState(int state) {
+    void setState(int state) {
         this.state = state;
     }
 
-    public String getReactorName() {
+    protected String getReactorName() {
         return reactor.getName();
     }
 
@@ -71,18 +71,18 @@ public abstract class BaseHandler implements Runnable {
         }
     }
 
-    protected synchronized void read() throws IOException {
-        input.clear();
-        int n = socket.read(input);
-        if (inputIsComplete(input, rawRequest, n)) {
+    private synchronized void read() throws IOException {
+        inputBuffer.clear();
+        int n = socketChannel.read(inputBuffer);
+        if (inputIsComplete(inputBuffer, rawRequest, n)) {
             state = PROCESSING;
             threadPool.execute(new Processor());
         }
     }
 
     protected void send() throws IOException {
-        output.flip();
-        socket.write(output);
+        outputBuffer.flip();
+        socketChannel.write(outputBuffer);
         sk.channel().close();
     }
 
@@ -90,7 +90,7 @@ public abstract class BaseHandler implements Runnable {
 
     private synchronized void processAndHandOff() throws Exception {
         state = SENDING;
-        process(output, rawRequest);
+        process(outputBuffer, rawRequest);
         sk.interestOps(SelectionKey.OP_WRITE);
         selector.wakeup();
     }
@@ -113,14 +113,14 @@ public abstract class BaseHandler implements Runnable {
     public class HandlerEvent implements Event {
         private BaseHandler handler;
 
-        public HandlerEvent(BaseHandler handler) {
+        HandlerEvent(BaseHandler handler) {
             this.handler = handler;
         }
 
         @Override
         public void event() throws IOException {
-            socket.configureBlocking(false);
-            handler.sk = socket.register(selector, 0);
+            socketChannel.configureBlocking(false);
+            handler.sk = socketChannel.register(selector, 0);
             sk.interestOps(SelectionKey.OP_READ);
             sk.attach(this);
         }

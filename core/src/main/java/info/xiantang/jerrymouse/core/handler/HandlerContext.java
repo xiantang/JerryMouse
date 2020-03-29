@@ -12,6 +12,9 @@ public class HandlerContext {
     private SocketChannel channel;
     private Map<String, ServletWrapper> mapper;
     private WebAppLoader loader;
+    private String resourcePath;
+
+
 
     public HandlerContext(Reactor reactor, SocketChannel channel, Map<String, ServletWrapper> mapper, WebAppLoader loader) {
         this.reactor = reactor;
@@ -44,7 +47,7 @@ public class HandlerContext {
         this.channel = channel;
     }
 
-    Map<String, ServletWrapper> getMapper() {
+    public Map<String, ServletWrapper> getMapper() {
         return mapper;
     }
 
@@ -52,4 +55,11 @@ public class HandlerContext {
         return loader;
     }
 
+    public String getResourcePath() {
+        return resourcePath;
+    }
+
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
 }

@@ -37,7 +37,7 @@ public class Context implements LifeCycle {
     }
 
 
-    Context(String jarName, Configuration configuration) throws Exception {
+    public Context(String jarName, Configuration configuration) throws Exception {
         this.jarName = jarName;
         this.configuration = configuration;
         this.mapper = configuration.getRouter();

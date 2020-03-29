@@ -7,11 +7,11 @@ public class TargetParser {
 
     private String rootPath;
 
-    public TargetParser(String rootPath) {
+    TargetParser(String rootPath) {
         this.rootPath = rootPath;
     }
 
-    public Project parse() {
+    Project parse() {
         String userPath = rootPath;
         File root = new File(userPath);
         Project project = new Project(

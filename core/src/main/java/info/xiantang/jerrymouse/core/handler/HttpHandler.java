@@ -1,5 +1,6 @@
 package info.xiantang.jerrymouse.core.handler;
 
+import info.xiantang.jerrymouse.core.handler.processor.HttpDispatchProcessor;
 import info.xiantang.jerrymouse.http.core.HttpRequest;
 import info.xiantang.jerrymouse.http.core.HttpResponse;
 import info.xiantang.jerrymouse.http.parser.HttpRequestParser;
@@ -52,10 +53,10 @@ public class HttpHandler extends BaseHandler {
         } else if (state == SENDING) {
             HttpRequestParser parser = new HttpRequestParser(rawRequest.toByteArray(), HttpRequest.newBuilder());
             HttpRequest request = parser.parse();
-            HttpResponse response = new HttpResponse();
-            HttpProcessor processor = new HttpProcessor(getContext());
+            HttpResponse response = new HttpResponse(outputBuffer);
+            HttpDispatchProcessor processor = new HttpDispatchProcessor(getContext());
             processor.process(request, response);
-            output.put(response.toRawResponse());
+            response.putOutputBuffer();
         }
     }
 

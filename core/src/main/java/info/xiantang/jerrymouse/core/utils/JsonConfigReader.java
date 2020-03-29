@@ -18,14 +18,14 @@ import static info.xiantang.jerrymouse.core.conf.ConfigConstants.*;
 import static info.xiantang.jerrymouse.core.utils.CastUtils.cast;
 
 
-public class JsonConfigReader {
-    public String readAsString(String path, Charset encoding) throws Exception {
+class JsonConfigReader {
+    String readAsString(String path, Charset encoding) throws Exception {
         URI uri = ClassLoader.getSystemResource(path).toURI();
         byte[] encoded = Files.readAllBytes(Paths.get(uri));
         return new String(encoded, encoding);
     }
 
-    public Configuration parseStringAsConfiguration(String raw) throws IOException {
+    Configuration parseStringAsConfiguration(String raw) throws IOException {
         Map<String, Object> rawConfig;
         ObjectMapper objectMapper = new ObjectMapper();
         rawConfig = cast(objectMapper.readValue(raw, new TypeReference<HashMap>() {

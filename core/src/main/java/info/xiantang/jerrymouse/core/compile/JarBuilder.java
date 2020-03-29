@@ -18,7 +18,7 @@ public class JarBuilder {
     private Path rootPath;
     private String outPutPath;
 
-    public JarBuilder(Project project) {
+    JarBuilder(Project project) {
         this.project = project;
         this.rootPath = project.getRootPath();
         this.outPutPath = rootPath.toAbsolutePath() + "/out";

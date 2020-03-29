@@ -1,14 +1,30 @@
 package info.xiantang.jerrymouse.core.utils;
 
+import com.google.common.primitives.Bytes;
+
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileUtils {
     public static URL[] parseSinglePathToUrls(String path) throws Exception {
         String property = System.getProperty("user.dir");
         URL url = new URL("file:"+property + "/build/"+path);
         return new URL[]{url};
+    }
+
+   public static byte[] readBytes(File image) throws IOException {
+        List<Byte> bytes = new ArrayList<>();
+        try (InputStream inputStream = new FileInputStream(image)) {
+            int read;
+            while ((read = inputStream.read()) != -1) {
+                byte newByte = (byte) read;
+                bytes.add(newByte);
+            }
+        }
+        return Bytes.toArray(bytes);
     }
 
     public static void deleteDir(File file) {

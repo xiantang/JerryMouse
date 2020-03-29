@@ -18,6 +18,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +30,11 @@ public class ContextTest {
     public void testHttpServerGetCanHandleCertainServlet() throws Exception {
         int availablePort = NetUtils.getAvailablePort();
         Map<String, ServletWrapper> mapper = new HashMap<>();
-        Servlet servlet = (request, response) -> response.setBody("test\ntest");
+        Servlet servlet = (request, response) ->
+        {
+            OutputStream responseOutputStream = response.getResponseOutputStream();
+            responseOutputStream.write("test\ntest".getBytes());
+        };
         mapper.put("/test",new ServletWrapper("","/test","aaa",null,servlet.getClass(),servlet));
         Configuration configuration = new Configuration(availablePort, 3, mapper);
         Context context = new Context("jarName", configuration);
@@ -47,7 +52,12 @@ public class ContextTest {
     public void testContextStartAndStop() throws Exception {
         int availablePort = NetUtils.getAvailablePort();
         Map<String, ServletWrapper> mapper = new HashMap<>();
-        Servlet servlet = (request, response) -> response.setBody("test\ntest");
+        Servlet servlet = (request, response) ->
+        {
+            OutputStream responseOutputStream = response.getResponseOutputStream();
+            responseOutputStream.write("test\ntest".getBytes());
+        };
+
         mapper.put("/test", new ServletWrapper("", "/test", "aaa", null, servlet.getClass(), servlet));
         Configuration configuration = new Configuration(availablePort, 3, mapper);
         LifeCycle context = new Context("jarName", configuration);
@@ -78,8 +88,9 @@ public class ContextTest {
                 "    \"Still\":\"https://cdn.www.sojson.com/study/linian.jpg\"\n" +
                 "}";
         Servlet servlet = (request, response) -> {
+            OutputStream outputStream = response.getResponseOutputStream();
             String body1 = request.getBody();
-            response.setBody(body1);
+            outputStream.write(body1.getBytes());
         };
 
         mapper.put("/test",new ServletWrapper("","/test","aaa",null,servlet.getClass(),servlet));
