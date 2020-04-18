@@ -1,6 +1,7 @@
 package info.xiantang.jerrymouse.core.handler.processor;
 
 import info.xiantang.jerrymouse.core.handler.HandlerContext;
+import info.xiantang.jerrymouse.core.utils.StaticResourcesUtils;
 import info.xiantang.jerrymouse.http.core.HttpRequest;
 import info.xiantang.jerrymouse.http.core.HttpResponse;
 
@@ -17,9 +18,8 @@ public class HttpDispatchProcessor implements Processor {
     @Override
     public void process(HttpRequest request, HttpResponse response) throws Exception {
         Processor processor;
-        Map<String, String> headers = request.getHeaders();
-        String dest = headers.get("Sec-Fetch-Dest");
-        if ("image".equals(dest)) {
+        boolean isStatic = StaticResourcesUtils.verifyPath(request.getPath());
+        if (isStatic) {
             processor = new HttpStaticResourcesProcessor();
         } else {
             processor = new HttpServletProcessor(context);
