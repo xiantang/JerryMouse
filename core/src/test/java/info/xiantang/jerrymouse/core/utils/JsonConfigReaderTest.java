@@ -3,6 +3,7 @@ package info.xiantang.jerrymouse.core.utils;
 import info.xiantang.jerrymouse.core.conf.Configuration;
 import info.xiantang.jerrymouse.core.server.ServletWrapper;
 import org.apache.commons.codec.Charsets;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import static org.junit.Assert.assertEquals;
 public class JsonConfigReaderTest {
 
     @Test
+    @Ignore()
     public void readJsonConfigAsString() throws Exception {
         JsonConfigReader reader = new JsonConfigReader();
         String actual = reader.readAsString("config.json", Charsets.UTF_8);

@@ -88,7 +88,7 @@ public class HttpServerTest {
         CloseableHttpResponse response = httpclient.execute(httpget);
         HttpEntity entity = response.getEntity();
         String responseStr = EntityUtils.toString(entity);
-        assertEquals("hello",responseStr);
+        assertTrue(responseStr.contains("hello"));
     }
 
 

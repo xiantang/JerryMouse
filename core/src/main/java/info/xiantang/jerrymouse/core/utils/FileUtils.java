@@ -6,7 +6,10 @@ import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class FileUtils {
     public static URL[] parseSinglePathToUrls(String path) throws Exception {
@@ -18,18 +21,6 @@ public class FileUtils {
    public static byte[] readBytes(File image) throws IOException {
         List<Byte> bytes = new ArrayList<>();
         try (InputStream inputStream = new FileInputStream(image)) {
-            int read;
-            while ((read = inputStream.read()) != -1) {
-                byte newByte = (byte) read;
-                bytes.add(newByte);
-            }
-        }
-        return Bytes.toArray(bytes);
-    }
-
-    public static byte[] readBytes(InputStream stream) throws IOException {
-        List<Byte> bytes = new ArrayList<>();
-        try (InputStream inputStream = stream) {
             int read;
             while ((read = inputStream.read()) != -1) {
                 byte newByte = (byte) read;
@@ -51,7 +42,7 @@ public class FileUtils {
         file.delete();
     }
 
-    public static String readFromStream(InputStream input) throws IOException {
+    static String readStringFromStream(InputStream input) throws IOException {
         InputStreamReader isr = new InputStreamReader(input);
         BufferedReader reader = new BufferedReader(isr);
         String line;
@@ -65,5 +56,27 @@ public class FileUtils {
     }
 
 
+    public static byte[] readFileFromJar(File file, String path) throws IOException {
+        JarFile jarFile = new JarFile(file.getAbsolutePath());
+        Enumeration<JarEntry> entries = jarFile.entries();
+        JarEntry configEntry = null;
+        while (entries.hasMoreElements()) {
+            JarEntry jarEntry = entries.nextElement();
+            String name = jarEntry.getName();
+            if (path.equals(name)) {
+                configEntry = jarEntry;
+                break;
+            }
+        }
+        if (configEntry == null) return null;
+        InputStream input = jarFile.getInputStream(configEntry);
+        byte[] buffer = new byte[4096];
+        int n;
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        while (-1 != (n = input.read(buffer))) {
+            output.write(buffer, 0, n);
+        }
+        return output.toByteArray();
+    }
 }
 

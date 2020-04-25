@@ -25,14 +25,14 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class HttpStaticResourcesProcessorTest {
 
     @Test
     public void testStaticResourcesProcessorCanHandle() throws Exception {
-        HandlerContext handlerContext = HandlerContext.emptyContext();
-        handlerContext.setResourcePath("src/test/resources");
-        Processor processor = new HttpStaticResourcesProcessor();
+        HandlerContext handlerContext = HandlerContext.contextWithMapperAndClassLoader(null,null,"sample.jar");
+        Processor processor = new HttpStaticResourcesProcessor(handlerContext);
         HttpResponse response = new HttpResponse(ByteBuffer.allocate(1024));
         Map<String, String> headers = new HashMap<>();
         headers.put("Sec-Fetch-Dest", "image");
@@ -47,16 +47,38 @@ public class HttpStaticResourcesProcessorTest {
                 .build();
         processor.process(request,response);
         byte[] actual = response.getBodyBytes();
-        byte[] except = FileUtils.readBytes(new File("src/test/resources/favicon.ico"));
+        byte[] except = FileUtils.readBytes(new File("core/src/test/resources/favicon.ico"));
         assertArrayEquals(except, actual);
     }
+
+    @Test
+    public void testStaticResourcesProcessJsFile() throws Exception {
+        HandlerContext handlerContext = HandlerContext.contextWithMapperAndClassLoader(null,null,"sample.jar");
+        Processor processor = new HttpStaticResourcesProcessor(handlerContext);
+        HttpResponse response = new HttpResponse(ByteBuffer.allocate(1024));
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Sec-Fetch-Dest", "image");
+        headers.put("Connection", "Keep-Alive");
+        headers.put("User-Agent", "Apache-HttpClient/4.5.3 (Java/1.8.0_232)");
+        headers.put("Accept-Encoding", "gzip,deflate");
+        HttpRequest request = HttpRequest.newBuilder()
+                .setMethod("GET")
+                .setHttpVersion("HTTP/1.1")
+                .setHeaders(headers)
+                .setPath("/scripts/jquery.min.js")
+                .build();
+        processor.process(request,response);
+        byte[] actual = response.getBodyBytes();
+        assertEquals(92555, actual.length);
+    }
+
 
     @Test
     public void testCanHandleStaticRequest() throws Exception {
         int availablePort = NetUtils.getAvailablePort();
         Map<String, ServletWrapper> mapper = new HashMap<>();
         Configuration configuration = new Configuration(availablePort, 3, mapper);
-        Context context = new Context("jarName", configuration);
+        Context context = new Context("sample.jar", configuration);
         context.start();
         HttpGet httpget = new HttpGet("http://localhost:" + availablePort + "/favicon.ico");
         httpget.setHeader("Sec-Fetch-Dest", "image");
@@ -71,7 +93,7 @@ public class HttpStaticResourcesProcessorTest {
             bytes.add(read1);
         }
         byte[] actual = Bytes.toArray(bytes);
-        byte[] except = FileUtils.readBytes(new File("src/test/resources/favicon.ico"));
+        byte[] except = FileUtils.readBytes(new File("core/src/test/resources/favicon.ico"));
         assertArrayEquals(except, actual);
     }
 

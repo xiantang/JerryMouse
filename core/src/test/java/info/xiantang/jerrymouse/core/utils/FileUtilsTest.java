@@ -5,15 +5,25 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 public class FileUtilsTest {
 
     @Test
     public void testReadByteFromFile() throws IOException {
-        File image = new File("src/test/resources/jerrymouse.jpeg");
+        File image = new File("core/src/test/resources/jerrymouse.jpeg");
         byte[] bytes = FileUtils.readBytes(image);
         long length = image.length();
         assertEquals(length, bytes.length);
+    }
+
+
+    @Test
+    public void testReadByteFromJarFile() throws IOException {
+        byte[] resource = FileUtils.readFileFromJar(new File("build/sample.jar"), "index.html");
+        File html = new File("core/src/test/resources/index.html");
+        byte[] bytes = FileUtils.readBytes(html);
+        assertArrayEquals(bytes,resource);
     }
 }

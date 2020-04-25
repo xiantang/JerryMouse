@@ -1,8 +1,6 @@
 package info.xiantang.jerrymouse.core.utils;
 
 import info.xiantang.jerrymouse.core.conf.Configuration;
-import info.xiantang.jerrymouse.core.utils.FileUtils;
-import info.xiantang.jerrymouse.core.utils.JsonConfigReader;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +25,7 @@ public class JarResourceParser {
         }
         if (configEntry == null) return null;
         InputStream input = jarFile.getInputStream(configEntry);
-        String process = FileUtils.readFromStream(input);
+        String process = FileUtils.readStringFromStream(input);
         JsonConfigReader reader = new JsonConfigReader();
         return reader.parseStringAsConfiguration(process);
     }

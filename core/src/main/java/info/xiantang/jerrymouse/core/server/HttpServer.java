@@ -45,9 +45,10 @@ public class HttpServer implements LifeCycle {
         if (buildDir.isDirectory() && (files = buildDir.listFiles()) != null) {
             for (File file : files) {
                 Configuration configuration = parseConfigFromJar(file);
-                if(configuration == null) continue;
+                if (configuration == null) continue;
                 ServerSource serverSource = new ServerSource(file.getName(), configuration);
                 sources.add(serverSource);
+                System.out.println("加载jar包" + file.getName() + "中的资源");
             }
         }
     }
@@ -71,7 +72,6 @@ public class HttpServer implements LifeCycle {
     List<Context> getContexts() {
         return contexts;
     }
-
 
 
 }

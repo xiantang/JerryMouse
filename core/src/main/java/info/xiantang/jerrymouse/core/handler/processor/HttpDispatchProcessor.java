@@ -20,7 +20,7 @@ public class HttpDispatchProcessor implements Processor {
         Processor processor;
         boolean isStatic = StaticResourcesUtils.verifyPath(request.getPath());
         if (isStatic) {
-            processor = new HttpStaticResourcesProcessor();
+            processor = new HttpStaticResourcesProcessor(context);
         } else {
             processor = new HttpServletProcessor(context);
         }

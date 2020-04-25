@@ -49,7 +49,7 @@ public class Context implements LifeCycle {
                 .setPort(port)
                 .setHandlerClass(HttpHandler.class)
                 .setMainReactorName("MainReactor")
-                .setHandlerContext(HandlerContext.contextWithMapperAndClassLoader(mapper, webAppLoader))
+                .setHandlerContext(HandlerContext.contextWithMapperAndClassLoader(mapper, webAppLoader,jarName))
                 .setSubReactorCount(subReactorNum)
                 .build();
 
