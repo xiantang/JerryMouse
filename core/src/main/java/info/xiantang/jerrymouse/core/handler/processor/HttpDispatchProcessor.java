@@ -22,6 +22,8 @@ public class HttpDispatchProcessor implements Processor {
         } else {
             processor = new HttpServletProcessor(context);
         }
+        // inbound pipeline
         processor.process(request, response);
+        // outbound pipeline
     }
 }

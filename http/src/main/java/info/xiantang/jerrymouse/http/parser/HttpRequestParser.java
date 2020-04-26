@@ -2,6 +2,8 @@ package info.xiantang.jerrymouse.http.parser;
 
 import info.xiantang.jerrymouse.http.core.HttpRequest;
 import info.xiantang.jerrymouse.http.exception.RequestParseException;
+import info.xiantang.jerrymouse.http.session.Cookies;
+import info.xiantang.jerrymouse.http.utils.CookiesUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +30,7 @@ public class HttpRequestParser {
 
     /**
      * can parse GET/POST http request
+     *
      * @return
      * @throws RequestParseException
      */
@@ -114,6 +117,19 @@ public class HttpRequestParser {
             if (!parseHeader(headers) || currentIndex > rawRequest.length) break;
         }
         requestBuilder.setHeaders(headers);
+        // parse Cookie
+        parseCookie(headers);
+
+    }
+
+    private void parseCookie(Map<String, String> headers) {
+        String rawCookie = headers.get("cookie");
+        if (rawCookie != null) {
+            Cookies cookies = CookiesUtils.parse(rawCookie);
+            requestBuilder.setCookies(cookies);
+        }
+
+
     }
 
     private String parseBySpace() throws RequestParseException {

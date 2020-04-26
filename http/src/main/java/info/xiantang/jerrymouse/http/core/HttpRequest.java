@@ -1,7 +1,10 @@
 package info.xiantang.jerrymouse.http.core;
 
 import info.xiantang.jerrymouse.http.servlet.Request;
+import info.xiantang.jerrymouse.http.session.Cookies;
+import info.xiantang.jerrymouse.http.session.Session;
 import info.xiantang.jerrymouse.http.utils.EqualsUtils;
+import org.apache.http.cookie.Cookie;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,16 +17,20 @@ public class HttpRequest implements Request {
     private String method;
     private String version;
     private Map<String, String> headers;
+    private Cookies cookies;
+    private Session session;
 
 
-    public HttpRequest(String method, String version, Map<String, String> headers, String path, Map<String, String> parameters, String body) {
+    public HttpRequest(String method, String version, Map<String, String> headers, String path, Map<String, String> parameters, String body, Cookies cookies) {
         this.method = method;
         this.version = version;
         this.headers = headers;
         this.path = path;
         this.parameters = parameters;
         this.body = body;
+        this.cookies = cookies;
     }
+
 
     @Override
     public String getMethod() {
@@ -68,6 +75,23 @@ public class HttpRequest implements Request {
         return body;
     }
 
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    public Cookies getCookies() {
+        return cookies;
+    }
+
+    public void setCookies(Cookies cookies) {
+        this.cookies = cookies;
+    }
+
+
+    public void setSession(Session session) {
+        this.session = session;
+    }
+
     public static class Builder {
 
         private String method;
@@ -76,10 +100,11 @@ public class HttpRequest implements Request {
         private String path;
         private Map<String, String> parameters = new HashMap<>();
         private String body;
+        private Cookies cookies;
 
 
         public HttpRequest build() {
-            return new HttpRequest(method, httpVersion, headers, path, parameters, body);
+            return new HttpRequest(method, httpVersion, headers, path, parameters, body, cookies);
         }
 
         public Map<String, String> getHeaders() {
@@ -120,6 +145,11 @@ public class HttpRequest implements Request {
 
         public Builder setBody(String body) {
             this.body = body;
+            return this;
+        }
+
+        public Builder setCookies(Cookies cookies) {
+            this.cookies = cookies;
             return this;
         }
     }

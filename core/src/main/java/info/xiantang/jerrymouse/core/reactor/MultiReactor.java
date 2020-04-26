@@ -131,7 +131,6 @@ public class MultiReactor implements Runnable {
         private void newInstanceOfHandler(SocketChannel channel) throws Exception {
             Constructor<? extends BaseHandler> handler
                     = handlerClass.getConstructor(ServletContext.class);
-            // 负载均衡
             Reactor subReactor = subReactors[loadBalancingInteger.incrementAndGet() % subReactorCount];
             servletContext.setChannel(channel);
             servletContext.setReactor(subReactor);

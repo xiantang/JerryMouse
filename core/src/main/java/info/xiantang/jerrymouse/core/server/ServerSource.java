@@ -7,16 +7,16 @@ public class ServerSource {
     private final String jarName;
     private final Configuration config;
 
-    public ServerSource(String jarName, Configuration config) {
+    ServerSource(String jarName, Configuration config) {
         this.jarName = jarName;
         this.config = config;
     }
 
-    public String getJarName() {
+    String getJarName() {
         return jarName;
     }
 
-    public Configuration getConfig() {
+    Configuration getConfig() {
         return config;
     }
 

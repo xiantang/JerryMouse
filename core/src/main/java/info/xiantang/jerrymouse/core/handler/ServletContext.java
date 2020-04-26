@@ -2,12 +2,15 @@ package info.xiantang.jerrymouse.core.handler;
 
 import info.xiantang.jerrymouse.core.handler.processor.ContentTypeMapper;
 import info.xiantang.jerrymouse.core.loader.WebAppLoader;
+import info.xiantang.jerrymouse.core.pipeline.InBoundPipeline;
 import info.xiantang.jerrymouse.core.reactor.Reactor;
 import info.xiantang.jerrymouse.core.server.ServletWrapper;
+import info.xiantang.jerrymouse.http.session.Session;
 
 import java.io.File;
 import java.nio.channels.SocketChannel;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ServletContext {
 
@@ -15,9 +18,10 @@ public class ServletContext {
     private SocketChannel channel;
     private Map<String, ServletWrapper> mapper;
     private WebAppLoader loader;
-    private String jarName;
     private ContentTypeMapper contentTypeMapper;
     private final File jarFile;
+    private InBoundPipeline inBoundPipeline;
+    private Map<String, Session> sessionMap = new ConcurrentHashMap<>();
 
 
     public ServletContext(Reactor reactor, SocketChannel channel, Map<String, ServletWrapper> mapper, WebAppLoader loader, String jarName) {
@@ -25,7 +29,6 @@ public class ServletContext {
         this.channel = channel;
         this.mapper = mapper;
         this.loader = loader;
-        this.jarName = jarName;
         this.contentTypeMapper = new ContentTypeMapper();
         this.jarFile = new File("build/" + jarName);
     }
@@ -71,4 +74,15 @@ public class ServletContext {
         return contentTypeMapper;
     }
 
+    public void setInboundPipeline(InBoundPipeline inBoundPipeline) {
+        this.inBoundPipeline = inBoundPipeline;
+    }
+
+    public InBoundPipeline getInboundPipeline() {
+        return inBoundPipeline;
+    }
+
+    public Map<String, Session> getSessionMap() {
+        return sessionMap;
+    }
 }

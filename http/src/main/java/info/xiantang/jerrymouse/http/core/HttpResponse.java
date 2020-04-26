@@ -69,4 +69,8 @@ public class HttpResponse implements Response {
         bodyBuffer.limit(capacity);
         return Bytes.toArray(bytes);
     }
+
+    public String getHeader(String key) {
+        return this.headers.get(key);
+    }
 }
