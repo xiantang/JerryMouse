@@ -20,7 +20,7 @@ public abstract class BaseHandler implements Runnable {
     private static ExecutorService threadPool = Executors.newFixedThreadPool(CORE_NUM);
     final SocketChannel socketChannel;
     private final Selector selector;
-    private final HandlerContext context;
+    private final ServletContext context;
     SelectionKey sk;
     private ByteBuffer inputBuffer = ByteBuffer.allocate(BUFFER_MAX_IN);
     ByteBuffer outputBuffer = ByteBuffer.allocate(BUFFER_MAX_OUT);
@@ -34,7 +34,7 @@ public abstract class BaseHandler implements Runnable {
      * we will register channel to selector and  wakeup it
      * and attach the this object prepare to use.
      */
-    BaseHandler(HandlerContext context) {
+    BaseHandler(ServletContext context) {
         this.context = context;
         this.reactor = context.getReactor();
         this.socketChannel = context.getChannel();
@@ -47,7 +47,7 @@ public abstract class BaseHandler implements Runnable {
         return state;
     }
 
-    public HandlerContext getContext() {
+    public ServletContext getContext() {
         return context;
     }
 

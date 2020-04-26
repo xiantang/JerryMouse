@@ -1,7 +1,7 @@
 package info.xiantang.jerrymouse.core.reactor;
 
 import info.xiantang.jerrymouse.core.handler.CountBaseHandler;
-import info.xiantang.jerrymouse.core.handler.HandlerContext;
+import info.xiantang.jerrymouse.core.handler.ServletContext;
 import info.xiantang.jerrymouse.core.utils.NetUtils;
 import info.xiantang.jerrymouses2.client.NetWorkClient;
 import org.apache.http.util.ByteArrayBuffer;
@@ -55,7 +55,7 @@ public class MultiReactorTest {
 
     public static class InsureReactorHandler extends CountBaseHandler {
 
-        public InsureReactorHandler(HandlerContext context) {
+        public InsureReactorHandler(ServletContext context) {
             super(context);
         }
 

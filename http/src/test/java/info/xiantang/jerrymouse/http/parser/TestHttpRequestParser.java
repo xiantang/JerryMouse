@@ -21,7 +21,10 @@ public class TestHttpRequestParser {
                 "\r\n";
 
         HttpRequestParser parser = new HttpRequestParser(reqStr.getBytes(), requestBuilder);
-        HttpRequest httpRequest = parser.parse();
+        HttpRequest result = parser.parse();
+
+
+
         Map<String, String> headers = new HashMap<>();
         headers.put("Host", "localhost:9820");
         headers.put("Connection", "Keep-Alive");
@@ -34,7 +37,7 @@ public class TestHttpRequestParser {
                 .setHeaders(headers)
                 .setPath("/")
                 .build();
-        assertEquals(expect, httpRequest);
+        assertEquals(expect, result);
     }
 
 

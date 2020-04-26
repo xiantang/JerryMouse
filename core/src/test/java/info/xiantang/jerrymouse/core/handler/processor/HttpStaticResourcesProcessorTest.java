@@ -2,7 +2,7 @@ package info.xiantang.jerrymouse.core.handler.processor;
 
 import com.google.common.primitives.Bytes;
 import info.xiantang.jerrymouse.core.conf.Configuration;
-import info.xiantang.jerrymouse.core.handler.HandlerContext;
+import info.xiantang.jerrymouse.core.handler.ServletContext;
 import info.xiantang.jerrymouse.core.server.Context;
 import info.xiantang.jerrymouse.core.server.ServletWrapper;
 import info.xiantang.jerrymouse.core.utils.FileUtils;
@@ -31,8 +31,8 @@ public class HttpStaticResourcesProcessorTest {
 
     @Test
     public void testStaticResourcesProcessorCanHandle() throws Exception {
-        HandlerContext handlerContext = HandlerContext.contextWithMapperAndClassLoader(null,null,"sample.jar");
-        Processor processor = new HttpStaticResourcesProcessor(handlerContext);
+        ServletContext servletContext = ServletContext.contextWithMapperAndClassLoader(null,null,"sample.jar");
+        Processor processor = new HttpStaticResourcesProcessor(servletContext);
         HttpResponse response = new HttpResponse(ByteBuffer.allocate(1024));
         Map<String, String> headers = new HashMap<>();
         headers.put("Sec-Fetch-Dest", "image");
@@ -53,8 +53,8 @@ public class HttpStaticResourcesProcessorTest {
 
     @Test
     public void testStaticResourcesProcessJsFile() throws Exception {
-        HandlerContext handlerContext = HandlerContext.contextWithMapperAndClassLoader(null,null,"sample.jar");
-        Processor processor = new HttpStaticResourcesProcessor(handlerContext);
+        ServletContext servletContext = ServletContext.contextWithMapperAndClassLoader(null,null,"sample.jar");
+        Processor processor = new HttpStaticResourcesProcessor(servletContext);
         HttpResponse response = new HttpResponse(ByteBuffer.allocate(1024));
         Map<String, String> headers = new HashMap<>();
         headers.put("Sec-Fetch-Dest", "image");

@@ -25,6 +25,8 @@ public class EchoClient implements AutoCloseable {
     }
 
     public String sendReceive(String message) throws IOException {
+        System.out.println(message);
+
         os.writeBytes(message + "\n");
         os.flush();
         return is.readLine();

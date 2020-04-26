@@ -55,7 +55,7 @@ public class TestHttpHandler {
         MultiReactor reactor = MultiReactor.newBuilder()
                 .setPort(availablePort)
                 .setHandlerClass(HttpHandler.class)
-                .setHandlerContext(new HandlerContext(null, null, mapper, null, "sample.jar"))
+                .setServletContext(new ServletContext(null, null, mapper, null, "sample.jar"))
                 .setSubReactorCount(3)
                 .build();
         Thread reactorT = new Thread(reactor);

@@ -11,6 +11,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 public class ServerLifeCycleTest {
@@ -18,7 +21,11 @@ public class ServerLifeCycleTest {
     @Test(expected = HttpHostConnectException.class)
     public void testServerStartAndStop() throws Exception {
         int availablePort = NetUtils.getAvailablePort();
-        LifeCycle server = new FakeServer(availablePort);
+        int availablePort1 = NetUtils.getAvailablePort();
+        List<Integer> ports = new ArrayList<>();
+        ports.add(availablePort);
+        ports.add(availablePort1);
+        LifeCycle server = new FakeServer(ports);
         server.init();
         server.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();

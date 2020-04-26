@@ -10,6 +10,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>sample</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>sample-static-resource</module>
+        <module>sample-user</module>
+    </modules>
     <dependencies>
         <dependency>
             <groupId>info.xiantang</groupId>

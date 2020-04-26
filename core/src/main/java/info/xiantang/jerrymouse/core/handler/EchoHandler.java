@@ -19,7 +19,7 @@ public class EchoHandler extends BaseHandler {
      *
      * @param context
      */
-    public EchoHandler(HandlerContext context) {
+    public EchoHandler(ServletContext context) {
         super(context);
     }
 

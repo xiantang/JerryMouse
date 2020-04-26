@@ -12,7 +12,7 @@ import static info.xiantang.jerrymouse.core.reactor.Constants.SENDING;
 public class CountBaseHandler extends BaseHandler {
 
 
-    public CountBaseHandler(HandlerContext context) {
+    public CountBaseHandler(ServletContext context) {
         super(context);
     }
     @Override

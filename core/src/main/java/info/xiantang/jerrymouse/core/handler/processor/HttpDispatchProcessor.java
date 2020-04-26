@@ -1,17 +1,15 @@
 package info.xiantang.jerrymouse.core.handler.processor;
 
-import info.xiantang.jerrymouse.core.handler.HandlerContext;
+import info.xiantang.jerrymouse.core.handler.ServletContext;
 import info.xiantang.jerrymouse.core.utils.StaticResourcesUtils;
 import info.xiantang.jerrymouse.http.core.HttpRequest;
 import info.xiantang.jerrymouse.http.core.HttpResponse;
 
-import java.util.Map;
-
 public class HttpDispatchProcessor implements Processor {
-    private HandlerContext context;
+    private ServletContext context;
 
 
-    public HttpDispatchProcessor(HandlerContext context) {
+    public HttpDispatchProcessor(ServletContext context) {
         this.context = context;
     }
 

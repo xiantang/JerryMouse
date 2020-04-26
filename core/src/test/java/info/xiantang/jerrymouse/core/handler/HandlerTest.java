@@ -80,7 +80,7 @@ public class HandlerTest {
 
     public static class SleepyHandler extends CountBaseHandler {
 
-        public SleepyHandler(HandlerContext context) {
+        public SleepyHandler(ServletContext context) {
             super(context);
         }
 

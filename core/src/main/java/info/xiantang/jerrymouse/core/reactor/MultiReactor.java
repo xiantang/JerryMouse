@@ -2,7 +2,7 @@ package info.xiantang.jerrymouse.core.reactor;
 
 import info.xiantang.jerrymouse.core.event.Event;
 import info.xiantang.jerrymouse.core.handler.BaseHandler;
-import info.xiantang.jerrymouse.core.handler.HandlerContext;
+import info.xiantang.jerrymouse.core.handler.ServletContext;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -22,14 +22,14 @@ public class MultiReactor implements Runnable {
     private Reactor[] subReactors;
     private Reactor mainReactor;
     private AtomicInteger loadBalancingInteger = new AtomicInteger();
-    private HandlerContext handlerContext;
+    private ServletContext servletContext;
 
-    private MultiReactor(String mainReactorName, int port, Class<? extends BaseHandler> handlerClass, int subReactorCount, HandlerContext context) throws IOException {
+    private MultiReactor(String mainReactorName, int port, Class<? extends BaseHandler> handlerClass, int subReactorCount, ServletContext context) throws IOException {
         this.subReactorCount = subReactorCount;
         this.mainReactor = new MainReactorImpl(mainReactorName, port, handlerClass);
         this.subReactors = new Reactor[subReactorCount];
         this.loadBalancingInteger.set(1);
-        this.handlerContext = context == null ? HandlerContext.emptyContext() : context;
+        this.servletContext = context == null ? ServletContext.emptyContext() : context;
         for (int i = 0; i < subReactorCount; i++) {
             this.subReactors[i] = new SubReactorImpl("subReactor-" + i, Selector.open());
         }
@@ -61,7 +61,7 @@ public class MultiReactor implements Runnable {
         private Class<? extends BaseHandler> handlerClass;
         private String mainReactorName = "DefaultMainReactor";
         private int subReactorCount;
-        private HandlerContext handlerContext;
+        private ServletContext servletContext;
 
         public Builder setPort(int port) {
             this.port = port;
@@ -79,7 +79,7 @@ public class MultiReactor implements Runnable {
         }
 
         public MultiReactor build() throws IOException {
-            return new MultiReactor(mainReactorName, port, handlerClass, subReactorCount, handlerContext);
+            return new MultiReactor(mainReactorName, port, handlerClass, subReactorCount, servletContext);
         }
 
 
@@ -88,8 +88,8 @@ public class MultiReactor implements Runnable {
             return this;
         }
 
-        public Builder setHandlerContext(HandlerContext handlerContext) {
-            this.handlerContext = handlerContext;
+        public Builder setServletContext(ServletContext servletContext) {
+            this.servletContext = servletContext;
             return this;
         }
     }
@@ -130,11 +130,12 @@ public class MultiReactor implements Runnable {
 
         private void newInstanceOfHandler(SocketChannel channel) throws Exception {
             Constructor<? extends BaseHandler> handler
-                    = handlerClass.getConstructor(HandlerContext.class);
+                    = handlerClass.getConstructor(ServletContext.class);
+            // 负载均衡
             Reactor subReactor = subReactors[loadBalancingInteger.incrementAndGet() % subReactorCount];
-            handlerContext.setChannel(channel);
-            handlerContext.setReactor(subReactor);
-            handler.newInstance(handlerContext);
+            servletContext.setChannel(channel);
+            servletContext.setReactor(subReactor);
+            handler.newInstance(servletContext);
         }
     }
 

@@ -1,7 +1,7 @@
 package info.xiantang.jerrymouse.core.server;
 
 import info.xiantang.jerrymouse.core.conf.Configuration;
-import info.xiantang.jerrymouse.core.handler.HandlerContext;
+import info.xiantang.jerrymouse.core.handler.ServletContext;
 import info.xiantang.jerrymouse.core.handler.HttpHandler;
 import info.xiantang.jerrymouse.core.lifecycle.LifeCycle;
 import info.xiantang.jerrymouse.core.loader.JarClassLoader;
@@ -49,7 +49,7 @@ public class Context implements LifeCycle {
                 .setPort(port)
                 .setHandlerClass(HttpHandler.class)
                 .setMainReactorName("MainReactor")
-                .setHandlerContext(HandlerContext.contextWithMapperAndClassLoader(mapper, webAppLoader,jarName))
+                .setServletContext(ServletContext.contextWithMapperAndClassLoader(mapper, webAppLoader,jarName))
                 .setSubReactorCount(subReactorNum)
                 .build();
 

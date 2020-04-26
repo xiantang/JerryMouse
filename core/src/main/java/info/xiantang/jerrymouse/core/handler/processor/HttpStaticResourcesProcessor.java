@@ -1,19 +1,18 @@
 package info.xiantang.jerrymouse.core.handler.processor;
 
-import info.xiantang.jerrymouse.core.handler.HandlerContext;
+import info.xiantang.jerrymouse.core.handler.ServletContext;
 import info.xiantang.jerrymouse.core.utils.FileUtils;
 import info.xiantang.jerrymouse.http.core.HttpRequest;
 import info.xiantang.jerrymouse.http.core.HttpResponse;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 public class HttpStaticResourcesProcessor implements Processor {
 
-    private HandlerContext context;
+    private ServletContext context;
 
-    HttpStaticResourcesProcessor(HandlerContext context) {
+    HttpStaticResourcesProcessor(ServletContext context) {
 
         this.context = context;
     }

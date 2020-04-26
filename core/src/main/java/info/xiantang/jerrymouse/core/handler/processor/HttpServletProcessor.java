@@ -1,6 +1,6 @@
 package info.xiantang.jerrymouse.core.handler.processor;
 
-import info.xiantang.jerrymouse.core.handler.HandlerContext;
+import info.xiantang.jerrymouse.core.handler.ServletContext;
 import info.xiantang.jerrymouse.core.loader.WebAppLoader;
 import info.xiantang.jerrymouse.core.server.ServletWrapper;
 import info.xiantang.jerrymouse.core.server.impl.NotFoundServlet;
@@ -14,9 +14,9 @@ import java.util.Map;
 import static info.xiantang.jerrymouse.core.utils.CastUtils.cast;
 
 public class HttpServletProcessor implements Processor{
-    private HandlerContext context;
+    private ServletContext context;
 
-    HttpServletProcessor(HandlerContext context) {
+    HttpServletProcessor(ServletContext context) {
         this.context = context;
     }
 

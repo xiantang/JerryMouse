@@ -7,7 +7,6 @@ import info.xiantang.jerrymouse.http.parser.HttpRequestParser;
 import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.EOFException;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import static info.xiantang.jerrymouse.core.reactor.Constants.CLOSED;
@@ -21,7 +20,7 @@ public class HttpHandler extends BaseHandler {
      *
      * @param context
      */
-    public HttpHandler(HandlerContext context) {
+    public HttpHandler(ServletContext context) {
         super(context);
     }
 

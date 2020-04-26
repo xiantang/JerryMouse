@@ -1,6 +1,7 @@
 package info.xiantang.jerrymouse.core.server;
 
 import info.xiantang.jerrymouse.core.conf.Configuration;
+import info.xiantang.jerrymouse.core.lifecycle.LifeCycle;
 import info.xiantang.jerrymouse.core.utils.NetUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -29,30 +30,32 @@ public class HttpServerTest {
         ServletWrapper wrapper1 = new ServletWrapper(
                 "index",
                 "/",
-                "info.xiantang.jerrymouse.sample.IndexServlet",
+                "info.xiantang.jerrymouse.staticresource.IndexServlet",
                 0,
                 null,
                 null);
         ServletWrapper wrapper2 = new ServletWrapper(
                 "hello",
                 "/hello",
-                "info.xiantang.jerrymouse.sample.HelloServlet",
+                "info.xiantang.jerrymouse.staticresource.HelloServlet",
                 null,
                 null,
                 null);
         router.put("/", wrapper1);
         router.put("/hello", wrapper2);
-        List<ServerSource> expect = new ArrayList<>();
         Configuration config = new Configuration(9000, 3, router);
-        expect.add(new ServerSource("sample.jar",config));
-        assertEquals(expect, sources);
+        assertEquals(new ServerSource("sample.jar",config), sources.get(0));
     }
 
 
     @Test
     public void httpServerCanInitContext() throws Exception {
         int availablePort = NetUtils.getAvailablePort();
-        FakeServer httpSever = new FakeServer(availablePort);
+        int availablePort1 = NetUtils.getAvailablePort();
+        List<Integer> ports = new ArrayList<>();
+        ports.add(availablePort);
+        ports.add(availablePort1);
+        FakeServer httpSever = new FakeServer(ports);
         httpSever.loadSources();
         httpSever.loadContexts();
         List<Context> contexts = httpSever.getContexts();
@@ -65,7 +68,12 @@ public class HttpServerTest {
     @Test
     public void httpServerCanHandleServletWhichLoadOnBootStrap() throws Exception {
         int availablePort = NetUtils.getAvailablePort();
-        FakeServer httpSever = new FakeServer(availablePort);
+        int availablePort1 = NetUtils.getAvailablePort();
+        List<Integer> ports = new ArrayList<>();
+        ports.add(availablePort);
+        ports.add(availablePort1);
+        FakeServer httpSever = new FakeServer(ports);
+        System.out.println(availablePort);
         httpSever.init();
         httpSever.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -80,7 +88,11 @@ public class HttpServerTest {
     @Test
     public void httpServerCanHandleServletWhichNotLoadOnBootStrap() throws Exception {
         int availablePort = NetUtils.getAvailablePort();
-        FakeServer httpSever = new FakeServer(availablePort);
+        int availablePort1 = NetUtils.getAvailablePort();
+        List<Integer> ports = new ArrayList<>();
+        ports.add(availablePort);
+        ports.add(availablePort1);
+        FakeServer httpSever = new FakeServer(ports);
         httpSever.init();
         httpSever.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();
@@ -95,7 +107,11 @@ public class HttpServerTest {
     @Test
     public void httpServerCanHandleServletWithIsNotFind() throws Exception {
         int availablePort = NetUtils.getAvailablePort();
-        FakeServer httpSever = new FakeServer(availablePort);
+        int availablePort1 = NetUtils.getAvailablePort();
+        List<Integer> ports = new ArrayList<>();
+        ports.add(availablePort);
+        ports.add(availablePort1);
+        FakeServer httpSever = new FakeServer(ports);
         httpSever.init();
         httpSever.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();

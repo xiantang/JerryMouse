@@ -49,6 +49,9 @@ public class HttpResponse implements Response {
             headersBuilder.append("\r\n");
         }
         headersBuilder.append("\r\n");
+        outputBuffer.clear();
+        int capacity = outputBuffer.capacity();
+        outputBuffer.limit(capacity);
         outputBuffer.put(headLine.getBytes());
         outputBuffer.put(headersBuilder.toString().getBytes());
         bodyBuffer.flip();

@@ -1,0 +1,17 @@
+{
+  "port": 9000,
+  "subReactorCount": 3,
+  "router": [
+    {
+      "servlet-name": "index",
+      "path": "/",
+      "servlet-class": "info.xiantang.jerrymouse.staticresource.IndexServlet",
+      "load-on-startup": 0
+    },
+    {
+      "servlet-name": "hello",
+      "path": "/hello",
+      "servlet-class": "info.xiantang.jerrymouse.staticresource.HelloServlet"
+    }
+  ]
+}

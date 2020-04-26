@@ -25,10 +25,17 @@ public class HttpRequest implements Request {
         this.body = body;
     }
 
+    @Override
+    public String getMethod() {
+        return method;
+    }
+
+    @Override
     public Map<String, String> getHeaders() {
         return headers;
     }
 
+    @Override
     public String getPath() {
         return path;
     }

@@ -1,0 +1,12 @@
+{
+  "port": 9001,
+  "subReactorCount": 3,
+  "router": [
+    {
+      "servlet-name": "index",
+      "path": "/",
+      "servlet-class": "info.xiantang.jerrymouse.user.LoginServlet",
+      "load-on-startup": 0
+    }
+  ]
+}
