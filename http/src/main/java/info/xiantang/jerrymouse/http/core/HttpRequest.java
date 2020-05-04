@@ -4,7 +4,6 @@ import info.xiantang.jerrymouse.http.servlet.Request;
 import info.xiantang.jerrymouse.http.session.Cookies;
 import info.xiantang.jerrymouse.http.session.Session;
 import info.xiantang.jerrymouse.http.utils.EqualsUtils;
-import org.apache.http.cookie.Cookie;
 
 import java.util.HashMap;
 import java.util.Map;
