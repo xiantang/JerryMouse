@@ -15,7 +15,7 @@ public class FileScannerTest {
     public void testFileScan() throws Exception {
 
         File file = new File("build");
-        FileScanner fileScanner = new FileScanner(file);
+        FileScanner fileScanner = new FileScanner(file,10);
         AtomicInteger counter = new AtomicInteger();
         counter.getAndSet(0);
         Listener listener = event -> counter.getAndIncrement();

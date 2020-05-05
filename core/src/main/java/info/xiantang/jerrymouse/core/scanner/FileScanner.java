@@ -8,13 +8,19 @@ import java.util.concurrent.TimeUnit;
 
 public class FileScanner implements Runnable{
     private File buildRoot;
+    private int interval;
     private List<Listener> listeners = new LinkedList<>();
     private List<File> preFiles = new ArrayList<>();
 
 
-    public FileScanner(File buildRoot) {
+    public FileScanner(File buildRoot,int interval) {
         this.buildRoot = buildRoot;
+        this.interval = interval;
         init();
+    }
+
+    public FileScanner(File buildRoot) {
+        this(buildRoot, 500);
     }
 
     private void init() {
@@ -49,7 +55,7 @@ public class FileScanner implements Runnable{
     public void run() {
         while (true) {
             try {
-                TimeUnit.MILLISECONDS.sleep(10);
+                TimeUnit.MILLISECONDS.sleep(interval);
                 List<File> newestFiles = findNewestFiles();
                 if (!newestFiles.equals(preFiles)) {
                     for (Listener listener : listeners) {
