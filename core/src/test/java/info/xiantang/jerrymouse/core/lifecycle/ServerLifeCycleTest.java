@@ -29,7 +29,7 @@ public class ServerLifeCycleTest {
         server.init();
         server.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet("http://localhost:" + availablePort + "/");
+        HttpGet httpget = new HttpGet("http://localhost:" + availablePort1 + "/");
         CloseableHttpResponse response = httpclient.execute(httpget);
         HttpEntity entity = response.getEntity();
         String responseStr = EntityUtils.toString(entity);

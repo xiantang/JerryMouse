@@ -20,7 +20,7 @@ public abstract class InBoundPipeline implements Pipeline{
         return context;
     }
 
-    void setNext(Pipeline nextPipeline) {
+    public void setNext(Pipeline nextPipeline) {
         next = nextPipeline;
     }
 

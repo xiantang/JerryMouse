@@ -29,7 +29,7 @@ public class TestSampleEchoServer {
             sb.append(echoClient.sendReceive("HELO" + i));
             TimeUnit.MILLISECONDS.sleep(50);
         }
-        echoClient.sendReceive(""+(char) (3));
+        echoClient.send(""+(char) (3));
         assertEquals("HELO0reactor> HELO1reactor> HELO2", sb.toString());
     }
 }

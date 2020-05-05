@@ -22,7 +22,7 @@ public class FileUtilsTest {
     @Test
     public void testReadByteFromJarFile() throws IOException {
         byte[] resource = FileUtils.readFileFromJar(new File("build/sample.jar"), "index.html");
-        File html = new File("core/src/test/resources/index.html");
+        File html = new File("sample/sample-static-resource/src/main/resources/index.html");
         byte[] bytes = FileUtils.readBytes(html);
         assertArrayEquals(bytes,resource);
     }

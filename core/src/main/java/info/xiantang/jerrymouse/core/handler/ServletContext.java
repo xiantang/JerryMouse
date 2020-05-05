@@ -3,6 +3,8 @@ package info.xiantang.jerrymouse.core.handler;
 import info.xiantang.jerrymouse.core.handler.processor.ContentTypeMapper;
 import info.xiantang.jerrymouse.core.loader.WebAppLoader;
 import info.xiantang.jerrymouse.core.pipeline.InBoundPipeline;
+import info.xiantang.jerrymouse.core.pipeline.RootInBoundPipeline;
+import info.xiantang.jerrymouse.core.pipeline.SessionInBoundPipeline;
 import info.xiantang.jerrymouse.core.reactor.Reactor;
 import info.xiantang.jerrymouse.core.server.ServletWrapper;
 import info.xiantang.jerrymouse.http.session.Session;
@@ -31,6 +33,14 @@ public class ServletContext {
         this.loader = loader;
         this.contentTypeMapper = new ContentTypeMapper();
         this.jarFile = new File("build/" + jarName);
+        init();
+    }
+
+    private void init() {
+        InBoundPipeline rootInBoundPipeline = new RootInBoundPipeline(this);
+        InBoundPipeline sessionInBoundPipeline = new SessionInBoundPipeline(this);
+        rootInBoundPipeline.setNext(sessionInBoundPipeline);
+        setInboundPipeline(rootInBoundPipeline);
     }
 
     public static ServletContext emptyContext() {

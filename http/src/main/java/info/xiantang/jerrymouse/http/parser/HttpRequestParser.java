@@ -123,7 +123,7 @@ public class HttpRequestParser {
     }
 
     private void parseCookie(Map<String, String> headers) {
-        String rawCookie = headers.get("cookie");
+        String rawCookie = headers.get("Cookie");
         if (rawCookie != null) {
             Cookies cookies = CookiesUtils.parse(rawCookie);
             requestBuilder.setCookies(cookies);

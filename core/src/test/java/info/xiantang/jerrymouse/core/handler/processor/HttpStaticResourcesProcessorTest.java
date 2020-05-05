@@ -69,7 +69,7 @@ public class HttpStaticResourcesProcessorTest {
                 .build();
         processor.process(request,response);
         byte[] actual = response.getBodyBytes();
-        assertEquals(92555, actual.length);
+        assertEquals(92554, actual.length);
     }
 
 

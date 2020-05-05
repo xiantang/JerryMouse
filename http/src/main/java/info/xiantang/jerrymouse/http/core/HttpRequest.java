@@ -74,6 +74,11 @@ public class HttpRequest implements Request {
         return body;
     }
 
+    @Override
+    public Session getSession() {
+        return session;
+    }
+
     public void setMethod(String method) {
         this.method = method;
     }

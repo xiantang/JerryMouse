@@ -14,7 +14,7 @@ import java.util.UUID;
  * @Date: 2020/4/26 23:16
  */
 public class SessionInBoundPipeline extends InBoundPipeline {
-    SessionInBoundPipeline(ServletContext context) {
+    public SessionInBoundPipeline(ServletContext context) {
         super(context);
     }
 
@@ -29,12 +29,12 @@ public class SessionInBoundPipeline extends InBoundPipeline {
         }
         String sessionId = cookies.get("SESSION_ID");
         Session session;
-        if (sessionId != null) {
-            session = sessionMap.get(sessionId);
-        } else {
+        if (sessionId == null || sessionMap.get(sessionId) == null) {
             sessionId = UUID.randomUUID().toString();
             session = new Session(sessionId);
             response.addHeader("Set-Cookie", "SESSION_ID="+sessionId);
+        } else {
+            session = sessionMap.get(sessionId);
         }
         sessionMap.put(sessionId, session);
         request.setSession(session);

@@ -44,7 +44,7 @@ public class HttpServerTest {
         router.put("/", wrapper1);
         router.put("/hello", wrapper2);
         Configuration config = new Configuration(9000, 3, router);
-        assertEquals(new ServerSource("sample.jar",config), sources.get(0));
+        assertEquals(new ServerSource("sample.jar",config), sources.get(1));
     }
 
 
@@ -61,7 +61,6 @@ public class HttpServerTest {
         List<Context> contexts = httpSever.getContexts();
         Context actual = contexts.get(0);
         assertNotNull(actual.getMapper().get("/").getServletClass());
-        assertNull(actual.getMapper().get("/hello").getServletClass());
 
     }
 
@@ -77,7 +76,7 @@ public class HttpServerTest {
         httpSever.init();
         httpSever.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet("http://localhost:" + availablePort + "/");
+        HttpGet httpget = new HttpGet("http://localhost:" + availablePort1 + "/");
         CloseableHttpResponse response = httpclient.execute(httpget);
         HttpEntity entity = response.getEntity();
         String responseStr = EntityUtils.toString(entity);
@@ -96,7 +95,7 @@ public class HttpServerTest {
         httpSever.init();
         httpSever.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet("http://localhost:" + availablePort + "/hello");
+        HttpGet httpget = new HttpGet("http://localhost:" + availablePort1 + "/hello");
         CloseableHttpResponse response = httpclient.execute(httpget);
         HttpEntity entity = response.getEntity();
         String responseStr = EntityUtils.toString(entity);
