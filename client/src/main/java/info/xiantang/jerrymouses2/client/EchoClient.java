@@ -31,9 +31,7 @@ public class EchoClient implements AutoCloseable {
     }
 
     public void send(String message) throws IOException {
-
         System.out.println(message);
-
         os.writeBytes(message + "\n");
         os.flush();
     }

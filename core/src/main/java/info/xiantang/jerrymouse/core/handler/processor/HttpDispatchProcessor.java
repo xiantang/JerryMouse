@@ -9,7 +9,6 @@ import info.xiantang.jerrymouse.http.core.HttpResponse;
 public class HttpDispatchProcessor implements Processor {
     private ServletContext context;
 
-
     public HttpDispatchProcessor(ServletContext context) {
         this.context = context;
     }

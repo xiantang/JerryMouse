@@ -73,7 +73,40 @@ public class LoginServlet implements Servlet {
             responseOutputStream.write(resource.getBytes());
         } else {
             User user1 = (User) user;
-            responseOutputStream.write(user1.getName().getBytes());
+            String resource = "<!DOCTYPE html>\n" +
+                    "<html lang=\"en\" class=\"no-js\">\n" +
+                    "<head>\n" +
+                    "<meta charset=\"UTF-8\" />\n" +
+                    "<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"> \n" +
+                    "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> \n" +
+                    "<title>login</title>\n" +
+                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/normalize.css\" />\n" +
+                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/demo.css\" />\n" +
+                    "<!--必要样式-->\n" +
+                    "<link rel=\"stylesheet\" type=\"text/css\" href=\"css/component.css\" />\n" +
+                    "<!--[if IE]>\n" +
+                    "<script src=\"js/html5.js\"></script>\n" +
+                    "<![endif]-->\n" +
+                    "</head>\n" +
+                    "<body>\n" +
+                    "\t\t<div class=\"container demo-1\">\n" +
+                    "\t\t\t<div class=\"content\">\n" +
+                    "\t\t\t\t<div id=\"large-header\" class=\"large-header\">\n" +
+                    "\t\t\t\t\t<canvas id=\"demo-canvas\"></canvas>\n" +
+                    "\t\t\t\t\t<div class=\"logo_box\">\n" +
+                    "\t\t\t\t\t\t<h3>" + user1.getName() + "欢迎你</h3>\n" +
+                    "\t\t\t\t\n" +
+                    "\t\t\t\t\t</div>\n" +
+                    "\t\t\t\t</div>\n" +
+                    "\t\t\t</div>\n" +
+                    "\t\t</div><!-- /container -->\n" +
+                    "\t\t<script src=\"js/TweenLite.min.js\"></script>\n" +
+                    "\t\t<script src=\"js/EasePack.min.js\"></script>\n" +
+                    "\t\t<script src=\"js/rAF.js\"></script>\n" +
+                    "\t\t<script src=\"js/demo-1.js\"></script>\n" +
+                    "\t</body>\n" +
+                    "</html>";
+            responseOutputStream.write(resource.getBytes());
         }
 
 
