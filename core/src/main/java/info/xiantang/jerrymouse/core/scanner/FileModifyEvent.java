@@ -4,7 +4,7 @@ package info.xiantang.jerrymouse.core.scanner;
 import java.io.File;
 import java.util.List;
 
-public class FileModifyEvent extends Event {
+public class FileModifyEvent implements Event {
     private List<File> preModifyFiles;
     private List<File> currentModifyFiles;
 
@@ -13,11 +13,4 @@ public class FileModifyEvent extends Event {
         this.currentModifyFiles = currentModifyFiles;
     }
 
-    public List<File> getCurrentModifyFiles() {
-        return currentModifyFiles;
-    }
-
-    public List<File> getPreModifyFiles() {
-        return preModifyFiles;
-    }
 }

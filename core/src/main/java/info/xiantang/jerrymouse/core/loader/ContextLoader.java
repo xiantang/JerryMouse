@@ -2,6 +2,7 @@ package info.xiantang.jerrymouse.core.loader;
 
 import info.xiantang.jerrymouse.core.conf.Configuration;
 import info.xiantang.jerrymouse.core.server.Context;
+import info.xiantang.jerrymouse.core.server.HttpServer;
 import info.xiantang.jerrymouse.core.server.ServerSource;
 
 import java.io.File;
@@ -15,11 +16,13 @@ public class ContextLoader {
 
     private String rootPath = System.getProperty("user.dir");
     private String jarPath;
+    private HttpServer httpServer;
     List<ServerSource> sources = new ArrayList<>();
     List<Context> contexts = new ArrayList<>();
 
-    public ContextLoader(String buildPath) {
+    public ContextLoader(String buildPath, HttpServer httpServer) {
         jarPath = rootPath + buildPath;
+        this.httpServer = httpServer;
     }
 
     public List<ServerSource> getSources() {
@@ -33,6 +36,8 @@ public class ContextLoader {
     public void load() throws Exception {
         loadSources();
         loadContexts();
+        httpServer.setSources(sources);
+        httpServer.setContexts(contexts);
     }
 
     void loadSources() throws IOException {
@@ -58,4 +63,20 @@ public class ContextLoader {
         }
     }
 
+    private void clear() throws IOException {
+        httpServer.clear();
+    }
+
+    private void start() throws Exception {
+        for (Context context : contexts) {
+            context.init();
+            context.start();
+        }
+    }
+
+    public void reload() throws Exception {
+        clear();
+        load();
+        start();
+    }
 }

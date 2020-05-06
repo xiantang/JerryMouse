@@ -1,26 +1,25 @@
 package info.xiantang.jerrymouse.core.scanner;
 
+import info.xiantang.jerrymouse.core.loader.ContextLoader;
+import info.xiantang.jerrymouse.core.scanner.listener.Listener;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class FileScanner implements Runnable{
+public class FileScanner implements Runnable {
     private final File buildRoot;
     private final int interval;
     private final List<Listener> listeners = new LinkedList<>();
     private List<File> preFiles = new ArrayList<>();
 
 
-    public FileScanner(File buildRoot,int interval) {
+    public FileScanner(File buildRoot, int interval) {
         this.buildRoot = buildRoot;
         this.interval = interval;
         init();
-    }
-
-    public FileScanner(File buildRoot) {
-        this(buildRoot, 500);
     }
 
     private void init() {
@@ -33,7 +32,7 @@ public class FileScanner implements Runnable{
 
     private List<File> findNewestFiles() {
         List<File> files = new LinkedList<>();
-        getAllFileInDir(buildRoot,files);
+        getAllFileInDir(buildRoot, files);
         return files;
     }
 
@@ -63,7 +62,7 @@ public class FileScanner implements Runnable{
                         preFiles = newestFiles;
                     }
                 }
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

@@ -7,6 +7,11 @@
       "path": "/",
       "servlet-class": "info.xiantang.jerrymouse.user.LoginServlet",
       "load-on-startup": 0
+    },
+    {
+      "servlet-name": "test",
+      "path": "/test",
+      "servlet-class": "info.xiantang.jerrymouse.user.TestServlet"
     }
   ]
 }

@@ -94,7 +94,7 @@ public class LoginServlet implements Servlet {
                     "\t\t\t\t<div id=\"large-header\" class=\"large-header\">\n" +
                     "\t\t\t\t\t<canvas id=\"demo-canvas\"></canvas>\n" +
                     "\t\t\t\t\t<div class=\"logo_box\">\n" +
-                    "\t\t\t\t\t\t<h3>" + user1.getName() + "欢迎你</h3>\n" +
+                    "\t\t\t\t\t\t<h3>" + user1.getName() + "欢迎你!</h3>\n" +
                     "\t\t\t\t\n" +
                     "\t\t\t\t\t</div>\n" +
                     "\t\t\t\t</div>\n" +

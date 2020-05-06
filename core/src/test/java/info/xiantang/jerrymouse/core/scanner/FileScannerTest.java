@@ -1,10 +1,16 @@
 package info.xiantang.jerrymouse.core.scanner;
 
+import info.xiantang.jerrymouse.core.scanner.listener.Listener;
+import info.xiantang.jerrymouse.core.server.Context;
+import info.xiantang.jerrymouse.core.server.HttpServer;
 import info.xiantang.jerrymouse.core.utils.FileUtils;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -31,5 +37,19 @@ public class FileScannerTest {
         assertEquals(2,counter.get());
     }
 
+
+    @Test
+    public void testFileReplace() throws Exception {
+        HttpServer httpServer = new HttpServer();
+        httpServer.start();
+        TimeUnit.MILLISECONDS.sleep(500);
+        File from = new File("build/sample-user.jar");
+        File to = new File("tmp/sample-user.jar");
+        Files.move(from.toPath(), to.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        TimeUnit.MILLISECONDS.sleep(500);
+        List<Context> contexts = httpServer.getContexts();
+        Files.move(to.toPath(),from.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        assertEquals(1, contexts.size());
+    }
 
 }
