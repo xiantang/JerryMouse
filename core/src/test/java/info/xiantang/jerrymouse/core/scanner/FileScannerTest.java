@@ -13,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class FileScannerTest {
     @Test
     public void testFileScan() throws Exception {
-
         File file = new File("build");
         FileScanner fileScanner = new FileScanner(file,10);
         AtomicInteger counter = new AtomicInteger();
@@ -30,8 +29,6 @@ public class FileScannerTest {
         FileUtils.deleteDir(new File("build/test.txt"));
         TimeUnit.MILLISECONDS.sleep(50);
         assertEquals(2,counter.get());
-
-
     }
 
 

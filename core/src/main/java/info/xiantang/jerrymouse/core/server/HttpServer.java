@@ -1,34 +1,38 @@
 package info.xiantang.jerrymouse.core.server;
 
-import info.xiantang.jerrymouse.core.conf.Configuration;
 import info.xiantang.jerrymouse.core.lifecycle.LifeCycle;
+import info.xiantang.jerrymouse.core.loader.ContextLoader;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static info.xiantang.jerrymouse.core.utils.JarResourceParser.parseConfigFromJar;
-
 public class HttpServer implements LifeCycle {
+    private List<Context> contexts;
+    private List<ServerSource> sources;
+    ContextLoader contextLoader;
 
-    List<ServerSource> sources = new ArrayList<>();
-    List<Context> contexts = new ArrayList<>();
-    private String rootPath = System.getProperty("user.dir");
-    private String jarPath = rootPath + "/build";
+    public HttpServer() throws Exception {
+        this("/build");
+    }
 
-
-    @Override
-    public void init() throws Exception {
-        loadSources();
-        loadContexts();
+    public HttpServer(String buildPath) throws Exception {
+        contextLoader = new ContextLoader(buildPath);
+        init();
     }
 
     @Override
-    public void start() {
+    public void init() throws Exception {
+        contextLoader.load();
+        contexts = contextLoader.getContexts();
+        sources = contextLoader.getSources();
+    }
+
+    @Override
+    public void start() throws Exception {
         for (Context context : contexts) {
+            context.init();
             context.start();
+
         }
     }
 
@@ -39,38 +43,14 @@ public class HttpServer implements LifeCycle {
         }
     }
 
-    void loadSources() throws IOException {
-        File buildDir = new File(jarPath);
-        File[] files;
-        if (buildDir.isDirectory() && (files = buildDir.listFiles()) != null) {
-            for (File file : files) {
-                Configuration configuration = parseConfigFromJar(file);
-                if (configuration == null) continue;
-                ServerSource serverSource = new ServerSource(file.getName(), configuration);
-                sources.add(serverSource);
-                System.out.println("加载jar包" + file.getName() + "中的资源");
-            }
-        }
-    }
-
-    void loadContexts() throws Exception {
-        for (ServerSource serverSource : sources) {
-            Configuration config = serverSource.getConfig();
-            String jarName = serverSource.getJarName();
-            Context context = new Context(jarName, config);
-            context.init();
-            contexts.add(context);
-        }
-    }
-
 
     List<ServerSource> getServerSources() {
         return Collections.unmodifiableList(sources);
     }
 
 
-    List<Context> getContexts() {
-        return contexts;
+    public List<Context> getContexts() {
+        return contextLoader.getContexts();
     }
 
 

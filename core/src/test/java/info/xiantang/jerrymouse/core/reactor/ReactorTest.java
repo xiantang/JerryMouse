@@ -5,14 +5,11 @@ import info.xiantang.jerrymouses2.client.NetWorkClient;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
 
 public class ReactorTest {
-
-
     @Test
     public void canAcceptRequests() throws IOException {
         MultiReactor reactor = MultiReactor.newBuilder()

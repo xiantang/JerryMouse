@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Map;
 
 public class Context implements LifeCycle {
+    private final int subReactorNum;
     private int port;
     private Map<String, ServletWrapper> mapper;
     private String jarName;
@@ -22,6 +23,13 @@ public class Context implements LifeCycle {
     @Override
     public void init() throws Exception {
         loadOnStartUpServlet();
+        this.reactor = MultiReactor.newBuilder()
+                .setPort(port)
+                .setHandlerClass(HttpHandler.class)
+                .setMainReactorName("MainReactor")
+                .setServletContext(ServletContext.contextWithMapperAndClassLoader(mapper, webAppLoader,jarName))
+                .setSubReactorCount(subReactorNum)
+                .build();
     }
 
 
@@ -42,16 +50,10 @@ public class Context implements LifeCycle {
         this.configuration = configuration;
         this.mapper = configuration.getRouter();
         this.port = configuration.getPort();
-        int subReactorNum = configuration.getSubReactorNum();
+        subReactorNum = configuration.getSubReactorNum();
         JarClassLoader jarClassLoader = new JarClassLoader(jarName);
         this.webAppLoader = new WebAppLoader(mapper, jarClassLoader);
-        this.reactor = MultiReactor.newBuilder()
-                .setPort(port)
-                .setHandlerClass(HttpHandler.class)
-                .setMainReactorName("MainReactor")
-                .setServletContext(ServletContext.contextWithMapperAndClassLoader(mapper, webAppLoader,jarName))
-                .setSubReactorCount(subReactorNum)
-                .build();
+
 
     }
 
@@ -61,6 +63,10 @@ public class Context implements LifeCycle {
 
     private void loadOnStartUpServlet() throws Exception {
         webAppLoader.loadOnStartUp();
+    }
+
+    public void setPort(int port) {
+        this.port = port;
     }
 
 

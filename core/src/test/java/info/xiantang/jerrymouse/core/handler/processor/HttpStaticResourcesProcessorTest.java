@@ -79,6 +79,7 @@ public class HttpStaticResourcesProcessorTest {
         Map<String, ServletWrapper> mapper = new HashMap<>();
         Configuration configuration = new Configuration(availablePort, 3, mapper);
         Context context = new Context("sample.jar", configuration);
+        context.init();
         context.start();
         HttpGet httpget = new HttpGet("http://localhost:" + availablePort + "/favicon.ico");
         httpget.setHeader("Sec-Fetch-Dest", "image");

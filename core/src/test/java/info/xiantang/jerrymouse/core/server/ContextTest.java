@@ -38,6 +38,7 @@ public class ContextTest {
         mapper.put("/test",new ServletWrapper("","/test","aaa",null,servlet.getClass(),servlet));
         Configuration configuration = new Configuration(availablePort, 3, mapper);
         Context context = new Context("jarName", configuration);
+        context.init();
         context.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();
         HttpGet httpget = new HttpGet("http://localhost:" + availablePort + "/test");
@@ -95,8 +96,9 @@ public class ContextTest {
 
         mapper.put("/test",new ServletWrapper("","/test","aaa",null,servlet.getClass(),servlet));
         Configuration configuration = new Configuration(availablePort, 3, mapper);
-        Context server = new Context("jarName", configuration);
-        server.start();
+        Context context = new Context("jarName", configuration);
+        context.init();
+        context.start();
         CloseableHttpClient httpclient = HttpClients.createDefault();
         StringEntity requestEntity = new StringEntity(
                 body,

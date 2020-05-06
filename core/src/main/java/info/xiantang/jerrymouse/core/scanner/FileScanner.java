@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class FileScanner implements Runnable{
-    private File buildRoot;
-    private int interval;
-    private List<Listener> listeners = new LinkedList<>();
+    private final File buildRoot;
+    private final int interval;
+    private final List<Listener> listeners = new LinkedList<>();
     private List<File> preFiles = new ArrayList<>();
 
 
@@ -40,8 +40,7 @@ public class FileScanner implements Runnable{
     private void getAllFileInDir(File root, List<File> currentFiles) {
         if (root.isDirectory()) {
             File[] files = root.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                File file = files[i];
+            for (File file : files) {
                 getAllFileInDir(file, currentFiles);
             }
         } else {
@@ -64,8 +63,6 @@ public class FileScanner implements Runnable{
                         preFiles = newestFiles;
                     }
                 }
-
-
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

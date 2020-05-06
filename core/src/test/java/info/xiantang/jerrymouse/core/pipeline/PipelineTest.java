@@ -51,13 +51,18 @@ public class PipelineTest {
         assertEquals(request1, request);
     }
 
-    @Test
-    public void testSessionInboundPipeline() {
+    private InBoundPipeline createInBoundPipeline() {
         ServletContext context = ServletContext.emptyContext();
         InBoundPipeline rootInBoundPipeline = new RootInBoundPipeline(context);
         InBoundPipeline sessionInBoundPipeline = new SessionInBoundPipeline(context);
         rootInBoundPipeline.setNext(sessionInBoundPipeline);
         context.setInboundPipeline(rootInBoundPipeline);
+        return rootInBoundPipeline;
+    }
+
+    @Test
+    public void testSessionInboundPipeline() {
+        InBoundPipeline rootInBoundPipeline = createInBoundPipeline();
         HttpRequest request = HttpRequest.newBuilder()
                 .setMethod("POST")
                 .setHttpVersion("HTTP/1.1")
@@ -67,18 +72,13 @@ public class PipelineTest {
                 .build();
         HttpResponse response = new HttpResponse(ByteBuffer.allocate(1024));
         rootInBoundPipeline.doHandle(request, response);
-
         String header = response.getHeader("Set-Cookie");
         assertNotNull(header);
     }
 
     @Test
     public void testRepeatRequestSessionInboundPipeline() {
-        ServletContext context = ServletContext.emptyContext();
-        InBoundPipeline rootInBoundPipeline = new RootInBoundPipeline(context);
-        InBoundPipeline sessionInBoundPipeline = new SessionInBoundPipeline(context);
-        rootInBoundPipeline.setNext(sessionInBoundPipeline);
-        context.setInboundPipeline(rootInBoundPipeline);
+        InBoundPipeline rootInBoundPipeline = createInBoundPipeline();
         HttpRequest request = HttpRequest.newBuilder()
                 .setMethod("POST")
                 .setHttpVersion("HTTP/1.1")
@@ -88,7 +88,6 @@ public class PipelineTest {
                 .build();
         HttpResponse response = new HttpResponse(ByteBuffer.allocate(1024));
         rootInBoundPipeline.doHandle(request, response);
-
         String header = response.getHeader("Set-Cookie");
         assertNotNull(header);
         Cookies cookies = new Cookies();
