@@ -18,11 +18,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class MultiReactor implements Runnable {
 
-    private int subReactorCount;
-    private Reactor[] subReactors;
-    private Reactor mainReactor;
-    private AtomicInteger loadBalancingInteger = new AtomicInteger();
-    private ServletContext servletContext;
+    private final int subReactorCount;
+    private final Reactor[] subReactors;
+    private final Reactor mainReactor;
+    private final AtomicInteger loadBalancingInteger = new AtomicInteger();
+    private final ServletContext servletContext;
 
     private MultiReactor(String mainReactorName, int port, Class<? extends BaseHandler> handlerClass, int subReactorCount, ServletContext context) throws IOException {
         this.subReactorCount = subReactorCount;
@@ -101,8 +101,8 @@ public class MultiReactor implements Runnable {
      * will gain a instance by reflect.
      */
     public class Acceptor implements Runnable {
-        private ServerSocketChannel serverSocket;
-        private Class<? extends BaseHandler> handlerClass;
+        private final ServerSocketChannel serverSocket;
+        private final Class<? extends BaseHandler> handlerClass;
 
         Acceptor(ServerSocketChannel serverSocket, Class<? extends BaseHandler> handlerClass) {
             this.serverSocket = serverSocket;
@@ -141,9 +141,9 @@ public class MultiReactor implements Runnable {
 
     public class MainReactorImpl implements Reactor {
         private final String mainReactorName;
-        private Selector selector;
+        private final Selector selector;
         private volatile boolean isRunning = true;
-        private Acceptor acceptor;
+        private final Acceptor acceptor;
 
 
         MainReactorImpl(String mainReactorName, int port, Class<? extends BaseHandler> handlerClass) throws IOException {
@@ -176,8 +176,8 @@ public class MultiReactor implements Runnable {
             try {
                 while (!Thread.interrupted() && isRunning) {
                     selector.select();
-                    Set selected = selector.selectedKeys();
-                    for (Object o : selected) dispatch((SelectionKey) o);
+                    Set<SelectionKey>  selected = selector.selectedKeys();
+                    for (SelectionKey key : selected) dispatch(key);
                     selected.clear();
                 }
             } catch (IOException e) {
@@ -200,9 +200,9 @@ public class MultiReactor implements Runnable {
 
 
     public static class SubReactorImpl implements Reactor {
-        private Queue<Event> events = new ConcurrentLinkedQueue<>();
-        private Selector subSelector;
-        private String name;
+        private final Queue<Event> events = new ConcurrentLinkedQueue<>();
+        private final Selector subSelector;
+        private final String name;
         private boolean isRunning = true;
 
 

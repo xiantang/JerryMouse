@@ -2,8 +2,9 @@ package info.xiantang.jerrymouse.core.handler;
 
 import info.xiantang.jerrymouse.core.handler.processor.ContentTypeMapper;
 import info.xiantang.jerrymouse.core.loader.WebAppLoader;
-import info.xiantang.jerrymouse.core.pipeline.InBoundPipeline;
-import info.xiantang.jerrymouse.core.pipeline.RootInBoundPipeline;
+import info.xiantang.jerrymouse.core.pipeline.BoundPipeline;
+import info.xiantang.jerrymouse.core.pipeline.ContentOutBoundPipeline;
+import info.xiantang.jerrymouse.core.pipeline.RootBoundPipeline;
 import info.xiantang.jerrymouse.core.pipeline.SessionInBoundPipeline;
 import info.xiantang.jerrymouse.core.reactor.Reactor;
 import info.xiantang.jerrymouse.core.server.ServletWrapper;
@@ -22,7 +23,9 @@ public class ServletContext {
     private WebAppLoader loader;
     private ContentTypeMapper contentTypeMapper;
     private final File jarFile;
-    private InBoundPipeline inBoundPipeline;
+    private BoundPipeline inBoundPipeline;
+    private BoundPipeline outBoundPipeline;
+
     private Map<String, Session> sessionMap = new ConcurrentHashMap<>();
 
 
@@ -37,10 +40,15 @@ public class ServletContext {
     }
 
     private void init() {
-        InBoundPipeline rootInBoundPipeline = new RootInBoundPipeline(this);
-        InBoundPipeline sessionInBoundPipeline = new SessionInBoundPipeline(this);
-        rootInBoundPipeline.setNext(sessionInBoundPipeline);
+        BoundPipeline rootInBoundPipeline = new RootBoundPipeline(this);
+        BoundPipeline sessionBoundPipeline = new SessionInBoundPipeline(this);
+        rootInBoundPipeline.setNext(sessionBoundPipeline);
         setInboundPipeline(rootInBoundPipeline);
+        BoundPipeline rootOutBoundPipeline = new RootBoundPipeline(this);
+        BoundPipeline contentOutBoundPipeline = new ContentOutBoundPipeline(this);
+        rootOutBoundPipeline.setNext(contentOutBoundPipeline);
+        setOutboundPipeline(rootOutBoundPipeline);
+
     }
 
     public static ServletContext emptyContext() {
@@ -84,15 +92,23 @@ public class ServletContext {
         return contentTypeMapper;
     }
 
-    public void setInboundPipeline(InBoundPipeline inBoundPipeline) {
-        this.inBoundPipeline = inBoundPipeline;
+    public void setInboundPipeline(BoundPipeline boundPipeline) {
+        this.inBoundPipeline = boundPipeline;
     }
 
-    public InBoundPipeline getInboundPipeline() {
+    public BoundPipeline getInboundPipeline() {
         return inBoundPipeline;
     }
 
     public Map<String, Session> getSessionMap() {
         return sessionMap;
     }
+
+    public void setOutboundPipeline(BoundPipeline outBoundPipeline) {
+        this.outBoundPipeline = outBoundPipeline;
+    }
+    public BoundPipeline getOutBoundPipeline() {
+        return outBoundPipeline;
+    }
+
 }

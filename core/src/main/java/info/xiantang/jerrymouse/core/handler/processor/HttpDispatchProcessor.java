@@ -1,7 +1,7 @@
 package info.xiantang.jerrymouse.core.handler.processor;
 
 import info.xiantang.jerrymouse.core.handler.ServletContext;
-import info.xiantang.jerrymouse.core.pipeline.InBoundPipeline;
+import info.xiantang.jerrymouse.core.pipeline.BoundPipeline;
 import info.xiantang.jerrymouse.core.utils.StaticResourcesUtils;
 import info.xiantang.jerrymouse.http.core.HttpRequest;
 import info.xiantang.jerrymouse.http.core.HttpResponse;
@@ -23,9 +23,11 @@ public class HttpDispatchProcessor implements Processor {
             processor = new HttpServletProcessor(context);
         }
         // inbound pipeline
-        InBoundPipeline inboundPipeline = context.getInboundPipeline();
+        BoundPipeline inboundPipeline = context.getInboundPipeline();
         inboundPipeline.doHandle(request, response);
         processor.process(request, response);
-        //TODO outbound pipeline
+        // outbound pipeline
+        BoundPipeline outBoundPipeline = context.getOutBoundPipeline();
+        outBoundPipeline.doHandle(request,response);
     }
 }

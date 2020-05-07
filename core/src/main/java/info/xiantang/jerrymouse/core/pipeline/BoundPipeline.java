@@ -8,11 +8,11 @@ import info.xiantang.jerrymouse.http.core.HttpResponse;
  * @Author: xiantang
  * @Date: 2020/4/26 22:56
  */
-public abstract class InBoundPipeline implements Pipeline{
+public abstract class BoundPipeline implements Pipeline{
     private Pipeline next;
-    private ServletContext context;
+    private final ServletContext context;
 
-    InBoundPipeline(ServletContext context) {
+    protected BoundPipeline(ServletContext context) {
         this.context = context;
     }
 

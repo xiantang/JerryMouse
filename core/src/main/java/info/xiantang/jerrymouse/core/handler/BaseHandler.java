@@ -6,6 +6,7 @@ import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -17,15 +18,15 @@ import static info.xiantang.jerrymouse.core.reactor.Constants.*;
 
 public abstract class BaseHandler implements Runnable {
 
-    private static ExecutorService threadPool = Executors.newFixedThreadPool(CORE_NUM);
+    private static final ExecutorService threadPool = Executors.newFixedThreadPool(CORE_NUM);
     final SocketChannel socketChannel;
-    private final Selector selector;
+    protected final Selector selector;
     private final ServletContext context;
     SelectionKey sk;
-    private ByteBuffer inputBuffer = ByteBuffer.allocate(BUFFER_MAX_IN);
+    private final ByteBuffer inputBuffer = ByteBuffer.allocate(BUFFER_MAX_IN);
     ByteBuffer outputBuffer = ByteBuffer.allocate(BUFFER_MAX_OUT);
     ByteArrayBuffer rawRequest = new ByteArrayBuffer(0);
-    private Reactor reactor;
+    private final Reactor reactor;
     private int state = READING;
 
 
@@ -63,15 +64,19 @@ public abstract class BaseHandler implements Runnable {
         try {
             if (state == READING)
                 read();
-            else if (state == SENDING)
+            else if (state == SENDING){
                 send();
+            }
+
         } catch (IOException e) {
             // TODO use log
             e.printStackTrace();
         }
     }
 
-    private synchronized void read() throws IOException {
+
+
+    protected synchronized void read() throws IOException {
         inputBuffer.clear();
         int n = socketChannel.read(inputBuffer);
         if (inputIsComplete(inputBuffer, rawRequest, n)) {

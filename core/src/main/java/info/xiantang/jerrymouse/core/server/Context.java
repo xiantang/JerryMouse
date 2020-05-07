@@ -19,15 +19,17 @@ public class Context implements LifeCycle {
     private Configuration configuration;
     private MultiReactor reactor;
     private WebAppLoader webAppLoader;
+    private ServletContext servletContext;
 
     @Override
     public void init() throws Exception {
         loadOnStartUpServlet();
+        servletContext = ServletContext.contextWithMapperAndClassLoader(mapper, webAppLoader, jarName);
         this.reactor = MultiReactor.newBuilder()
                 .setPort(port)
                 .setHandlerClass(HttpHandler.class)
                 .setMainReactorName("MainReactor")
-                .setServletContext(ServletContext.contextWithMapperAndClassLoader(mapper, webAppLoader,jarName))
+                .setServletContext(servletContext)
                 .setSubReactorCount(subReactorNum)
                 .build();
     }
@@ -55,6 +57,10 @@ public class Context implements LifeCycle {
         this.webAppLoader = new WebAppLoader(mapper, jarClassLoader);
 
 
+    }
+
+    public ServletContext getServletContext() {
+        return servletContext;
     }
 
     Map<String, ServletWrapper> getMapper() {

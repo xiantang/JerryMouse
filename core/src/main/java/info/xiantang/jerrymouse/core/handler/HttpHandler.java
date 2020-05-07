@@ -7,10 +7,11 @@ import info.xiantang.jerrymouse.http.parser.HttpRequestParser;
 import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.EOFException;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectableChannel;
 
-import static info.xiantang.jerrymouse.core.reactor.Constants.CLOSED;
-import static info.xiantang.jerrymouse.core.reactor.Constants.SENDING;
+import static info.xiantang.jerrymouse.core.reactor.Constants.*;
 
 public class HttpHandler extends BaseHandler {
     /**

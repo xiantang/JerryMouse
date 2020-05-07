@@ -13,7 +13,7 @@ import java.util.UUID;
  * @Author: xiantang
  * @Date: 2020/4/26 23:16
  */
-public class SessionInBoundPipeline extends InBoundPipeline {
+public class SessionInBoundPipeline extends BoundPipeline {
     public SessionInBoundPipeline(ServletContext context) {
         super(context);
     }
