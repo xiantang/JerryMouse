@@ -64,7 +64,7 @@ public abstract class BaseHandler implements Runnable {
         try {
             if (state == READING)
                 read();
-            else if (state == SENDING){
+            else if (state == SENDING) {
                 send();
             }
 
@@ -75,13 +75,20 @@ public abstract class BaseHandler implements Runnable {
     }
 
 
-
     protected synchronized void read() throws IOException {
         inputBuffer.clear();
         int n = socketChannel.read(inputBuffer);
+
         if (inputIsComplete(inputBuffer, rawRequest, n)) {
-            state = PROCESSING;
-            threadPool.execute(new Processor());
+            if (state != CLOSED) {
+                state = PROCESSING;
+                threadPool.execute(new Processor());
+            } else {
+                System.out.println("服务端关闭连接");
+                sk.cancel();
+                socketChannel.close();
+            }
+
         }
     }
 
