@@ -1,12 +1,12 @@
 package info.xiantang.jerrymouse.core.handler;
 
 import info.xiantang.jerrymouse.core.event.Event;
+import info.xiantang.jerrymouse.core.reactor.MultiReactor;
 import info.xiantang.jerrymouse.core.reactor.Reactor;
 import org.apache.http.util.ByteArrayBuffer;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -22,6 +22,7 @@ public abstract class BaseHandler implements Runnable {
     final SocketChannel socketChannel;
     protected final Selector selector;
     private final ServletContext context;
+    private final HandlerEvent event;
     SelectionKey sk;
     private final ByteBuffer inputBuffer = ByteBuffer.allocate(BUFFER_MAX_IN);
     ByteBuffer outputBuffer = ByteBuffer.allocate(BUFFER_MAX_OUT);
@@ -29,6 +30,13 @@ public abstract class BaseHandler implements Runnable {
     private final Reactor reactor;
     private int state = READING;
 
+    public HandlerEvent getEvent() {
+        return event;
+    }
+
+    public Reactor getReactor() {
+        return reactor;
+    }
 
     /**
      * the constructor of handler.
@@ -40,8 +48,7 @@ public abstract class BaseHandler implements Runnable {
         this.reactor = context.getReactor();
         this.socketChannel = context.getChannel();
         this.selector = reactor.getSelector();
-        HandlerEvent event = new HandlerEvent(this);
-        reactor.register(event);
+        this.event = new HandlerEvent(this);
     }
 
     protected int getState() {
@@ -68,17 +75,16 @@ public abstract class BaseHandler implements Runnable {
                 send();
             }
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             // TODO use log
             e.printStackTrace();
         }
     }
 
 
-    protected synchronized void read() throws IOException {
+    protected synchronized void read() throws Exception {
         inputBuffer.clear();
         int n = socketChannel.read(inputBuffer);
-
         if (inputIsComplete(inputBuffer, rawRequest, n)) {
             if (state != CLOSED) {
                 state = PROCESSING;
@@ -92,10 +98,12 @@ public abstract class BaseHandler implements Runnable {
         }
     }
 
-    protected void send() throws IOException {
+    protected void send() throws Exception {
         outputBuffer.flip();
         socketChannel.write(outputBuffer);
-        sk.channel().close();
+        MultiReactor.Acceptor acceptor = context.getAcceptor();
+        acceptor.newInstanceOfHandler(socketChannel,reactor);
+
     }
 
     public abstract boolean inputIsComplete(ByteBuffer input, ByteArrayBuffer rawRequest, int bytes) throws IOException;
@@ -105,6 +113,7 @@ public abstract class BaseHandler implements Runnable {
         process(outputBuffer, rawRequest);
         sk.interestOps(SelectionKey.OP_WRITE);
         selector.wakeup();
+
     }
 
     public abstract void process(ByteBuffer output, ByteArrayBuffer request) throws Exception;
@@ -116,16 +125,15 @@ public abstract class BaseHandler implements Runnable {
             try {
                 processAndHandOff();
             } catch (Exception e) {
-                //TODO print error
                 e.printStackTrace();
             }
         }
     }
 
-    public class HandlerEvent implements Event {
+    public  class HandlerEvent implements Event {
         private BaseHandler handler;
 
-        HandlerEvent(BaseHandler handler) {
+        public HandlerEvent(BaseHandler handler) {
             this.handler = handler;
         }
 

@@ -16,7 +16,7 @@ public class CountBaseHandler extends BaseHandler {
         super(context);
     }
     @Override
-    public boolean inputIsComplete(ByteBuffer input, ByteArrayBuffer request, int bytes) throws IOException {
+    public boolean inputIsComplete(ByteBuffer input, ByteArrayBuffer request, int bytes) {
         if (bytes > 0) {
             input.flip(); // 切换成读取模式
             while (input.hasRemaining()) {
@@ -33,7 +33,8 @@ public class CountBaseHandler extends BaseHandler {
                 }
             }
         } else if (bytes == -1) {
-            throw new EOFException();
+            setState(CLOSED);
+            return true;
         }
 
         return false;

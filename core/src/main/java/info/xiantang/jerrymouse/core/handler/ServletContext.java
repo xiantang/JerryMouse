@@ -6,6 +6,7 @@ import info.xiantang.jerrymouse.core.pipeline.BoundPipeline;
 import info.xiantang.jerrymouse.core.pipeline.ContentOutBoundPipeline;
 import info.xiantang.jerrymouse.core.pipeline.RootBoundPipeline;
 import info.xiantang.jerrymouse.core.pipeline.SessionInBoundPipeline;
+import info.xiantang.jerrymouse.core.reactor.MultiReactor;
 import info.xiantang.jerrymouse.core.reactor.Reactor;
 import info.xiantang.jerrymouse.core.server.ServletWrapper;
 import info.xiantang.jerrymouse.http.session.Session;
@@ -27,6 +28,7 @@ public class ServletContext {
     private BoundPipeline outBoundPipeline;
 
     private Map<String, Session> sessionMap = new ConcurrentHashMap<>();
+    private MultiReactor.Acceptor acceptor;
 
 
     public ServletContext(Reactor reactor, SocketChannel channel, Map<String, ServletWrapper> mapper, WebAppLoader loader, String jarName) {
@@ -111,4 +113,11 @@ public class ServletContext {
         return outBoundPipeline;
     }
 
+    public void setAcceptor(MultiReactor.Acceptor acceptor) {
+        this.acceptor = acceptor;
+    }
+
+    public MultiReactor.Acceptor getAcceptor() {
+        return acceptor;
+    }
 }

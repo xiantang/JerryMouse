@@ -22,7 +22,7 @@ public class HttpResponse implements Response {
         this.outputBuffer = outputBuffer;
         this.statusCode = 200;
         this.headers.put("Server", server);
-        this.headers.put("Connection", "Closed");
+        this.headers.put("Content", "Keep-Alive");
         this.headers.put("Content-Type", "text/html");
     }
 
@@ -60,7 +60,6 @@ public class HttpResponse implements Response {
 
     public byte[] getBodyBytes() {
         int capacity = bodyBuffer.capacity();
-
         bodyBuffer.flip();
         List<Byte> bytes = new ArrayList<>();
         while (bodyBuffer.hasRemaining()) {

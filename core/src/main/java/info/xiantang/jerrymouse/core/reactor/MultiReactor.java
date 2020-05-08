@@ -7,10 +7,8 @@ import info.xiantang.jerrymouse.core.handler.ServletContext;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.InetSocketAddress;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
+import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -20,7 +18,7 @@ public class MultiReactor implements Runnable {
 
     private final int subReactorCount;
     private final Reactor[] subReactors;
-    private final Reactor mainReactor;
+    private final MainReactorImpl mainReactor;
     private final AtomicInteger loadBalancingInteger = new AtomicInteger();
     private final ServletContext servletContext;
 
@@ -33,6 +31,9 @@ public class MultiReactor implements Runnable {
         for (int i = 0; i < subReactorCount; i++) {
             this.subReactors[i] = new SubReactorImpl("subReactor-" + i, Selector.open());
         }
+
+        Acceptor acceptor = mainReactor.getAcceptor();
+        servletContext.setAcceptor(acceptor);
 
     }
 
@@ -115,7 +116,8 @@ public class MultiReactor implements Runnable {
             try {
                 channel = serverSocket.accept();
                 if (channel != null) {
-                    newInstanceOfHandler(channel);
+                    Reactor subReactor = subReactors[loadBalancingInteger.incrementAndGet() % subReactorCount];
+                    newInstanceOfHandler(channel,subReactor);
                 }
             } catch (Exception e) {
                 //TODO log error
@@ -128,13 +130,14 @@ public class MultiReactor implements Runnable {
             serverSocket.close();
         }
 
-        private void newInstanceOfHandler(SocketChannel channel) throws Exception {
+        public void newInstanceOfHandler(SocketChannel channel,Reactor reactor) throws Exception {
             Constructor<? extends BaseHandler> handler
                     = handlerClass.getConstructor(ServletContext.class);
-            Reactor subReactor = subReactors[loadBalancingInteger.incrementAndGet() % subReactorCount];
             servletContext.setChannel(channel);
-            servletContext.setReactor(subReactor);
-            handler.newInstance(servletContext);
+            servletContext.setReactor(reactor);
+            BaseHandler baseHandler = handler.newInstance(servletContext);
+            BaseHandler.HandlerEvent event = baseHandler.getEvent();
+            reactor.register(event);
         }
     }
 
@@ -144,6 +147,7 @@ public class MultiReactor implements Runnable {
         private final Selector selector;
         private volatile boolean isRunning = true;
         private final Acceptor acceptor;
+
 
 
         MainReactorImpl(String mainReactorName, int port, Class<? extends BaseHandler> handlerClass) throws IOException {
@@ -177,8 +181,10 @@ public class MultiReactor implements Runnable {
                 while (!Thread.interrupted() && isRunning) {
                     selector.select();
                     Set<SelectionKey>  selected = selector.selectedKeys();
-                    for (SelectionKey key : selected) dispatch(key);
+                    HashSet<SelectionKey> selectionKeys = new HashSet<>(selected);
                     selected.clear();
+                    for (SelectionKey key : selectionKeys) dispatch(key);
+                    selectionKeys.clear();
                 }
             } catch (IOException e) {
                 //TODO log error
@@ -194,7 +200,16 @@ public class MultiReactor implements Runnable {
 
         public void stop() throws IOException {
             isRunning = false;
+            Set<SelectionKey> keys = selector.keys();
+            for (SelectionKey key : keys) {
+                SelectableChannel channel = key.channel();
+                channel.close();
+            }
             acceptor.stop();
+        }
+
+        public Acceptor getAcceptor() {
+            return acceptor;
         }
     }
 
@@ -203,7 +218,7 @@ public class MultiReactor implements Runnable {
         private final Queue<Event> events = new ConcurrentLinkedQueue<>();
         private final Selector subSelector;
         private final String name;
-        private boolean isRunning = true;
+        private volatile boolean isRunning = true;
 
 
         SubReactorImpl(String name, Selector subSelector) {
@@ -221,7 +236,8 @@ public class MultiReactor implements Runnable {
                     }
                     subSelector.select();
                     Set<SelectionKey> selected = subSelector.selectedKeys();
-                    for (SelectionKey key : selected) dispatch(key);
+                    for (SelectionKey key : selected)
+                        dispatch(key);
                     selected.clear();
                 }
             } catch (IOException e) {
@@ -256,8 +272,13 @@ public class MultiReactor implements Runnable {
 
 
         @Override
-        public void stop() {
+        public void stop() throws IOException {
             isRunning = false;
+            Set<SelectionKey> keys = subSelector.keys();
+            for (SelectionKey key : keys) {
+                SelectableChannel channel = key.channel();
+                channel.close();
+            }
         }
     }
 
